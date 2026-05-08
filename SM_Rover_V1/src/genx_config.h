@@ -75,6 +75,8 @@
 
 #define ULTRASONIC_CONFIGURED
 
+#define ADAS_USECASE_CONFIGURED
+
 /***********************************************
  * ANCIT_Peripheral_Enablement_Stop
  ***********************************************/

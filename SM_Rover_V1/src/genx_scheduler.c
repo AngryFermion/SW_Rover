@@ -66,11 +66,9 @@ void Task_While(void){
 	ggenx.Distance = genx_ultrason_get_distance_cm();
 }
 void Task_1ms(void) {
-/*#ifdef SIMULINK_BRIDGE_CONFIGURED
-ANCIT_App_PreStep();
-ACC_step();
-ANCIT_App_PostStep();
-#endif  SIMULINK_BRIDGE_CONFIGURED */
+
+#ifdef ADAS_USECASE_CONFIGURED
+if(mode == 4 && state == 1){
 	ANCIT_App_PreStep();
 	ACC_step();
 	ANCIT_App_PostStep();
@@ -78,6 +76,8 @@ ANCIT_App_PostStep();
 	genx_PWM_LBM_updateDutyCycle(100 - ggenx.PWM);
 	genx_PWM_RFM_updateDutyCycle(100);
 	genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
+}
+#endif
 
 }
 
@@ -85,14 +85,14 @@ void Task_10ms(void) {
 
 
 
-/*ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
+ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
 sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
 ggenx.PWM = pwm;
-
 if(state == 1){
 	if(mode ==1 || mode == 2){
 		ancit_smartkit_dc();
 	}
+#ifdef ADAS_USECASE_CONFIGURED
 	if(mode == 3){
 		ancit_uart_message_setup();
 		if(ggenx.Distance < 50){
@@ -108,13 +108,23 @@ if(state == 1){
 			genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
 		}
 	}
+	if(mode == 4){
+		ancit_uart_message_setup();
+	}
+#endif
+	else{
+		genx_PWM_LFM_updateDutyCycle(100);
+		genx_PWM_LBM_updateDutyCycle(100);
+		genx_PWM_RFM_updateDutyCycle(100);
+		genx_PWM_RBM_updateDutyCycle(100);
+	}
 }
 else{
 	genx_PWM_LFM_updateDutyCycle(100);
 	genx_PWM_LBM_updateDutyCycle(100);
 	genx_PWM_RFM_updateDutyCycle(100);
 	genx_PWM_RBM_updateDutyCycle(100);
-}*/
+}
 
 } 
 
