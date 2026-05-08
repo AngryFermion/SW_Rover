@@ -9,7 +9,7 @@
 
 extern int dir;
 
-void ancit_smartkit_dc(uint8_t *buffer){
+void ancit_smartkit_dc(void){
 
 	if(dir == 2){
 		genx_PWM_LFM_updateDutyCycle(100 - ggenx.PWM);

@@ -28,8 +28,8 @@ global_genx_t ggenx;
  
 void genx_global_init(void) {
 		ggenx.Distance= 0;
-	ggenx.V_set= 0;
-	ggenx.D_min= 0;
+	ggenx.V_set= 70;
+	ggenx.D_min= 25;
 	ggenx.PWM= 0;
 
 }

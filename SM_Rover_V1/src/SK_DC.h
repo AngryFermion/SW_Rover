@@ -11,5 +11,5 @@
 #include "genx_pwm.h"
 #include "genx_common.h"
 
-void ancit_smartkit_dc(uint8_t *buffer);
+void ancit_smartkit_dc(void);
 #endif /* SK_DC_H_ */

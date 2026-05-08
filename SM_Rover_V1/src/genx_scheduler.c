@@ -40,6 +40,12 @@ uint32_t mill_sec_value = 0;
 
 #endif
 
+
+//#include "genx_runnables.h"
+#ifdef SIMULINK_BRIDGE_CONFIGURED
+#include "genx_simulink_bridge.h"
+#endif /* SIMULINK_BRIDGE_CONFIGURED */
+
 #ifdef SCHEDULER_CONFIGURED
 //#include "genx_runnables.h"
 #ifdef UART_RTE_CONFIGURED
@@ -60,21 +66,32 @@ void Task_While(void){
 	ggenx.Distance = genx_ultrason_get_distance_cm();
 }
 void Task_1ms(void) {
+/*#ifdef SIMULINK_BRIDGE_CONFIGURED
+ANCIT_App_PreStep();
+ACC_step();
+ANCIT_App_PostStep();
+#endif  SIMULINK_BRIDGE_CONFIGURED */
+	ANCIT_App_PreStep();
+	ACC_step();
+	ANCIT_App_PostStep();
+	genx_PWM_LFM_updateDutyCycle(100);
+	genx_PWM_LBM_updateDutyCycle(100 - ggenx.PWM);
+	genx_PWM_RFM_updateDutyCycle(100);
+	genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
 
-} 
+}
 
 void Task_10ms(void) {
-#ifdef UART_RTE_CONFIGURED
-//ancit_uart_message_setup();
-#endif //UART_RTE_CONFIGURED
 
-ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
+
+
+/*ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
 sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
 ggenx.PWM = pwm;
 
 if(state == 1){
 	if(mode ==1 || mode == 2){
-		ancit_smartkit_dc(buffer);
+		ancit_smartkit_dc();
 	}
 	if(mode == 3){
 		ancit_uart_message_setup();
@@ -97,7 +114,7 @@ else{
 	genx_PWM_LBM_updateDutyCycle(100);
 	genx_PWM_RFM_updateDutyCycle(100);
 	genx_PWM_RBM_updateDutyCycle(100);
-}
+}*/
 
 } 
 

@@ -37,7 +37,9 @@
 #include "ancit_uart_rte.h"
 #include "ancit_timer.h"
 #include "genx_common.h"
-#include "genx_ultrason.h"
+#ifdef SIMULINK_BRIDGE_CONFIGURED
+#include "genx_simulink_bridge.h"
+#endif /* SIMULINK_BRIDGE_CONFIGURED */
 
 #ifdef SCHEDULER_CONFIGURED
 #include "genx_scheduler.h"
@@ -50,6 +52,8 @@
 #ifdef I2C_MANAGER_CONFIGURED
 #include "genx_i2c_manager.h"
 #endif
+
+#include "genx_ultrason.h"
 
 volatile int exit_code = 0;
 
@@ -88,6 +92,11 @@ int main(void) {
     genx_ultrason_init();
 #endif
 
+#ifdef SIMULINK_BRIDGE_CONFIGURED
+	/* Initialize Simulink model */
+	ANCIT_App_Init();
+#endif /* SIMULINK_BRIDGE_CONFIGURED */
+
 	/***********************************************
 	 * ANCIT_CG_Init_End
 	 ***********************************************/
@@ -109,11 +118,11 @@ ancit_uart_conn_main();
 #ifdef SCHEDULER_CONFIGURED
 	genx_scheduler_main();
 #endif
-
 #ifdef ULTRASONIC_CONFIGURED
     genx_ultrason_main();
 #endif
-    Task_While();
+	Task_While();
+
 		//Toggle the Debug Pin PTD8 to indicate end of main loop
 		//Toggles every main loop execution
 		//		ancit_digital_output_toggle(DO_PTD8_DEBUG_IDX);

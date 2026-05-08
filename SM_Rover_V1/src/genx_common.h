@@ -22,6 +22,7 @@
 
 #ifndef GENX_COMMON_H_
 #define GENX_COMMON_H_
+#include "stdint.h"
 
 typedef struct {
 		uint8_t Distance;
