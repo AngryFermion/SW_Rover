@@ -207,6 +207,7 @@
 								<option id="com.nxp.s32ds.cle.arm.mbs.arm32.bare.tool.c.compiler.option.target.libraries.568677591" name="Libraries support" superClass="com.nxp.s32ds.cle.arm.mbs.arm32.bare.tool.c.compiler.option.target.libraries" useByScannerDiscovery="false" value="com.nxp.s32ds.cle.arm.mbs.arm32.bare.tool.c.compiler.option.target.libraries.newlib_noio" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.490978286" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../SDK/platform/drivers/inc"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/ancit_lib/Ultrasonic}&quot;"/>
 									<listOptionValue builtIn="false" value="../SDK/rtos/osif"/>
 									<listOptionValue builtIn="false" value="../SDK/platform/drivers/src/lpuart"/>
 									<listOptionValue builtIn="false" value="../SDK/platform/drivers/src/ftm"/>
@@ -360,7 +361,7 @@
 	<storageModule moduleId="org.eclipse.embsys" parent_project="true" register_architecture="" register_board="---  none ---" register_chip="S32K144" register_core="CortexM4F" register_vendor=""/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="com.nxp.s32ds.cle.uct.core">
-		<sdkComponents>platform.driver.clock;platform.driver.interrupt_manager;platform.driver.pins;platform.driver.lptmr;platform.driver.osif_baremetal;platform.driver.osif;platform.driver.edma;platform.driver.lpuart;platform.driver.adc;platform.driver.flexcan;platform.driver.lpi2c;platform.driver.flash;platform.driver.ftm_pwm</sdkComponents>
+		<sdkComponents>platform.driver.clock;platform.driver.interrupt_manager;platform.driver.pins;platform.driver.lptmr;platform.driver.osif_baremetal;platform.driver.osif;platform.driver.edma;platform.driver.lpuart;platform.driver.adc;platform.driver.flexcan;platform.driver.lpi2c;platform.driver.flash;platform.driver.ftm_pwm;platform.driver.ftm_ic</sdkComponents>
 	</storageModule>
 	<storageModule moduleId="com.nxp.s32ds.cle.uct.internal.core.toolchainSettings">
 		<COND_TOOLCHAIN_LIBRARIES/>
@@ -370,7 +371,7 @@
 		<COND_TOOLCHAIN_ASM_DEFINES/>
 	</storageModule>
 	<storageModule moduleId="com.nxp.s32ds.cle.uct.internal.core.toolchainScriptProfile">
-		<COND_TOOLCHAIN_COMPONENTS_OPTION>COPY=platform.driver.adc;platform.driver.osif;platform.driver.lpuart;platform.driver.edma;platform.driver.lpi2c;platform.driver.lptmr;platform.driver.ftm_pwm;platform.driver.osif_baremetal;platform.driver.flash;platform.driver.flexcan</COND_TOOLCHAIN_COMPONENTS_OPTION>
+		<COND_TOOLCHAIN_COMPONENTS_OPTION>COPY=platform.driver.adc;platform.driver.osif;platform.driver.lpuart;platform.driver.ftm_ic;platform.driver.edma;platform.driver.lpi2c;platform.driver.lptmr;platform.driver.ftm_pwm;platform.driver.osif_baremetal;platform.driver.flash;platform.driver.flexcan</COND_TOOLCHAIN_COMPONENTS_OPTION>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Debug_FLASH">

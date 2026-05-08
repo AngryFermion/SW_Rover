@@ -36,6 +36,7 @@
 #define MAX_TASKS		3
 
 void genx_scheduler_init(void);
+void Task_While(void);
 // This macro replaces calls to genx_scheduler_main() with a direct call to ancit_scheduler_main().
 #define genx_scheduler_main() ancit_scheduler_main()
 

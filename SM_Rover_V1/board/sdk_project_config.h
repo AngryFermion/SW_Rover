@@ -28,6 +28,7 @@
 #include "peripherals_lpi2c_config_1.h"
 #include "peripherals_flash_1.h"
 #include "peripherals_flexTimer_pwm_0.h"
+#include "peripherals_flexTimer_ic_echo.h"
 
 
 #endif /* SDK_PROJECT_CONFIG_H_ */

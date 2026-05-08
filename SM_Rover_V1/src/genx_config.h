@@ -71,6 +71,8 @@
 
 //#define AUTOSAR_CONFIGURED 
 
+#define ULTRASONIC_CONFIGURED
+
 /***********************************************
  * ANCIT_Peripheral_Enablement_Stop
  ***********************************************/

@@ -37,6 +37,7 @@
 #include "ancit_uart_rte.h"
 #include "ancit_timer.h"
 #include "genx_common.h"
+#include "genx_ultrason.h"
 
 #ifdef SCHEDULER_CONFIGURED
 #include "genx_scheduler.h"
@@ -83,6 +84,10 @@ int main(void) {
 	genx_scheduler_init();
 #endif //SCHEDULER_CONFIGURED
 
+#ifdef ULTRASONIC_CONFIGURED
+    genx_ultrason_init();
+#endif
+
 	/***********************************************
 	 * ANCIT_CG_Init_End
 	 ***********************************************/
@@ -105,6 +110,10 @@ ancit_uart_conn_main();
 	genx_scheduler_main();
 #endif
 
+#ifdef ULTRASONIC_CONFIGURED
+    genx_ultrason_main();
+#endif
+    Task_While();
 		//Toggle the Debug Pin PTD8 to indicate end of main loop
 		//Toggles every main loop execution
 		//		ancit_digital_output_toggle(DO_PTD8_DEBUG_IDX);

@@ -65,7 +65,7 @@
                <pin_label pin_num="42" pin_signal="PTD8" label="DEBUG_PIN"/>
                <pin_label pin_num="32" pin_signal="PTD6" label="SPARE4"/>
                <pin_label pin_num="36" pin_signal="PTD10" label="SPARE2"/>
-               <pin_label pin_num="34" pin_signal="PTD12" label="SPARE3"/>
+               <pin_label pin_num="34" pin_signal="PTD12" label="ECHO"/>
                <pin_label pin_num="8" pin_signal="PTE5" label="CAN0_TX"/>
                <pin_label pin_num="9" pin_signal="PTE4" label="CAN0_RX"/>
                <pin_label pin_num="80" pin_signal="PTC7" label="LPUART1_TX"/>
@@ -73,6 +73,7 @@
                <pin_label pin_num="4" pin_signal="PTD0" label="RGB_LED_BLUE" identifier="L_BLUE"/>
                <pin_label pin_num="21" pin_signal="PTD16" label="RGB_LED_GREEN"/>
                <pin_label pin_num="22" pin_signal="PTD15" label="RGB_LED_RED"/>
+               <pin_label pin_num="35" pin_signal="PTD11" label="Trigger"/>
             </pin_labels>
             <external_user_signals>
                <routingDetailsColumns/>
@@ -151,6 +152,16 @@
                   <pin peripheral="LPUART1" signal="txd" pin_num="55" pin_signal="PTC9">
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="PORTD" signal="port, 11" pin_num="35" pin_signal="PTD11">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="FTM2" signal="ch, 2" pin_num="34" pin_signal="PTD12">
+                     <pin_features>
+                        <pin_feature name="direction" value="INPUT"/>
                      </pin_features>
                   </pin>
                </pins>
@@ -430,6 +441,16 @@
                   <data type="Version">1.0.0</data>
                </feature>
             </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.driver.ftm_ic" description="FTM_IC Driver is not found in the toolchain/IDE project. The project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.driver.ftm_ic" description="An unsupported version of the FTM_IC Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. The project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="equivalent">
+                  <data type="Version">1.0.0</data>
+               </feature>
+            </dependency>
             <dependency resourceType="Tool" resourceId="Clocks" description="The Clocks tool is required by the Peripherals tool, but it is disabled." problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data>true</data>
@@ -445,6 +466,8 @@
             <file path="board/peripherals_edma_config_1.h" update_enabled="true"/>
             <file path="board/peripherals_flash_1.c" update_enabled="true"/>
             <file path="board/peripherals_flash_1.h" update_enabled="true"/>
+            <file path="board/peripherals_flexTimer_ic_echo.c" update_enabled="true"/>
+            <file path="board/peripherals_flexTimer_ic_echo.h" update_enabled="true"/>
             <file path="board/peripherals_flexTimer_pwm_0.c" update_enabled="true"/>
             <file path="board/peripherals_flexTimer_pwm_0.h" update_enabled="true"/>
             <file path="board/peripherals_flexcan_config_0.c" update_enabled="true"/>
@@ -732,6 +755,37 @@
                                     <array name="pwmCombinedChannelConfig"/>
                                  </struct>
                               </struct>
+                           </struct>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="flexTimer_ic_echo" uuid="58ef1a61-7edf-4e58-999b-d36e2bb0dde9" type="flexTimer_ic" type_id="ftm_ic" mode="general" peripheral="FTM_2" enabled="true" comment="" custom_name_enabled="true" editing_lock="false">
+                     <config_set name="ftm_ic">
+                        <struct name="totalConfiguration">
+                           <struct name="ftmUserConfig">
+                              <setting name="ClockSource" value="FTM_CLOCK_SOURCE_EXTERNALCLK"/>
+                              <setting name="ClockSourcePrescaler" value="8"/>
+                              <setting name="DebugMode" value="FTM_BDM_MODE_11"/>
+                              <setting name="TimerOverInterrupt" value="true"/>
+                              <setting name="InitializationTrigger" value="false"/>
+                           </struct>
+                           <struct name="icConfiguration">
+                              <setting name="numofChannel" value="1"/>
+                              <setting name="maxCountVal" value="65535"/>
+                              <array name="arrayicConfig">
+                                 <struct name="0">
+                                    <setting name="configName" value="flexTimer_ic_echo_ChannelConfig0"/>
+                                    <setting name="hwID" value="2"/>
+                                    <setting name="operationMode" value="FTM_SIGNAL_MEASUREMENT"/>
+                                    <setting name="edgeDetectMode" value="FTM_RISING_EDGE"/>
+                                    <setting name="measureMode" value="FTM_PERIOD_ON_MEASUREMENT"/>
+                                    <setting name="continousMode" value="true"/>
+                                    <setting name="inputCaptureFilter" value="false"/>
+                                    <setting name="inputCaptureFilterValue" value="0"/>
+                                    <setting name="callback" value="callback_echo_received"/>
+                                    <setting name="callbackParameter" value="NULL"/>
+                                 </struct>
+                              </array>
                            </struct>
                         </struct>
                      </config_set>

@@ -27,6 +27,7 @@
 #include "SK_DC.h"
 #include "ancit_driver_uart.h"
 #include "stdio.h"
+#include "genx_ultrason.h"
 
 
 #ifdef UNIFIED_DIAGNOSTICS_SERVICES_CONFIGURED
@@ -54,7 +55,12 @@ genx_global_init();
 #endif
 } 
 
+
+void Task_While(void){
+	ggenx.Distance = genx_ultrason_get_distance_cm();
+}
 void Task_1ms(void) {
+
 } 
 
 void Task_10ms(void) {
@@ -65,9 +71,25 @@ void Task_10ms(void) {
 ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
 sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
 ggenx.PWM = pwm;
+
 if(state == 1){
 	if(mode ==1 || mode == 2){
 		ancit_smartkit_dc(buffer);
+	}
+	if(mode == 3){
+		ancit_uart_message_setup();
+		if(ggenx.Distance < 50){
+			genx_PWM_LFM_updateDutyCycle(100);
+			genx_PWM_LBM_updateDutyCycle(100);
+			genx_PWM_RFM_updateDutyCycle(100);
+			genx_PWM_RBM_updateDutyCycle(100);
+		}
+		else{
+			genx_PWM_LFM_updateDutyCycle(100);
+			genx_PWM_LBM_updateDutyCycle(100 - ggenx.PWM);
+			genx_PWM_RFM_updateDutyCycle(100);
+			genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
+		}
 	}
 }
 else{

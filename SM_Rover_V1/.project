@@ -218,6 +218,11 @@
 			<locationURI>S32SDK_S32K1XX_RTM_4.0.1/platform/drivers/src/ftm/doxygen/ftm_driver.dox</locationURI>
 		</link>
 		<link>
+			<name>doc/SDK/platform/drivers/src/ftm/doxygen/ftm_ic_driver.dox</name>
+			<type>1</type>
+			<locationURI>S32SDK_S32K1XX_RTM_4.0.1/platform/drivers/src/ftm/doxygen/ftm_ic_driver.dox</locationURI>
+		</link>
+		<link>
 			<name>doc/SDK/platform/drivers/src/ftm/doxygen/ftm_pwm_driver.dox</name>
 			<type>1</type>
 			<locationURI>S32SDK_S32K1XX_RTM_4.0.1/platform/drivers/src/ftm/doxygen/ftm_pwm_driver.dox</locationURI>
