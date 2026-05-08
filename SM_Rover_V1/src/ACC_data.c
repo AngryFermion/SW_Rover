@@ -25,7 +25,7 @@ P_ACC_T ACC_P = {
   /* Expression: 0.000005
    * Referenced by: '<Root>/Kp_d'
    */
-  5.0E-6,
+  0.00005,
 
   /* Expression: 1/0.01
    * Referenced by: '<Root>/Ts'
@@ -45,7 +45,7 @@ P_ACC_T ACC_P = {
   /* Expression: 0.000008
    * Referenced by: '<Root>/Kp_v'
    */
-  8.0E-6,
+  0.0005,
 
   /* Expression: 0
    * Referenced by: '<Root>/Unit Delay'
@@ -75,7 +75,7 @@ P_ACC_T ACC_P = {
   /* Expression: 12
    * Referenced by: '<Root>/Tg'
    */
-  12.0,
+  20.0,
 
   /* Expression: 5
    * Referenced by: '<Root>/Rate Limiter'

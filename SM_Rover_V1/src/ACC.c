@@ -22,7 +22,7 @@
 #include "rtwtypes.h"
 #include <string.h>
 #include "ACC_private.h"
-#define ACC_period                     (0.2)
+#define ACC_period                     (0.001)
 
 /* Block states (default storage) */
 DW_ACC_T ACC_DW;
