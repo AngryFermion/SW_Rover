@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SMART CAR KIT Control Panel</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #eef2f7;
+            margin: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #222;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: #dfe6ee;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card {
+            width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        #startBtn {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+        }
+        #startBtn2 {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+        }
+
+        #stopBtn {
+            background: linear-gradient(135deg, #f44336, #b71c1c);
+            color: white;
+        }
+        #stopBtn2 {
+            background: linear-gradient(135deg, #f44336, #b71c1c);
+            color: white;
+        }
+
+        .top-controls button {
+            width: 120px;
+            height: 45px;
+            border-radius: 12px;
+            border: none;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .slider { width: 80%; }
+        .slider2 { width: 80%; }
+
+        .container {
+            display: grid;
+            grid-template-columns: 90px 90px 90px;
+            grid-template-rows: 90px 90px 90px;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .dir-btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: none;
+            background: #f0f3f7;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .dir-btn.active {
+            background: #1506e3;
+            color: white;
+        }
+        .dir-btn.active2 {
+            background: #1506e3;
+            color: white;
+        }
+
+        .center {
+            width: 25px;
+            height: 25px;
+            background: #333;
+            border-radius: 50%;
+            margin: auto;
+        }
+
+        .status-box {
+            margin-top: 15px;
+            font-weight: bold;
+            background: #f4f6fa;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .green, .red {
+            width: 120px;
+            height: 45px;
+            border-radius: 12px;
+            border: none;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .green { background: linear-gradient(135deg, #4CAF50, #2e7d32); }
+        .red { background: linear-gradient(135deg, #f44336, #b71c1c); }
+
+        .green:active, .red:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>SMART CAR KIT Control Panel</h1>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="openTab('tab1', this, '1')">Direction & Speed</button>
+    <button class="tab-btn" onclick="openTab('tab2', this, '2')">Track Assist</button>
+    <button class="tab-btn" onclick="openTab('tab3', this, '3')">Ultrasonic</button>
+</div>
+
+<!-- TAB 1 -->
+<div id="tab1" class="tab-content active">
+    <div class="card">
+        <div class="top-controls">
+            <button id="startBtn">START</button>
+            <button id="stopBtn">STOP</button>
+
+            <br>
+
+            <input type="range" min="0" max="100" value="0" class="slider" id="speedSlider">
+            <p>Speed: <span id="speedValue">0</span></p>
+
+            <div class="status-box">
+                State: <span id="state">IDLE</span> |
+                Direction: <span id="direction">STOP</span> |
+                Speed: <span id="liveSpeed">0</span>
+            </div>
+        </div>
+
+        <div class="container">
+            <div></div>
+            <button class="dir-btn" id="up">⬆</button>
+            <div></div>
+
+            <button class="dir-btn" id="left">⬅</button>
+            <div class="center"></div>
+            <button class="dir-btn" id="right">➡</button>
+
+            <div></div>
+            <button class="dir-btn" id="down">⬇</button>
+            <div></div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 2 -->
+<div id="tab2" class="tab-content">
+    <div class="card">
+        <div class="top-controls">
+            <button id="startBtn2">START</button>
+            <button id="stopBtn2">STOP</button>
+
+            <br>
+
+                <button class="green" id="startRecordBtn">Start Recording</button>
+                <button class="red" id="stopRecordBtn">Stop Recording</button>
+
+            <br>
+
+            <input type="range" min="0" max="100" value="0" class="slider" id="speedSlider2">
+            <p>Speed: <span id="speedValue2">0</span></p>
+
+            <div class="status-box">
+                State: <span id="state2">IDLE</span> |
+                Direction: <span id="direction2">STOP</span> |
+                Speed: <span id="liveSpeed2">0</span>
+                <br>
+                Playback: <span id="playStatus">IDLE</span>
+            </div>
+        </div>
+        <select id="trackList"></select>
+            <br><br>
+
+        <button class="green" id="playTrackBtn">Play Track</button>
+        <button class="red" id="deleteTrackBtn">Delete Track</button>
+
+        <div class="container">
+            <div></div>
+            <button class="dir-btn" id="up2">⬆</button>
+            <div></div>
+
+            <button class="dir-btn" id="left2">⬅</button>
+            <div class="center"></div>
+            <button class="dir-btn" id="right2">➡</button>
+
+            <div></div>
+            <button class="dir-btn" id="down2">⬇</button>
+            <div></div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 3 -->
+<div id="tab3" class="tab-content">
+    <div class="card">
+        <h2>Ultrasonic Feature</h2>
+        <button class="green" onclick="sendUltra('1')">ENABLE</button>
+        <button class="red" onclick="sendUltra('0')">DISABLE</button>
+
+            <input type="range" min="0" max="100" value="0" class="slider" id="speedSlider3">
+            <p>Speed: <span id="speedValue3">0</span></p>
+
+        <div class="status-box">
+            <span id="ultraData">Waiting...</span>
+            Speed: <span id="liveSpeed3">0</span>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<script>
+    const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+
+    let currentCommand = "0";
+    let speed = "0";
+    let isStarted = 0;
+    let currentTab = "1";
+
+    const stateText = document.getElementById("state");
+    const directionText = document.getElementById("direction");
+    const liveSpeedText = document.getElementById("liveSpeed");
+
+    const stateText2 = document.getElementById("state2");
+    const directionText2 = document.getElementById("direction2");
+    const liveSpeedText2 = document.getElementById("liveSpeed2");
+
+    let ultraTimeout;
+    const ultraText = document.getElementById("ultraData");
+    const liveSpeedText3 = document.getElementById("liveSpeed3");
+
+    // ✅ MODIFIED (ONLY ADDITION INSIDE)
+    setInterval(() => {
+
+        if(isPlaying) return;
+
+        if(currentTab === "3"){
+            currentCommand = "0";
+        }
+
+        let message = currentTab + "," + isStarted + "," + currentCommand + "," + speed;
+        client.publish('SmartKit/Control', message);
+
+    }, 200);
+
+    window.onload = () => {
+        client.publish('SmartKit/Control', "1,0,0,0");
+    };
+
+    function getDirectionName(val) {
+        return ["STOP","FORWARD","REVERSE","LEFT","RIGHT"][val] || "STOP";
+    }
+
+    function press(btn, value) {
+        btn.classList.add("active");
+        currentCommand = value;
+
+        if(currentTab === "1"){
+            directionText.innerText = getDirectionName(value);
+        } else if(currentTab === "2"){
+            directionText2.innerText = getDirectionName(value);
+        }
+    }
+
+    function release(btn) {
+        btn.classList.remove("active");
+        currentCommand = "0";
+
+        if(currentTab === "1"){
+            directionText.innerText = "STOP";
+        } else if(currentTab === "2"){
+            directionText2.innerText = "STOP";
+        }
+    }
+
+    function setupButton(id, value) {
+        const btn = document.getElementById(id);
+
+        btn.addEventListener("mousedown", () => press(btn, value));
+        btn.addEventListener("mouseup", () => release(btn));
+        btn.addEventListener("mouseleave", () => release(btn));
+
+        btn.addEventListener("touchstart", e => {
+            e.preventDefault();
+            press(btn, value);
+        });
+
+        btn.addEventListener("touchend", () => release(btn));
+    }
+
+    setupButton("up","1");
+    setupButton("down","2");
+    setupButton("left","3");
+    setupButton("right","4");
+    // Direction buttons
+    setupButton("up2","1");
+    setupButton("down2","2");
+    setupButton("left2","3");
+    setupButton("right2","4");
+
+    document.getElementById("startBtn").onclick = () => {
+        isStarted = 1;
+        stateText.innerText = "ACTIVE";
+        stateText.style.color = "green";
+    };
+
+    document.getElementById("stopBtn").onclick = () => {
+        isStarted = 0;
+        stateText.innerText = "IDLE";
+        stateText.style.color = "red";
+    };
+
+    document.getElementById("speedSlider").oninput = function () {
+        speed = this.value;
+        document.getElementById("speedValue").innerText = speed;
+        liveSpeedText.innerText = speed;
+    };
+
+    // START button
+    document.getElementById("startBtn2").onclick = () => {
+        isStarted = 1;
+        stateText2.innerText = "ACTIVE";
+        stateText2.style.color = "green";
+    };
+
+    // STOP button
+    document.getElementById("stopBtn2").onclick = () => {
+        isStarted = 0;
+        stateText2.innerText = "IDLE";
+        stateText2.style.color = "red";
+    };
+
+    // Speed slider
+    document.getElementById("speedSlider2").oninput = function () {
+        speed = this.value;
+        document.getElementById("speedValue2").innerText = speed;
+        liveSpeedText2.innerText = speed;
+    };
+    document.getElementById("speedSlider3").oninput = function () {
+        speed = this.value;
+        document.getElementById("speedValue3").innerText = speed;
+        liveSpeedText3.innerText = speed;
+    };
+
+    function openTab(tabId, btn, tabNumber) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+
+        currentTab = tabNumber;
+
+        isStarted = 0;
+        currentCommand = "0";
+        speed = "0";
+    }
+
+    function sendTrack(val){
+        client.publish('SmartKit/Control', val);
+    }
+
+    // ✅ MODIFIED (ONLY ADDITIONS)
+    function sendUltra(val){
+        client.publish('SmartKit/ultra', val);
+
+        if(val === '1'){
+            isStarted = 1;
+            client.subscribe('SmartKit/Ultra');
+            ultraText.innerText = "Waiting...";
+        } else {
+            isStarted = 0;
+            client.unsubscribe('SmartKit/Ultra');
+            ultraText.innerText = "Disabled";
+        }
+    }
+
+    client.on('message', (topic, message) => {
+        if (topic === 'SmartKit/Ultra') {
+            ultraText.innerText = message.toString();
+
+            clearTimeout(ultraTimeout);
+            ultraTimeout = setTimeout(() => {
+                ultraText.innerText = "Waiting...";
+            }, 2000);
+        }
+    });
+
+    // ================= RECORDING FEATURE (ADDED) =================
+
+    let isRecording = false;
+    let recordedTrack = [];
+    let recordStartTime = 0;
+    let savedTracks = {};
+
+    // Load saved tracks from localStorage
+    if(localStorage.getItem("tracks")){
+        savedTracks = JSON.parse(localStorage.getItem("tracks"));
+        updateTrackDropdown();
+    }
+
+    // Start Recording
+    document.getElementById("startRecordBtn").onclick = () => {
+        if(currentTab !== "2") return;
+
+        isRecording = true;
+        recordedTrack = [];
+        recordStartTime = Date.now();
+
+        alert("Recording Started");
+    };
+
+    // Stop Recording
+    document.getElementById("stopRecordBtn").onclick = () => {
+        if(!isRecording) return;
+
+        isRecording = false;
+
+        let name = prompt("Enter track name:");
+        if(name){
+            savedTracks[name] = recordedTrack;
+            localStorage.setItem("tracks", JSON.stringify(savedTracks));
+            updateTrackDropdown();
+        }
+    };
+
+    // Capture data while sending (HOOK - NO CHANGE TO YOUR LOGIC)
+    setInterval(() => {
+
+        if(isRecording && currentTab === "2"){
+            let time = Date.now() - recordStartTime;
+
+            recordedTrack.push({
+                t: time,
+                data: currentTab + "," + isStarted + "," + currentCommand + "," + speed
+            });
+        }
+
+    }, 200);
+
+    // Update dropdown
+    function updateTrackDropdown(){
+        let list = document.getElementById("trackList");
+        list.innerHTML = "";
+
+        for(let key in savedTracks){
+            let option = document.createElement("option");
+            option.value = key;
+            option.text = key;
+            list.appendChild(option);
+        }
+    }
+
+    // Play Track
+    document.getElementById("playTrackBtn").onclick = () => {
+        let name = document.getElementById("trackList").value;
+        if(!savedTracks[name]) return;
+
+        let track = savedTracks[name];
+
+        track.forEach(item => {
+            setTimeout(() => {
+                client.publish('SmartKit/Control', item.data);
+            }, item.t);
+        });
+    };
+
+    // Delete Track
+    document.getElementById("deleteTrackBtn").onclick = () => {
+        let name = document.getElementById("trackList").value;
+        if(!savedTracks[name]) return;
+
+        delete savedTracks[name];
+        localStorage.setItem("tracks", JSON.stringify(savedTracks));
+        updateTrackDropdown();
+    };
+    // ================= PLAYBACK VISUAL FEEDBACK (ADDED) =================
+
+let isPlaying = false;
+
+// Highlight direction buttons during playback
+function highlightDirection(cmd){
+    const map = {
+        "1": "up2",
+        "2": "down2",
+        "3": "left2",
+        "4": "right2"
+    };
+
+    // remove all
+    ["up2","down2","left2","right2"].forEach(id => {
+        document.getElementById(id).classList.remove("active2");
+    });
+
+    if(map[cmd]){
+        document.getElementById(map[cmd]).classList.add("active2");
+    }
+}
+
+    // Play Track (ENHANCED - only added logic)
+    document.getElementById("playTrackBtn").onclick = () => {
+        let name = document.getElementById("trackList").value;
+        if(!savedTracks[name]) return;
+
+        let track = savedTracks[name];
+
+        isPlaying = true;
+        document.getElementById("playStatus").innerText = "PLAYING...";
+        document.getElementById("playStatus").style.color = "green";
+
+        track.forEach(item => {
+            setTimeout(() => {
+
+                // send data (your original logic)
+                client.publish('SmartKit/Control', item.data);
+
+                // parse data
+                let parts = item.data.split(",");
+                let cmd = parts[2];
+                let spd = parts[3];
+
+                // update UI
+                directionText2.innerText = getDirectionName(cmd);
+                liveSpeedText2.innerText = spd;
+
+                highlightDirection(cmd);
+
+            }, item.t);
+        });
+
+        // detect end of playback
+        let totalTime = track[track.length - 1].t;
+
+        setTimeout(() => {
+            isPlaying = false;
+            document.getElementById("playStatus").innerText = "COMPLETED";
+            document.getElementById("playStatus").style.color = "blue";
+
+            highlightDirection("0");
+            directionText2.innerText = "STOP";
+
+        }, totalTime + 200);
+    };
+
+</script>
+
+</body>
+</html>
