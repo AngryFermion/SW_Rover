@@ -26,6 +26,8 @@
 #include "string.h"
 #include "SK_DC.h"
 #include "ancit_driver_uart.h"
+#include "stdio.h"
+
 
 #ifdef UNIFIED_DIAGNOSTICS_SERVICES_CONFIGURED
 #include "cantp.h"
@@ -44,6 +46,7 @@ uint32_t mill_sec_value = 0;
 #endif
 
 uint8_t buffer[10];
+int mode, state, dir, pwm;
 
 void Task_OnStart(void) {
 #ifdef RTE_VARIABLES_CONFIGURED
@@ -59,10 +62,11 @@ void Task_10ms(void) {
 //ancit_uart_message_setup();
 #endif //UART_RTE_CONFIGURED
 
-ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 8U);
-ggenx.PWM = buffer[6];
-if(buffer[2] == '1'){
-	if(buffer[0]=='1'||'2'){
+ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
+sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
+ggenx.PWM = pwm;
+if(state == 1){
+	if(mode ==1 || mode == 2){
 		ancit_smartkit_dc(buffer);
 	}
 }
