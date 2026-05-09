@@ -54,7 +54,9 @@ do_registration_params_t do_reg[DIGITAL_OUTPUT_MAX] = {
  ***********************************************/
 //DO_LED_RED
 void DO_LED_RED_set_value(uint8_t value) {
+
 	ancit_digital_output_set(DO_LED_RED_IDX, value);
+	
 }
 
 void DO_LED_RED_toggle(void) {

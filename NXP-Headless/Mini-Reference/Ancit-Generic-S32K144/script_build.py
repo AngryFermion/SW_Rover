@@ -3,8 +3,11 @@ import subprocess
 import os
 from srec_align import align_srec
 from srec_utils import pad_srec
-#If this script is executing via Jenkins, then it expect 
+#If this script is executing via Jenkins, then it expect
 #NXP_K144_RTM and S32DS_ROOT_DIR to be saved in jenkins env variables.
+
+MAKE = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin\make.exe"
+MSYS32_BIN = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin"
 
 
 # ==== Step 1: Add your source directories ====
@@ -104,7 +107,8 @@ srec: $(TARGET)
 makefile_prefix = """
 # ==== Toolchain path ====
 
-
+S32DS_ROOT_DIR := C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620
+NXP_K144_RTM := C:/NXP/S32DS.3.5/S32DS/software/S32SDK_S32K1XX_RTM_4.0.1
 PROJECT_NAME := SubSys_Mini_HeadLight
 TOOLCHAIN_PATH := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/bin
 
@@ -149,6 +153,7 @@ CFLAGS := $(COMMON_ARCH) \\
 
 LDFLAGS := $(COMMON_ARCH) \\
     -T"$(LD_SCRIPT)" \\
+    -nostartfiles \\
     -Wl,-Map,"$(BUILD_DIR)/$(PROJECT_NAME).map" \\
     -Wl,--gc-sections \\
     -L"$(LIBDIR_GCC)" -L"$(LIBDIR_NEWLIB)" \\
@@ -228,8 +233,10 @@ def validate_env_vars():
 
 def run_command(cmd, description):
     print(f"\n Running: {description} ...")
+    env = os.environ.copy()
+    env["PATH"] = MSYS32_BIN + os.pathsep + env.get("PATH", "")
     try:
-        subprocess.check_call(cmd, shell=True)
+        subprocess.check_call(cmd, shell=True, env=env)
         print(f"{description} succeeded.\n")
     except subprocess.CalledProcessError as e:
         print(f"{description} failed: {e}\n")
@@ -259,7 +266,7 @@ def flash_with_jlink(elf_path: Path):
 # ==== Final Makefile Generation + Build + Flash ====
 def main():
 
-    nxp_path = validate_env_vars()
+    # nxp_path = validate_env_vars()
     c_files = collect_c_sources(C_SOURCE_DIRS)
     c_block = format_c_sources_block(c_files)
     
@@ -269,9 +276,9 @@ def main():
     print("Running Make\n")
     print("===========================================================\n")
 
-    run_command("make clean", "Clean previous build")
-    run_command("make", "Build project")
-    run_command("make srec", "Generating SREC file")
+    run_command(f'"{MAKE}" clean', "Clean previous build")
+    run_command(f'"{MAKE}"', "Build project")
+    run_command(f'"{MAKE}" srec', "Generating SREC file")
 
     # after successful generation of srec file it must be aligned
     # align_srec("build/SubSys_Mini_HeadLight.srec","SubSys_Mini_HeadLight_fota_aligned.srec")

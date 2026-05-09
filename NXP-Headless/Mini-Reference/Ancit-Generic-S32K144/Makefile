@@ -1,7 +1,7 @@
 # ==== Toolchain path ====
-S32DS_ROOT_DIR := E:/Software/NXP/S32DS/build_tools/gcc_b1620
-NXP_K144_RTM := E:/Software/NXP/S32DS/software/S32SDK_S32K1XX_RTM_4.0.1
 
+S32DS_ROOT_DIR := C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620
+NXP_K144_RTM := C:/NXP/S32DS.3.5/S32DS/software/S32SDK_S32K1XX_RTM_4.0.1
 PROJECT_NAME := SubSys_Mini_HeadLight
 TOOLCHAIN_PATH := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/bin
 
@@ -46,6 +46,7 @@ CFLAGS := $(COMMON_ARCH) \
 
 LDFLAGS := $(COMMON_ARCH) \
     -T"$(LD_SCRIPT)" \
+    -nostartfiles \
     -Wl,-Map,"$(BUILD_DIR)/$(PROJECT_NAME).map" \
     -Wl,--gc-sections \
     -L"$(LIBDIR_GCC)" -L"$(LIBDIR_NEWLIB)" \

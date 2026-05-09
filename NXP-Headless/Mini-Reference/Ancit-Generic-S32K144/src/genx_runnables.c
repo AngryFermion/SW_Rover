@@ -36,17 +36,27 @@ extern uint8_t button_status;
  ***********************************************/
 void Runnable_100ms(void) {
 	// DO_LED_RED_toggle();
-	DO_LED_GREEN_toggle();
+	// DO_LED_GREEN_toggle();
+	DO_LED_RED_toggle();
 #ifdef HEAD_LIGHT_CONFIGURED
-	 ancit_hl_ApplyRightLightStatus();
-	 ancit_hl_UpdatePwmFromLeveller();
+	//  ancit_hl_ApplyRightLightStatus();
+	//  ancit_hl_UpdatePwmFromLeveller();
 #endif
 }
-
+bool led = 0;
 void Runnable_1000ms(void) {
+
 	// increment counter
 	// counter reaches 10 - 10 seconds
 	//
+
+	// DO_LED_GREEN_set_value(1);
+	led = !(led);
+
+	
+	
+	// DO_LED_RED_set_value(led);
+
 #ifdef AUTO_DIP_FEATURE_ENABLED
 
 	if(button_status == 1){
@@ -68,17 +78,17 @@ void Runnable_1000ms(void) {
 }
 
 void Runnable_10ms(void) {
-#ifdef HEAD_LIGHT_CONFIGURED
-	 ancit_hl_ReadAllSensors();
-#endif
-	 ancit_button_read();
+// #ifdef HEAD_LIGHT_CONFIGURED
+// 	 ancit_hl_ReadAllSensors();
+// #endif
+// 	 ancit_button_read();
 }
 
 void Runnable_500ms(void) {
 
-#ifdef HEAD_LIGHT_CONFIGURED
-	 ancit_hl_ToggleIndicators();
-#endif
+// #ifdef HEAD_LIGHT_CONFIGURED
+// 	 ancit_hl_ToggleIndicators();
+// #endif
 }
 
 /***********************************************

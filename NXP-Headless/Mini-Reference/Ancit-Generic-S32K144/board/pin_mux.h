@@ -78,7 +78,7 @@ extern "C" {
 #define DI_PD_CH8_PORT    PTB
 #define DI_PD_CH8_PIN     12U
 /*! @brief User number of configured pins */
-#define NUM_OF_CONFIGURED_PINS0 37
+#define NUM_OF_CONFIGURED_PINS0 35
 /*! @brief User configuration structure */
 extern pin_settings_config_t g_pin_mux_InitConfigArr0[NUM_OF_CONFIGURED_PINS0];
 

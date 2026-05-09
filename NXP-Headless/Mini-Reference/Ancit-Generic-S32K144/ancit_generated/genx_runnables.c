@@ -38,7 +38,7 @@ uint16_t var_outputLED_RED= 0;
 	//Receive Input from >>  
 //Send Output to >> LED_RED 
 var_outputLED_RED = var_input;
-DO_LED_RED_set_value(var_outputLED_RED);
+// DO_LED_RED_set_value(var_outputLED_RED);
 
 } 
 
