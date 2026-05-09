@@ -1,0 +1,6 @@
+r
+halt
+loadfile build/SubSys_Mini_HeadLight.elf
+r
+go
+exit

@@ -1,0 +1,114 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Other_Nodes combi_switch_node
+VAL_TABLE_ Vt_HeadLightLevel 4 "LEVELLER_POS_4" 3 "LEVELLER_POS_3" 2 "LEVELLER_POS_2" 1 "LEVELLER_POS_1" 0 "LEVELLER_POS_0" ;
+VAL_TABLE_ Vt_HeadLightBeam 2 "HL_BEAM_HIGH" 1 "HL_BEAM_LOW" 0 "HL_BEAM_OFF" ;
+VAL_TABLE_ Vt_OnOff 1 "ON" 0 "OFF" ;
+
+
+BO_ 801 head_light_left_btn_ctrl: 1 combi_switch_node
+ SG_ parking_light : 6|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ indicator_light : 5|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ head_light_level : 2|3@1+ (1,0) [0|7] ""  Other_Nodes
+ SG_ head_light_beam : 0|2@1+ (1,0) [0|3] ""  Other_Nodes
+
+BO_ 802 head_light_right_btn_ctrl: 1 combi_switch_node
+ SG_ parking_light : 6|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ indicator_light : 5|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ head_light_level : 2|3@1+ (1,0) [0|7] ""  Other_Nodes
+ SG_ head_light_beam : 0|2@1+ (1,0) [0|3] ""  Other_Nodes
+
+BO_ 805 head_light_left_sdv_ctrl: 1 Vector__XXX
+ SG_ parking_light : 6|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ indicator_light : 5|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ head_light_level : 2|3@1+ (1,0) [0|7] ""  Other_Nodes
+ SG_ head_light_beam : 0|2@1+ (1,0) [0|3] ""  Other_Nodes
+
+BO_ 806 head_light_right_sdv_ctrl: 1 Vector__XXX
+ SG_ parking_light : 6|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ indicator_light : 5|1@1+ (1,0) [0|1] ""  Other_Nodes
+ SG_ head_light_level : 2|3@1+ (1,0) [0|7] ""  Other_Nodes
+ SG_ head_light_beam : 0|2@1+ (1,0) [0|3] ""  Other_Nodes
+
+
+
+CM_ BO_ 801 "AI_10V_Status";
+CM_ BO_ 802 "AI_10V_Status";
+CM_ BO_ 805 "AI_10V_Status";
+CM_ BO_ 806 "AI_10V_Status";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ SG_  "SPN" INT 0 524287;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG";
+BA_DEF_  "DatabaseVersion" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_  "DatabaseCompiler" STRING ;
+BA_DEF_DEF_  "GenMsgCycleTime" 100;
+BA_DEF_DEF_  "SPN" 0;
+BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
+BA_DEF_DEF_  "DatabaseVersion" "Code Generator";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "ProtocolType" "";
+BA_DEF_DEF_  "DatabaseCompiler" "";
+BA_ "ProtocolType" "CAN";
+BA_ "BusType" "CAN";
+BA_ "DatabaseCompiler" "Ancit Consulting (www.ancitconsulting.com)";
+BA_ "DatabaseVersion" "1.0.0";
+BA_ "VFrameFormat" BO_ 801 0;
+BA_ "GenMsgCycleTime" BO_ 801 100;
+BA_ "VFrameFormat" BO_ 802 0;
+BA_ "GenMsgCycleTime" BO_ 802 100;
+BA_ "VFrameFormat" BO_ 805 0;
+BA_ "GenMsgCycleTime" BO_ 805 100;
+BA_ "VFrameFormat" BO_ 806 0;
+BA_ "GenMsgCycleTime" BO_ 806 100;
+VAL_ 801 parking_light 1 "ON" 0 "OFF" ;
+VAL_ 801 indicator_light 1 "ON" 0 "OFF" ;
+VAL_ 801 head_light_level 4 "LEVELLER_POS_4" 3 "LEVELLER_POS_3" 2 "LEVELLER_POS_2" 1 "LEVELLER_POS_1" 0 "LEVELLER_POS_0" ;
+VAL_ 801 head_light_beam 2 "HL_BEAM_HIGH" 1 "HL_BEAM_LOW" 0 "HL_BEAM_OFF" ;
+VAL_ 802 parking_light 1 "ON" 0 "OFF" ;
+VAL_ 802 indicator_light 1 "ON" 0 "OFF" ;
+VAL_ 802 head_light_level 4 "LEVELLER_POS_4" 3 "LEVELLER_POS_3" 2 "LEVELLER_POS_2" 1 "LEVELLER_POS_1" 0 "LEVELLER_POS_0" ;
+VAL_ 802 head_light_beam 2 "HL_BEAM_HIGH" 1 "HL_BEAM_LOW" 0 "HL_BEAM_OFF" ;
+VAL_ 805 parking_light 1 "ON" 0 "OFF" ;
+VAL_ 805 indicator_light 1 "ON" 0 "OFF" ;
+VAL_ 805 head_light_level 4 "LEVELLER_POS_4" 3 "LEVELLER_POS_3" 2 "LEVELLER_POS_2" 1 "LEVELLER_POS_1" 0 "LEVELLER_POS_0" ;
+VAL_ 805 head_light_beam 2 "HL_BEAM_HIGH" 1 "HL_BEAM_LOW" 0 "HL_BEAM_OFF" ;
+VAL_ 806 parking_light 1 "ON" 0 "OFF" ;
+VAL_ 806 indicator_light 1 "ON" 0 "OFF" ;
+VAL_ 806 head_light_level 4 "LEVELLER_POS_4" 3 "LEVELLER_POS_3" 2 "LEVELLER_POS_2" 1 "LEVELLER_POS_1" 0 "LEVELLER_POS_0" ;
+VAL_ 806 head_light_beam 2 "HL_BEAM_HIGH" 1 "HL_BEAM_LOW" 0 "HL_BEAM_OFF" ;
+

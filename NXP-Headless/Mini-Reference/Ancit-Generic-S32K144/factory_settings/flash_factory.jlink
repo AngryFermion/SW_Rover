@@ -1,0 +1,6 @@
+r
+halt
+loadfile factory_settings/SubSys_Mini_HeadLight_original.elf
+r
+go
+exit
