@@ -1,0 +1,115 @@
+// Test program for Device State Manager, Switch, and LEDs
+// This file can be temporarily used as main.cpp for testing
+
+#include <Arduino.h>
+#include <AncitRgbLed.h>
+#include <ancit_config_switch.h>
+#include <device_state_manager.h>
+#include <BT_LOGGER.h>
+#include <ancit_pins.h>
+
+// Setup function
+void setup() {
+  Serial.begin(115200);
+  delay(2000);
+
+  Serial.println("\n\n=== Device State Manager Integration Test ===");
+  Serial.println("Testing: Switch + State Manager + LEDs\n");
+
+  // Initialize logger (BT_LOGGER doesn't need explicit Init)
+  g_Logger.SetLogLevel(LogLevel::Debug);
+  g_Logger.WriteImmediate(LogLevel::Info, LogCategory::SETUP, "Test",
+                          "Starting integration test...");
+
+  // 1. Start RGB LED task
+  Serial.println("1. Initializing RGB LED...");
+  RgbLed_Start();
+  delay(1000);
+
+  // 2. Start Config Switch task
+  Serial.println("2. Initializing Config Switch...");
+  ConfigSwitch_Start();
+  delay(1000);
+
+  // 3. Start Device State Manager (this will register switch callback)
+  Serial.println("3. Initializing Device State Manager...");
+  DeviceStateManager_Start();
+  delay(1000);
+
+  Serial.println("\n=== Initialization Complete ===\n");
+  Serial.println("Test Instructions:");
+  Serial.println("- SHORT PRESS (< 1s)   -> EDIT_ENABLE mode (Green fast blink)");
+  Serial.println("- LONG PRESS (1-3s)    -> BLUETOOTH mode (Blue/Red alternate)");
+  Serial.println("- HOLD (> 3s)          -> CONFIG mode (Blue slow blink)");
+  Serial.println("\nSerial Commands:");
+  Serial.println("- '0' -> Test BOOT mode");
+  Serial.println("- '1' -> Test CONFIG mode");
+  Serial.println("- '2' -> Test NORMAL mode");
+  Serial.println("- '3' -> Test EDIT_ENABLE mode");
+  Serial.println("- '4' -> Test BLUETOOTH mode");
+  Serial.println("- 's' -> Show current mode");
+  Serial.println("- 'r' -> Reset to NORMAL mode");
+  Serial.println("\nWaiting for input...\n");
+}
+
+// Loop function
+void loop() {
+  // Check for serial commands
+  if (Serial.available()) {
+    char cmd = Serial.read();
+
+    switch(cmd) {
+      case '0':
+        Serial.println("\n[TEST] Setting BOOT mode (Red fast blink)");
+        DeviceStateManager_TestLedPattern(DEVICE_MODE_BOOT);
+        break;
+
+      case '1':
+        Serial.println("\n[TEST] Setting CONFIG mode (Blue slow blink)");
+        DeviceStateManager_TestLedPattern(DEVICE_MODE_CONFIG);
+        break;
+
+      case '2':
+        Serial.println("\n[TEST] Setting NORMAL mode (Green solid)");
+        DeviceStateManager_TestLedPattern(DEVICE_MODE_NORMAL);
+        break;
+
+      case '3':
+        Serial.println("\n[TEST] Setting EDIT_ENABLE mode (Green fast blink)");
+        DeviceStateManager_TestLedPattern(DEVICE_MODE_EDIT_ENABLE);
+        break;
+
+      case '4':
+        Serial.println("\n[TEST] Setting BLUETOOTH mode (Blue/Red alternate)");
+        DeviceStateManager_TestLedPattern(DEVICE_MODE_BLUETOOTH);
+        break;
+
+      case 's':
+      case 'S': {
+        DeviceMode_t currentMode = DeviceStateManager_GetMode();
+        const char* modeNames[] = {"BOOT", "CONFIG", "NORMAL", "EDIT_ENABLE", "BLUETOOTH"};
+        Serial.print("\n[STATUS] Current mode: ");
+        Serial.println(modeNames[currentMode]);
+        break;
+      }
+
+      case 'r':
+      case 'R':
+        Serial.println("\n[RESET] Resetting to NORMAL mode");
+        DeviceStateManager_SetMode(DEVICE_MODE_NORMAL);
+        break;
+
+      case '\n':
+      case '\r':
+        // Ignore newlines
+        break;
+
+      default:
+        Serial.print("\n[ERROR] Unknown command: ");
+        Serial.println(cmd);
+        break;
+    }
+  }
+
+  delay(100);
+}

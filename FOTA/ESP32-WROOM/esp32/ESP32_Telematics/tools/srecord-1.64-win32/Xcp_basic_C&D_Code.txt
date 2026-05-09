@@ -1,0 +1,86 @@
+#include <stdint.h>
+#include <stdbool.h>
+
+// Define XCP command codes
+#define XCP_CMD_CONNECT   0xFF
+#define XCP_CMD_DISCONNECT 0xFE
+
+// Response codes
+#define XCP_RES_OK  0x00
+#define XCP_RES_ERROR 0x01
+
+// Define state of the XCP session
+typedef enum {
+    XCP_STATE_DISCONNECTED,
+    XCP_STATE_CONNECTED
+} XCP_State;
+
+// Global variable to track connection state
+XCP_State xcp_state = XCP_STATE_DISCONNECTED;
+
+// Function to handle CONNECT command
+void handle_connect(uint8_t *response) {
+    if (xcp_state == XCP_STATE_DISCONNECTED) {
+        // Establish connection
+        xcp_state = XCP_STATE_CONNECTED;
+        *response = XCP_RES_OK;  // Send positive acknowledgment
+    } else {
+        // Already connected, return error
+        *response = XCP_RES_ERROR;
+    }
+}
+
+// Function to handle DISCONNECT command
+void handle_disconnect(uint8_t *response) {
+    if (xcp_state == XCP_STATE_CONNECTED) {
+        // Terminate connection
+        xcp_state = XCP_STATE_DISCONNECTED;
+        *response = XCP_RES_OK;  // Send positive acknowledgment
+    } else {
+        // No active connection, return error
+        *response = XCP_RES_ERROR;
+    }
+}
+
+// Function to process incoming commands
+void process_xcp_command(uint8_t command, uint8_t *response) {
+    switch (command) {
+        case XCP_CMD_CONNECT:
+            handle_connect(response);
+            break;
+        case XCP_CMD_DISCONNECT:
+            handle_disconnect(response);
+            break;
+        default:
+            *response = XCP_RES_ERROR;  // Unknown command
+            break;
+    }
+}
+
+// Example usage (simulating command reception and response)
+int main() {
+    uint8_t command;
+    uint8_t response;
+
+    // Simulate receiving the CONNECT command (0xFF)
+    command = XCP_CMD_CONNECT;
+    process_xcp_command(command, &response);
+    // Check response for CONNECT
+    if (response == XCP_RES_OK) {
+        printf("Connection established.\n");
+    } else {
+        printf("Error: Connection failed.\n");
+    }
+
+    // Simulate receiving the DISCONNECT command (0xFE)
+    command = XCP_CMD_DISCONNECT;
+    process_xcp_command(command, &response);
+    // Check response for DISCONNECT
+    if (response == XCP_RES_OK) {
+        printf("Connection terminated.\n");
+    } else {
+        printf("Error: Disconnection failed.\n");
+    }
+
+    return 0;
+}

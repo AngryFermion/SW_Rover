@@ -1,0 +1,322 @@
+{
+  "version": "1.0",
+  "contentBlocks": [
+    {
+      "id": "block_1",
+      "type": "text",
+      "data": {
+        "content": "Welcome to South Spice Heritage Hotel\nAuthentic South Indian",
+        "fontSize": "4.0",
+        "fontFamily": "Georgia",
+        "color": "#2c3e50",
+        "textAlign": "center",
+        "backgroundColor": "#f8f9fa"
+      }
+    },
+    {
+      "id": "block_2",
+      "type": "clock",
+      "data": {
+        "format": "12",
+        "displayMode": "datetime",
+        "timezone": "local",
+        "backgroundColor": "#667eea",
+        "color": "#ffffff",
+        "timeFontSize": "3",
+        "dateFontSize": "2"
+      }
+    },
+    {
+      "id": "block_3",
+      "type": "marquee",
+      "data": {
+        "text": "🥥 Today's Special: Coconut Fish Curry with Appam - Traditional Kerala Delight! 🌶️",
+        "speed": "20",
+        "backgroundColor": "#fff3cd",
+        "color": "#856404",
+        "fontSize": "3.0"
+      }
+    },
+    {
+      "id": "block_4",
+      "type": "text",
+      "data": {
+        "content": "🥞 SOUTH INDIAN BREAKFAST\n6:00 AM - 11:00 AM",
+        "fontSize": "3.0",
+        "fontFamily": "Arial",
+        "color": "#ffffff",
+        "textAlign": "center",
+        "backgroundColor": "#28a745"
+      }
+    },
+    {
+      "id": "block_5",
+      "type": "table",
+      "data": {
+        "headers": [
+          "Item",
+          "Description",
+          "Price"
+        ],
+        "rows": [
+          [
+            "Idly Sambar (4 pcs)",
+            "Steamed rice cakes with sambar & chutneys",
+            "₹120"
+          ],
+          [
+            "Masala Dosa",
+            "Crispy crepe with spiced potato filling",
+            "₹150"
+          ],
+          [
+            "Medu Vada (3 pcs)",
+            "Crispy lentil donuts with sambar",
+            "₹100"
+          ],
+          [
+            "Rava Upma",
+            "Semolina with vegetables & curry leaves",
+            "₹90"
+          ],
+          [
+            "Pongal",
+            "Rice & lentil dish with ghee & pepper",
+            "₹110"
+          ],
+          [
+            "Appam with Stew",
+            "Fermented rice pancakes with vegetable stew",
+            "₹140"
+          ]
+        ],
+        "columnAlignments": [
+          "left",
+          "left",
+          "right"
+        ],
+        "hiddenRows": [],
+        "boldRows": [
+          0,
+          2
+        ],
+        "headerBg": "#dc3545",
+        "headerColor": "#ffffff",
+        "rowBg": "#ffffff",
+        "rowColor": "#333333",
+        "borderColor": "#dee2e6",
+        "fontSize": "2.0"
+      }
+    },
+    {
+      "id": "block_6",
+      "type": "separator",
+      "data": {
+        "style": "solid",
+        "color": "#6c757d",
+        "thickness": "3"
+      }
+    },
+    {
+      "id": "block_7",
+      "type": "text",
+      "data": {
+        "content": "🍛 MAIN MEALS & SPECIALTIES\n12:00 PM - 10:00 PM",
+        "fontSize": "3.0",
+        "fontFamily": "Arial",
+        "color": "#ffffff",
+        "textAlign": "center",
+        "backgroundColor": "#6f42c1"
+      }
+    },
+    {
+      "id": "block_8",
+      "type": "table",
+      "data": {
+        "headers": [
+          "Starters & Snacks",
+          "Description",
+          "Price"
+        ],
+        "rows": [
+          [
+            "Bonda (6 pcs)",
+            "Spiced potato fritters with chutneys",
+            "₹80"
+          ],
+          [
+            "Rasam",
+            "Tangy tamarind soup with spices",
+            "₹60"
+          ],
+          [
+            "Paruppu Vadai",
+            "Lentil fritters with coconut chutney",
+            "₹90"
+          ],
+          [
+            "Murukku Platter",
+            "Assorted crunchy rice flour spirals",
+            "₹70"
+          ]
+        ],
+        "columnAlignments": [
+          "left",
+          "left",
+          "right"
+        ],
+        "hiddenRows": [],
+        "boldRows": [],
+        "headerBg": "#17a2b8",
+        "headerColor": "#ffffff",
+        "rowBg": "#f8f9fa",
+        "rowColor": "#333333",
+        "borderColor": "#dee2e6",
+        "fontSize": "1.8"
+      }
+    },
+    {
+      "id": "block_9",
+      "type": "table",
+      "data": {
+        "headers": [
+          "Rice & Curry Meals",
+          "Description",
+          "Price"
+        ],
+        "rows": [
+          [
+            "Curd Rice",
+            "Yogurt rice with tempering & pickle",
+            "₹120"
+          ],
+          [
+            "Sambar Rice",
+            "Rice with lentil curry & vegetables",
+            "₹140"
+          ],
+          [
+            "Tamarind Rice",
+            "Tangy rice with peanuts & curry leaves",
+            "₹130"
+          ],
+          [
+            "Coconut Rice",
+            "Fragrant rice with fresh coconut",
+            "₹125"
+          ],
+          [
+            "Biryani Veg/Non-Veg",
+            "Aromatic basmati rice with spices",
+            "₹250/350"
+          ],
+          [
+            "Fish Curry Meals",
+            "Kerala fish curry with rice & sides",
+            "₹300"
+          ]
+        ],
+        "columnAlignments": [
+          "left",
+          "left",
+          "right"
+        ],
+        "hiddenRows": [],
+        "boldRows": [
+          1,
+          4
+        ],
+        "headerBg": "#fd7e14",
+        "headerColor": "#ffffff",
+        "rowBg": "#ffffff",
+        "rowColor": "#333333",
+        "borderColor": "#dee2e6",
+        "fontSize": "1.8"
+      }
+    },
+    {
+      "id": "block_10",
+      "type": "table",
+      "data": {
+        "headers": [
+          "Desserts & Beverages",
+          "Description",
+          "Price"
+        ],
+        "rows": [
+          [
+            "Payasam",
+            "Traditional sweet pudding with jaggery",
+            "₹80"
+          ],
+          [
+            "Mysore Pak",
+            "Rich gram flour sweet with ghee",
+            "₹70"
+          ],
+          [
+            "Filter Coffee",
+            "South Indian coffee with chicory",
+            "₹40"
+          ],
+          [
+            "Buttermilk",
+            "Spiced yogurt drink with curry leaves",
+            "₹35"
+          ],
+          [
+            "Fresh Lime Water",
+            "Sweet/salt lime juice",
+            "₹30"
+          ],
+          [
+            "Coconut Water",
+            "Fresh tender coconut",
+            "₹50"
+          ]
+        ],
+        "columnAlignments": [
+          "left",
+          "left",
+          "right"
+        ],
+        "hiddenRows": [],
+        "boldRows": [],
+        "headerBg": "#e83e8c",
+        "headerColor": "#ffffff",
+        "rowBg": "#f8f9fa",
+        "rowColor": "#333333",
+        "borderColor": "#dee2e6",
+        "fontSize": "1.8"
+      }
+    },
+    {
+      "id": "block_11",
+      "type": "separator",
+      "data": {
+        "style": "dotted",
+        "color": "#6c757d",
+        "thickness": "2"
+      }
+    },
+    {
+      "id": "block_12",
+      "type": "text",
+      "data": {
+        "content": "Room Service Available 24/7 • Call Extension 1234\nJain & Vegan Options Available • Please inform your server\nAll prices subject to 18% service charge + taxes",
+        "fontSize": "1.6",
+        "fontFamily": "Arial",
+        "color": "#6c757d",
+        "textAlign": "center",
+        "backgroundColor": "#f8f9fa"
+      }
+    }
+  ],
+  "globalSettings": {
+    "backgroundColor": "#ffffff",
+    "scrollEnabled": true,
+    "scrollSpeed": 25,
+    "scrollPause": 5
+  },
+  "timestamp": "2025-09-22T03:55:51.164Z"
+}

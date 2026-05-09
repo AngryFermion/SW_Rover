@@ -1,0 +1,69 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive",
+        "iot:PublishRetain"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:533267239170:topic/sdk/test/java",
+        "arn:aws:iot:us-east-1:533267239170:topic/sdk/test/python",
+        "arn:aws:iot:us-east-1:533267239170:topic/sdk/test/js"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:533267239170:topicfilter/sdk/test/java",
+        "arn:aws:iot:us-east-1:533267239170:topicfilter/sdk/test/python",
+        "arn:aws:iot:us-east-1:533267239170:topicfilter/sdk/test/js"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:533267239170:client/sdk-java",
+        "arn:aws:iot:us-east-1:533267239170:client/basicPubSub",
+        "arn:aws:iot:us-east-1:533267239170:client/sdk-nodejs-*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:533267239170:client/sdv-vehicle-001"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive",
+        "iot:PublishRetain"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:533267239170:topic/sdv/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:533267239170:topicfilter/sdv/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+#ifndef _HEADER_ANCIT_PINS_H_
+#define _HEADER_ANCIT_PINS_H_
+
+#include <Arduino.h>
+
+#define MP_NET_LED_RED GPIO_NUM_26
+#define MP_NET_LED_GREEN GPIO_NUM_25
+#define MP_NET_LED_BLUE GPIO_NUM_27
+
+#define FOTA_SERIAL_BAUD_RATE 115200
+#define FOTA_SERIAL_RX_PIN 16
+#define FOTA_SERIAL_TX_PIN 17
+#define FOTA_SERIAL_HW Serial1
+
+#define DEBUG_SERIAL_BAUD_RATE 921600
+#define DEBUG_SERIAL_RX_PIN 3
+#define DEBUG_SERIAL_TX_PIN 1
+#define DEBUG_SERIAL_HW Serial0
+
+// #define MP_MODBUS_LED_RED 26
+// #define MP_MODBUS_LED_GREEN 25
+// #define MP_MODBUS_LED_BLUE 27
+
+#define MP_CFG_SW GPIO_NUM_34
+
+
+#endif

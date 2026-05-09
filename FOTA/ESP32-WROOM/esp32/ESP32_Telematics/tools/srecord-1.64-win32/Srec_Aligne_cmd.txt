@@ -1,0 +1,8 @@
+To Aligne Srec file
+
+srec_cat.exe LED_Trai.srec -Output_Block_Size 128 -Output_Block_Packing -address-length 4 -output Aligned_LED_Trai.srec
+
+
+To Convert elf to Srec formate
+
+C:\NXP\S32DS.3.5\S32DS\build_tools\gcc_v9.2\gcc-9.2-arm32-eabi\bin>arm-none-eabi-objcopy.exe -O srec "D:\LED_Trail.elf" "LED_Trai.srec" --srec-forceS3
