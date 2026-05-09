@@ -1,0 +1,664 @@
+
+Discarded input sections
+
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .group         0x00000000        0xc build/system_S32K144.o
+ .text          0x00000000        0x0 build/system_S32K144.o
+ .data          0x00000000        0x0 build/system_S32K144.o
+ .bss           0x00000000        0x0 build/system_S32K144.o
+ .text.SystemCoreClockUpdate
+                0x00000000       0x88 build/system_S32K144.o
+ .text.SystemSoftwareReset
+                0x00000000       0x18 build/system_S32K144.o
+ .data.SystemCoreClock
+                0x00000000        0x4 build/system_S32K144.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .group         0x00000000        0xc build/startup.o
+ .text          0x00000000        0x0 build/startup.o
+ .data          0x00000000        0x0 build/startup.o
+ .bss           0x00000000        0x0 build/startup.o
+ .debug_macro   0x00000000      0x8e0 build/startup.o
+ .debug_macro   0x00000000       0x22 build/startup.o
+ .debug_macro   0x00000000       0x56 build/startup.o
+ .debug_macro   0x00000000       0x51 build/startup.o
+ .debug_macro   0x00000000       0xef build/startup.o
+ .debug_macro   0x00000000       0x6a build/startup.o
+ .debug_macro   0x00000000      0x1df build/startup.o
+ .debug_macro   0x00000000       0x10 build/startup.o
+ .debug_macro   0x00000000       0x79 build/startup.o
+ .debug_macro   0x00000000      0xbbd build/startup.o
+ .debug_macro   0x00000000       0x22 build/startup.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .group         0x00000000        0xc build/interrupt_manager.o
+ .text          0x00000000        0x0 build/interrupt_manager.o
+ .data          0x00000000        0x0 build/interrupt_manager.o
+ .bss           0x00000000        0x0 build/interrupt_manager.o
+ .text.INT_SYS_InstallHandler
+                0x00000000       0x60 build/interrupt_manager.o
+ .text.INT_SYS_EnableIRQ
+                0x00000000       0x28 build/interrupt_manager.o
+ .text.INT_SYS_DisableIRQ
+                0x00000000       0x2c build/interrupt_manager.o
+ .text.INT_SYS_EnableIRQGlobal
+                0x00000000       0x1c build/interrupt_manager.o
+ .text.INT_SYS_DisableIRQGlobal
+                0x00000000       0x10 build/interrupt_manager.o
+ .text.INT_SYS_SetPriority
+                0x00000000       0x70 build/interrupt_manager.o
+ .text.INT_SYS_GetPriority
+                0x00000000       0x54 build/interrupt_manager.o
+ .text.INT_SYS_ClearPending
+                0x00000000       0x2c build/interrupt_manager.o
+ .text.INT_SYS_SetPending
+                0x00000000       0x2c build/interrupt_manager.o
+ .text.INT_SYS_GetPending
+                0x00000000       0x2c build/interrupt_manager.o
+ .text.INT_SYS_GetActive
+                0x00000000       0x2c build/interrupt_manager.o
+ .bss.g_interruptDisableCount
+                0x00000000        0x4 build/interrupt_manager.o
+ .debug_info    0x00000000      0xc99 build/interrupt_manager.o
+ .debug_abbrev  0x00000000      0x278 build/interrupt_manager.o
+ .debug_loc     0x00000000      0x678 build/interrupt_manager.o
+ .debug_aranges
+                0x00000000       0x70 build/interrupt_manager.o
+ .debug_ranges  0x00000000       0x98 build/interrupt_manager.o
+ .debug_macro   0x00000000       0xca build/interrupt_manager.o
+ .debug_macro   0x00000000      0x8e0 build/interrupt_manager.o
+ .debug_macro   0x00000000       0x10 build/interrupt_manager.o
+ .debug_macro   0x00000000       0x79 build/interrupt_manager.o
+ .debug_macro   0x00000000       0x19 build/interrupt_manager.o
+ .debug_macro   0x00000000       0x22 build/interrupt_manager.o
+ .debug_macro   0x00000000       0x56 build/interrupt_manager.o
+ .debug_macro   0x00000000       0x51 build/interrupt_manager.o
+ .debug_macro   0x00000000       0xef build/interrupt_manager.o
+ .debug_macro   0x00000000       0x6a build/interrupt_manager.o
+ .debug_macro   0x00000000      0x1df build/interrupt_manager.o
+ .debug_macro   0x00000000     0xed1d build/interrupt_manager.o
+ .debug_macro   0x00000000      0xbbd build/interrupt_manager.o
+ .debug_macro   0x00000000       0x22 build/interrupt_manager.o
+ .debug_macro   0x00000000       0x40 build/interrupt_manager.o
+ .debug_line    0x00000000      0x5ae build/interrupt_manager.o
+ .debug_str     0x00000000    0x6930e build/interrupt_manager.o
+ .comment       0x00000000       0x7f build/interrupt_manager.o
+ .debug_frame   0x00000000       0xd8 build/interrupt_manager.o
+ .ARM.attributes
+                0x00000000       0x39 build/interrupt_manager.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .group         0x00000000        0xc build/pins_driver.o
+ .text          0x00000000        0x0 build/pins_driver.o
+ .data          0x00000000        0x0 build/pins_driver.o
+ .bss           0x00000000        0x0 build/pins_driver.o
+ .text.PINS_DRV_Init
+                0x00000000       0x20 build/pins_driver.o
+ .text.PINS_DRV_SetPullSel
+                0x00000000       0x44 build/pins_driver.o
+ .text.PINS_DRV_SetMuxModeSel
+                0x00000000        0x8 build/pins_driver.o
+ .text.PINS_DRV_SetPinIntSel
+                0x00000000       0x20 build/pins_driver.o
+ .text.PINS_DRV_GetPinIntSel
+                0x00000000       0x12 build/pins_driver.o
+ .text.PINS_DRV_ClearPinIntFlagCmd
+                0x00000000       0x16 build/pins_driver.o
+ .text.PINS_DRV_EnableDigitalFilter
+                0x00000000       0x18 build/pins_driver.o
+ .text.PINS_DRV_DisableDigitalFilter
+                0x00000000       0x1a build/pins_driver.o
+ .text.PINS_DRV_ConfigDigitalFilter
+                0x00000000       0x20 build/pins_driver.o
+ .text.PINS_DRV_GetPortIntFlag
+                0x00000000        0x6 build/pins_driver.o
+ .text.PINS_DRV_ClearPortIntFlagCmd
+                0x00000000        0xa build/pins_driver.o
+ .text.PINS_DRV_GetPinsDirection
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_SetPinDirection
+                0x00000000       0x18 build/pins_driver.o
+ .text.PINS_DRV_SetPinsDirection
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_SetPortInputDisable
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_GetPortInputDisable
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_SetGlobalPinControl
+                0x00000000        0x8 build/pins_driver.o
+ .text.PINS_DRV_SetGlobalIntControl
+                0x00000000        0x8 build/pins_driver.o
+ .text.PINS_DRV_WritePin
+                0x00000000       0x18 build/pins_driver.o
+ .text.PINS_DRV_WritePins
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_GetPinsOutput
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_SetPins
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_ClearPins
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_TogglePins
+                0x00000000        0x4 build/pins_driver.o
+ .text.PINS_DRV_ReadPins
+                0x00000000        0x4 build/pins_driver.o
+ .debug_info    0x00000000     0x14b7 build/pins_driver.o
+ .debug_abbrev  0x00000000      0x2f6 build/pins_driver.o
+ .debug_loc     0x00000000      0x7c7 build/pins_driver.o
+ .debug_aranges
+                0x00000000       0xe0 build/pins_driver.o
+ .debug_ranges  0x00000000       0xd0 build/pins_driver.o
+ .debug_macro   0x00000000       0xde build/pins_driver.o
+ .debug_macro   0x00000000      0x8e0 build/pins_driver.o
+ .debug_macro   0x00000000       0x10 build/pins_driver.o
+ .debug_macro   0x00000000       0x79 build/pins_driver.o
+ .debug_macro   0x00000000       0x19 build/pins_driver.o
+ .debug_macro   0x00000000       0x22 build/pins_driver.o
+ .debug_macro   0x00000000       0x56 build/pins_driver.o
+ .debug_macro   0x00000000       0x51 build/pins_driver.o
+ .debug_macro   0x00000000       0xef build/pins_driver.o
+ .debug_macro   0x00000000       0x6a build/pins_driver.o
+ .debug_macro   0x00000000      0x1df build/pins_driver.o
+ .debug_macro   0x00000000     0xed1d build/pins_driver.o
+ .debug_macro   0x00000000      0xbbd build/pins_driver.o
+ .debug_macro   0x00000000       0x22 build/pins_driver.o
+ .debug_macro   0x00000000      0x16d build/pins_driver.o
+ .debug_line    0x00000000      0x6f5 build/pins_driver.o
+ .debug_str     0x00000000    0x69ce1 build/pins_driver.o
+ .comment       0x00000000       0x7f build/pins_driver.o
+ .debug_frame   0x00000000      0x1e4 build/pins_driver.o
+ .ARM.attributes
+                0x00000000       0x39 build/pins_driver.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .group         0x00000000        0xc build/pins_port_hw_access.o
+ .text          0x00000000        0x0 build/pins_port_hw_access.o
+ .data          0x00000000        0x0 build/pins_port_hw_access.o
+ .bss           0x00000000        0x0 build/pins_port_hw_access.o
+ .text.PINS_GetAdcInterleaveVal
+                0x00000000       0x6c build/pins_port_hw_access.o
+ .text.PINS_Init
+                0x00000000      0x138 build/pins_port_hw_access.o
+ .text.PINS_SetMuxModeSel
+                0x00000000       0x58 build/pins_port_hw_access.o
+ .text.PINS_SetGlobalPinControl
+                0x00000000       0x2e build/pins_port_hw_access.o
+ .text.PINS_SetGlobalIntControl
+                0x00000000       0x26 build/pins_port_hw_access.o
+ .debug_info    0x00000000      0x9a5 build/pins_port_hw_access.o
+ .debug_abbrev  0x00000000      0x232 build/pins_port_hw_access.o
+ .debug_loc     0x00000000      0x639 build/pins_port_hw_access.o
+ .debug_aranges
+                0x00000000       0x40 build/pins_port_hw_access.o
+ .debug_ranges  0x00000000       0x48 build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0xde build/pins_port_hw_access.o
+ .debug_macro   0x00000000      0x8e0 build/pins_port_hw_access.o
+ .debug_macro   0x00000000      0x16d build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x10 build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x79 build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x19 build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x22 build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x56 build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x51 build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0xef build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x6a build/pins_port_hw_access.o
+ .debug_macro   0x00000000      0x1df build/pins_port_hw_access.o
+ .debug_macro   0x00000000     0xed1d build/pins_port_hw_access.o
+ .debug_macro   0x00000000      0xbbd build/pins_port_hw_access.o
+ .debug_macro   0x00000000       0x22 build/pins_port_hw_access.o
+ .debug_line    0x00000000      0x5bc build/pins_port_hw_access.o
+ .debug_str     0x00000000    0x691c9 build/pins_port_hw_access.o
+ .comment       0x00000000       0x7f build/pins_port_hw_access.o
+ .debug_frame   0x00000000       0xa0 build/pins_port_hw_access.o
+ .ARM.attributes
+                0x00000000       0x39 build/pins_port_hw_access.o
+ .data          0x00000000        0x0 build/startup_S32K144.o
+ .bss           0x00000000        0x0 build/startup_S32K144.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+m_interrupts     0x00000000         0x00000400         xr
+m_flash_config   0x00000400         0x00000010         xr
+m_text           0x00000410         0x0007fbf0         xr
+m_data           0x1fff8000         0x00008000         rw
+m_data_2         0x20000000         0x00007000         rw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD build/system_S32K144.o
+LOAD build/startup.o
+LOAD build/interrupt_manager.o
+LOAD build/pins_driver.o
+LOAD build/pins_port_hw_access.o
+LOAD build/startup_S32K144.o
+START GROUP
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard\libc.a
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard\libnosys.a
+END GROUP
+START GROUP
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard\libc.a
+END GROUP
+START GROUP
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard\libc.a
+LOAD C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard\libnosys.a
+END GROUP
+                0x00000400                HEAP_SIZE = DEFINED (__heap_size__)?__heap_size__:0x400
+                0x00000400                STACK_SIZE = DEFINED (__stack_size__)?__stack_size__:0x400
+                0x00000400                M_VECTOR_RAM_SIZE = DEFINED (__flash_vector_table__)?0x0:0x400
+
+.interrupts     0x00000000      0x400
+                0x00000000                __VECTOR_TABLE = .
+                0x00000000                __interrupts_start__ = .
+                0x00000000                . = ALIGN (0x4)
+ *(.isr_vector)
+ .isr_vector    0x00000000      0x400 build/startup_S32K144.o
+                0x00000000                __isr_vector
+                0x00000400                __interrupts_end__ = .
+                0x00000400                . = ALIGN (0x4)
+
+.flash_config   0x00000400       0x10
+                0x00000400                . = ALIGN (0x4)
+ *(.FlashConfig)
+ .FlashConfig   0x00000400       0x10 build/startup_S32K144.o
+                0x00000410                . = ALIGN (0x4)
+
+.text           0x00000410      0x160
+                0x00000410                . = ALIGN (0x4)
+ *(.text)
+ .text          0x00000410       0x4c build/startup_S32K144.o
+                0x00000410                Reset_Handler
+                0x00000458                DebugMon_Handler
+                0x00000458                Reserved88_IRQHandler
+                0x00000458                CAN0_ORed_IRQHandler
+                0x00000458                HardFault_Handler
+                0x00000458                Reserved86_IRQHandler
+                0x00000458                Reserved103_IRQHandler
+                0x00000458                SysTick_Handler
+                0x00000458                FTM2_Ovf_Reload_IRQHandler
+                0x00000458                Reserved50_IRQHandler
+                0x00000458                FTFC_Fault_IRQHandler
+                0x00000458                FTM0_Ch6_Ch7_IRQHandler
+                0x00000458                Reserved114_IRQHandler
+                0x00000458                PendSV_Handler
+                0x00000458                NMI_Handler
+                0x00000458                Reserved89_IRQHandler
+                0x00000458                ERM_double_fault_IRQHandler
+                0x00000458                DMA2_IRQHandler
+                0x00000458                Reserved59_IRQHandler
+                0x00000458                LPIT0_Ch0_IRQHandler
+                0x00000458                Reserved99_IRQHandler
+                0x00000458                FTM3_Ch6_Ch7_IRQHandler
+                0x00000458                CAN2_ORed_0_15_MB_IRQHandler
+                0x00000458                LPIT0_Ch3_IRQHandler
+                0x00000458                Reserved92_IRQHandler
+                0x00000458                FTM0_Ch4_Ch5_IRQHandler
+                0x00000458                CAN1_Error_IRQHandler
+                0x00000458                FTM3_Ch0_Ch1_IRQHandler
+                0x00000458                SWI_IRQHandler
+                0x00000458                ADC0_IRQHandler
+                0x00000458                FTM2_Ch4_Ch5_IRQHandler
+                0x00000458                UsageFault_Handler
+                0x00000458                FTM0_Ovf_Reload_IRQHandler
+                0x00000458                DefaultISR
+                0x00000458                DMA9_IRQHandler
+                0x00000458                Reserved58_IRQHandler
+                0x00000458                CAN1_ORed_0_15_MB_IRQHandler
+                0x00000458                FTM1_Ch2_Ch3_IRQHandler
+                0x00000458                DMA14_IRQHandler
+                0x00000458                Reserved82_IRQHandler
+                0x00000458                CAN0_ORed_16_31_MB_IRQHandler
+                0x00000458                LPI2C0_Slave_IRQHandler
+                0x00000458                Reserved71_IRQHandler
+                0x00000458                PORTD_IRQHandler
+                0x00000458                Reserved69_IRQHandler
+                0x00000458                PORTB_IRQHandler
+                0x00000458                Reserved70_IRQHandler
+                0x00000458                ADC1_IRQHandler
+                0x00000458                FTM2_Ch2_Ch3_IRQHandler
+                0x00000458                Reserved53_IRQHandler
+                0x00000458                DMA5_IRQHandler
+                0x00000458                RTC_IRQHandler
+                0x00000458                PDB0_IRQHandler
+                0x00000458                Reserved54_IRQHandler
+                0x00000458                FTM2_Ch6_Ch7_IRQHandler
+                0x00000458                FTM3_Ch2_Ch3_IRQHandler
+                0x00000458                FTM2_Ch0_Ch1_IRQHandler
+                0x00000458                LPSPI1_IRQHandler
+                0x00000458                LPUART1_RxTx_IRQHandler
+                0x00000458                RTC_Seconds_IRQHandler
+                0x00000458                CAN2_ORed_IRQHandler
+                0x00000458                Reserved72_IRQHandler
+                0x00000458                Reserved110_IRQHandler
+                0x00000458                DMA11_IRQHandler
+                0x00000458                Reserved107_IRQHandler
+                0x00000458                Read_Collision_IRQHandler
+                0x00000458                CAN2_Error_IRQHandler
+                0x00000458                FTFC_IRQHandler
+                0x00000458                DMA7_IRQHandler
+                0x00000458                FTM1_Ch6_Ch7_IRQHandler
+                0x00000458                Reserved105_IRQHandler
+                0x00000458                LPIT0_Ch1_IRQHandler
+                0x00000458                FTM1_Ch4_Ch5_IRQHandler
+                0x00000458                FTM3_Ovf_Reload_IRQHandler
+                0x00000458                LPUART2_RxTx_IRQHandler
+                0x00000458                LPSPI0_IRQHandler
+                0x00000458                WDOG_EWM_IRQHandler
+                0x00000458                MemManage_Handler
+                0x00000458                Reserved90_IRQHandler
+                0x00000458                Reserved83_IRQHandler
+                0x00000458                FTM0_Fault_IRQHandler
+                0x00000458                Reserved48_IRQHandler
+                0x00000458                SVC_Handler
+                0x00000458                ERM_single_fault_IRQHandler
+                0x00000458                FTM2_Fault_IRQHandler
+                0x00000458                FTM0_Ch2_Ch3_IRQHandler
+                0x00000458                DMA13_IRQHandler
+                0x00000458                FTM0_Ch0_Ch1_IRQHandler
+                0x00000458                FTM3_Fault_IRQHandler
+                0x00000458                RCM_IRQHandler
+                0x00000458                DMA3_IRQHandler
+                0x00000458                Reserved100_IRQHandler
+                0x00000458                DMA0_IRQHandler
+                0x00000458                Reserved91_IRQHandler
+                0x00000458                CAN1_ORed_IRQHandler
+                0x00000458                DMA15_IRQHandler
+                0x00000458                SCG_IRQHandler
+                0x00000458                PDB1_IRQHandler
+                0x00000458                Reserved81_IRQHandler
+                0x00000458                Reserved46_IRQHandler
+                0x00000458                Reserved45_IRQHandler
+                0x00000458                CAN0_Error_IRQHandler
+                0x00000458                Reserved112_IRQHandler
+                0x00000458                LPI2C0_Master_IRQHandler
+                0x00000458                DMA4_IRQHandler
+                0x00000458                FTM1_Fault_IRQHandler
+                0x00000458                Reserved106_IRQHandler
+                0x00000458                DMA_Error_IRQHandler
+                0x00000458                LVD_LVW_IRQHandler
+                0x00000458                LPIT0_Ch2_IRQHandler
+                0x00000458                PORTA_IRQHandler
+                0x00000458                MCM_IRQHandler
+                0x00000458                LPSPI2_IRQHandler
+                0x00000458                DMA12_IRQHandler
+                0x00000458                FTM3_Ch4_Ch5_IRQHandler
+                0x00000458                CAN0_ORed_0_15_MB_IRQHandler
+                0x00000458                PORTE_IRQHandler
+                0x00000458                LPUART0_RxTx_IRQHandler
+                0x00000458                LPTMR0_IRQHandler
+                0x00000458                BusFault_Handler
+                0x00000458                Reserved87_IRQHandler
+                0x00000458                FTM1_Ovf_Reload_IRQHandler
+                0x00000458                DMA8_IRQHandler
+                0x00000458                Reserved93_IRQHandler
+                0x00000458                DMA10_IRQHandler
+                0x00000458                CAN0_Wake_Up_IRQHandler
+                0x00000458                CMP0_IRQHandler
+                0x00000458                Reserved52_IRQHandler
+                0x00000458                PORTC_IRQHandler
+                0x00000458                DMA6_IRQHandler
+                0x00000458                FTM1_Ch0_Ch1_IRQHandler
+                0x00000458                FLEXIO_IRQHandler
+                0x00000458                DMA1_IRQHandler
+                0x00000458                Reserved113_IRQHandler
+ *(.text*)
+ .text.SystemInit
+                0x0000045c       0x3c build/system_S32K144.o
+                0x0000045c                SystemInit
+ .text.init_data_bss
+                0x00000498       0xd8 build/startup.o
+                0x00000498                init_data_bss
+ *(.rodata)
+ *(.rodata*)
+ *(.init)
+ *(.fini)
+ *(.eh_frame)
+                0x00000570                . = ALIGN (0x4)
+
+.glue_7         0x00000570        0x0
+ .glue_7        0x00000570        0x0 linker stubs
+
+.glue_7t        0x00000570        0x0
+ .glue_7t       0x00000570        0x0 linker stubs
+
+.vfp11_veneer   0x00000570        0x0
+ .vfp11_veneer  0x00000570        0x0 linker stubs
+
+.v4_bx          0x00000570        0x0
+ .v4_bx         0x00000570        0x0 linker stubs
+
+.iplt           0x00000570        0x0
+ .iplt          0x00000570        0x0 build/system_S32K144.o
+
+.rel.dyn        0x00000570        0x0
+ .rel.iplt      0x00000570        0x0 build/system_S32K144.o
+
+.ARM            0x00000570        0x0
+                0x00000570                __exidx_start = .
+ *(.ARM.exidx*)
+                0x00000570                __exidx_end = .
+                0x00000570                __etext = .
+                0x00000570                __DATA_ROM = .
+
+.interrupts_ram
+                0x1fff8000      0x400
+                0x1fff8000                . = ALIGN (0x4)
+                0x1fff8000                __VECTOR_RAM__ = .
+                0x1fff8000                __RAM_START = .
+                0x1fff8000                __interrupts_ram_start__ = .
+ *(.m_interrupts_ram)
+                0x1fff8400                . = (. + M_VECTOR_RAM_SIZE)
+ *fill*         0x1fff8000      0x400 
+                0x1fff8400                . = ALIGN (0x4)
+                0x1fff8400                __interrupts_ram_end__ = .
+                0x1fff8000                __VECTOR_RAM = DEFINED (__flash_vector_table__)?ORIGIN (m_interrupts):__VECTOR_RAM__
+                0x00000400                __RAM_VECTOR_TABLE_SIZE = DEFINED (__flash_vector_table__)?0x0:(__interrupts_ram_end__ - __interrupts_ram_start__)
+
+.data           0x1fff8400        0x0 load address 0x00000570
+                0x1fff8400                . = ALIGN (0x4)
+                0x1fff8400                __DATA_RAM = .
+                0x1fff8400                __data_start__ = .
+ *(.data)
+ *(.data*)
+                0x1fff8400                . = ALIGN (0x4)
+                0x1fff8400                __data_end__ = .
+                0x00000570                __DATA_END = (__DATA_ROM + (__data_end__ - __data_start__))
+                0x00000570                __CODE_ROM = __DATA_END
+
+.igot.plt       0x1fff8400        0x0
+ .igot.plt      0x1fff8400        0x0 build/system_S32K144.o
+
+.code           0x1fff8400        0x0 load address 0x00000570
+                0x1fff8400                . = ALIGN (0x4)
+                0x1fff8400                __CODE_RAM = .
+                0x1fff8400                __code_start__ = .
+                0x1fff8400                __code_ram_start__ = .
+ *(.code_ram)
+                0x1fff8400                . = ALIGN (0x4)
+                0x1fff8400                __code_end__ = .
+                0x1fff8400                __code_ram_end__ = .
+                0x00000570                __CODE_END = (__CODE_ROM + (__code_end__ - __code_start__))
+                0x00000570                __CUSTOM_ROM = __CODE_END
+
+.customSectionBlock
+                0x20000000        0x0 load address 0x00000570
+                0x20000000                __customSection_start__ = .
+ *(.customSection)
+                0x20000000                __customSection_end__ = .
+                0x00000570                __CUSTOM_END = (__CUSTOM_ROM + (__customSection_end__ - __customSection_start__))
+                0x00000570                __rom_end = __CUSTOM_END
+
+.bss            0x20000000        0x0
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                __BSS_START = .
+                0x20000000                __bss_start__ = .
+ *(.bss)
+ *(.bss*)
+ *(COMMON)
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                __bss_end__ = .
+                0x20000000                __BSS_END = .
+
+.heap           0x20000000      0x400
+                0x20000000                . = ALIGN (0x8)
+                0x20000000                __end__ = .
+                0x20000000                __heap_start__ = .
+                [!provide]                PROVIDE (end = .)
+                [!provide]                PROVIDE (_end = .)
+                [!provide]                PROVIDE (__end = .)
+                0x20000000                __HeapBase = .
+                0x20000400                . = (. + HEAP_SIZE)
+ *fill*         0x20000000      0x400 
+                0x20000400                __HeapLimit = .
+                0x20000400                __heap_limit = .
+                0x20000400                __heap_end__ = .
+                0x20007000                __StackTop = (ORIGIN (m_data_2) + LENGTH (m_data_2))
+                0x20006c00                __StackLimit = (__StackTop - STACK_SIZE)
+                [!provide]                PROVIDE (__stack = __StackTop)
+                0x20007000                __RAM_END = __StackTop
+
+.stack          0x20006c00      0x400
+                0x20006c00                . = ALIGN (0x8)
+                0x20006c00                __stack_start__ = .
+                0x20007000                . = (. + STACK_SIZE)
+ *fill*         0x20006c00      0x400 
+                0x20007000                __stack_end__ = .
+
+.ARM.attributes
+                0x00000000       0x37
+ *(.ARM.attributes)
+ .ARM.attributes
+                0x00000000       0x39 build/system_S32K144.o
+ .ARM.attributes
+                0x00000039       0x39 build/startup.o
+ .ARM.attributes
+                0x00000072       0x1f build/startup_S32K144.o
+                0x00000001                ASSERT ((__rom_end <= (ORIGIN (m_text) + LENGTH (m_text))), Region m_text overflowed!)
+                0x00000001                ASSERT ((__StackLimit >= __HeapLimit), region m_data_2 overflowed with stack and heap)
+OUTPUT(build/SM_Rover_V1.elf elf32-littlearm)
+
+.debug_info     0x00000000      0x7f4
+ .debug_info    0x00000000      0x521 build/system_S32K144.o
+ .debug_info    0x00000521      0x2ad build/startup.o
+ .debug_info    0x000007ce       0x26 build/startup_S32K144.o
+
+.debug_abbrev   0x00000000      0x236
+ .debug_abbrev  0x00000000      0x141 build/system_S32K144.o
+ .debug_abbrev  0x00000141       0xe1 build/startup.o
+ .debug_abbrev  0x00000222       0x14 build/startup_S32K144.o
+
+.debug_loc      0x00000000      0x1f6
+ .debug_loc     0x00000000      0x10a build/system_S32K144.o
+ .debug_loc     0x0000010a       0xec build/startup.o
+
+.debug_aranges  0x00000000       0x70
+ .debug_aranges
+                0x00000000       0x30 build/system_S32K144.o
+ .debug_aranges
+                0x00000030       0x20 build/startup.o
+ .debug_aranges
+                0x00000050       0x20 build/startup_S32K144.o
+
+.debug_ranges   0x00000000       0x30
+ .debug_ranges  0x00000000       0x20 build/system_S32K144.o
+ .debug_ranges  0x00000020       0x10 build/startup.o
+
+.debug_macro    0x00000000    0x1f585
+ .debug_macro   0x00000000       0xb6 build/system_S32K144.o
+ .debug_macro   0x000000b6      0x8e0 build/system_S32K144.o
+ .debug_macro   0x00000996       0x10 build/system_S32K144.o
+ .debug_macro   0x000009a6       0x79 build/system_S32K144.o
+ .debug_macro   0x00000a1f       0x19 build/system_S32K144.o
+ .debug_macro   0x00000a38       0x22 build/system_S32K144.o
+ .debug_macro   0x00000a5a       0x56 build/system_S32K144.o
+ .debug_macro   0x00000ab0       0x51 build/system_S32K144.o
+ .debug_macro   0x00000b01       0xef build/system_S32K144.o
+ .debug_macro   0x00000bf0       0x6a build/system_S32K144.o
+ .debug_macro   0x00000c5a      0x1df build/system_S32K144.o
+ .debug_macro   0x00000e39     0xed1d build/system_S32K144.o
+ .debug_macro   0x0000fb56      0xbbd build/system_S32K144.o
+ .debug_macro   0x00010713       0x22 build/system_S32K144.o
+ .debug_macro   0x00010735       0x28 build/system_S32K144.o
+ .debug_macro   0x0001075d       0xb6 build/startup.o
+ .debug_macro   0x00010813     0xed32 build/startup.o
+ .debug_macro   0x0001f545       0x40 build/startup.o
+
+.debug_line     0x00000000      0x8a2
+ .debug_line    0x00000000      0x42e build/system_S32K144.o
+ .debug_line    0x0000042e      0x3b5 build/startup.o
+ .debug_line    0x000007e3       0xbf build/startup_S32K144.o
+
+.debug_str      0x00000000    0x68ce5
+ .debug_str     0x00000000    0x68895 build/system_S32K144.o
+                              0x68a13 (size before relaxing)
+ .debug_str     0x00068895      0x399 build/startup.o
+                              0x68b85 (size before relaxing)
+ .debug_str     0x00068c2e       0xb7 build/startup_S32K144.o
+
+.comment        0x00000000       0x7e
+ .comment       0x00000000       0x7e build/system_S32K144.o
+                                 0x7f (size before relaxing)
+ .comment       0x0000007e       0x7f build/startup.o
+
+.debug_frame    0x00000000       0x6c
+ .debug_frame   0x00000000       0x40 build/system_S32K144.o
+ .debug_frame   0x00000040       0x2c build/startup.o
