@@ -17,8 +17,8 @@ MQTT_USERNAME = "rw"
 MQTT_PASSWORD = "readwrite"
 
 # MQTT Topic Configuration (using new directional structure)
-MQTT_BASE_TOPIC = "SmartWheelsNS"
-DEVICE_ID = "ABCD"  # Device ID (fixed for now)
+MQTT_BASE_TOPIC     = "SmartWheelsNS"
+DEVICE_ID           = "ABCD"  # Device ID (fixed for now)
 
 # Build MQTT topics with device ID
 TOPIC_SERVER_FOTA_BOOTLOAD = f"{MQTT_BASE_TOPIC}/server/{DEVICE_ID}/fota/bootload"

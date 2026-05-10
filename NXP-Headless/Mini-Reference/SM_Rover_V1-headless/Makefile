@@ -26,7 +26,7 @@ SIZE := $(TOOLCHAIN_PATH)/arm-none-eabi-size
 BUILD_DIR := build
 TARGET := $(BUILD_DIR)/$(PROJECT_NAME).elf
 MAP_FILE := $(BUILD_DIR)/$(PROJECT_NAME).map
-LD_SCRIPT := $(NXP_K144_RTM)/platform/devices/S32K144/linker/gcc/S32K144_64_flash.ld
+LD_SCRIPT := Project_Settings/Linker_Files/S32K144_64_flash.ld
 
 # ==== Flags ====
 COMMON_ARCH := -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=$(LIBRARIES_SUPPORT)
