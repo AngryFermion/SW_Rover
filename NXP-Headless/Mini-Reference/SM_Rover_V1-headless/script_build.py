@@ -1,17 +1,24 @@
 from pathlib import Path
 import subprocess
+import sys
 import os
 
 #If this script is executing via Jenkins, then it expects
 #NXP_K144_RTM and S32DS_ROOT_DIR to be saved in jenkins env variables.
 
-MAKE = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin\make.exe"
+MAKE     = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin\make.exe"
 MSYS32_BIN = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin"
+SREC_CAT = r"C:\Program Files\srecord\bin\srec_cat.exe"
 
 # Always operate from the directory that contains this script,
 # regardless of where the user invokes it from.
 PROJECT_DIR = Path(__file__).resolve().parent
 os.chdir(PROJECT_DIR)
+
+# srec_utils.py lives in the sibling Ancit project — import it from there.
+ANCIT_DIR = PROJECT_DIR.parent / "Ancit-Generic-S32K144"
+sys.path.insert(0, str(ANCIT_DIR))
+from srec_utils import pad_srec
 
 
 # ==== Step 1: Add your local source directories ====
@@ -274,6 +281,30 @@ def flash_with_jlink(elf_path: Path):
 
     run_command(" ".join(cmd), "Flashing ELF with J-Link")
 
+# ==== SREC post-processing ====
+def srec_process(project_name: str):
+    build_dir   = Path("build")
+    temp_dir    = build_dir / "temp"
+    target_dir  = build_dir / "target"
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    input_srec  = build_dir  / f"{project_name}.srec"
+    temp_srec   = temp_dir   / f"{project_name}_temp.srec"
+    output_srec = target_dir / f"Image_{project_name}_padded.srec"
+
+    srec_cat_cmd = (
+        f'"{SREC_CAT}" "{input_srec}" -Motorola'
+        f' -Output_Block_Size 128 -Output_Block_Packing'
+        f' -address-length=4'
+        f' -o "{temp_srec}"'
+    )
+    run_command(srec_cat_cmd, "srec_cat block-align SREC")
+
+    print(f"\n Running: pad_srec ...")
+    pad_srec(str(temp_srec), str(output_srec))
+    print("pad_srec succeeded.\n")
+
 # ==== Final Makefile Generation + Build + Flash ====
 def main():
 
@@ -290,6 +321,7 @@ def main():
     run_command(f'"{MAKE}" clean', "Clean previous build")
     run_command(f'"{MAKE}"', "Build project")
     run_command(f'"{MAKE}" srec', "Generating SREC file")
+    srec_process("SM_Rover_V1")
 
     # elf_file = Path("build") / "SM_Rover_V1.elf"
     # if elf_file.exists():
