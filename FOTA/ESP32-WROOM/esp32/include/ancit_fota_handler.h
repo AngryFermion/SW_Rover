@@ -9,7 +9,7 @@
 #define FOTA_FOLDER "/fota"               // FOTA folder
 #define FOTA_TEMP_FILE "/fota/temp.srec"  // Temporary file for FOTA data
 #define DEFAULT_CHUNK_SIZE 4096           // Default 4KB chunk size
-#define MAX_FOTA_FILE_SIZE (80 * 1024)   // Maximum FOTA file size: 200KB
+#define MAX_FOTA_FILE_SIZE (220 * 1024)   // Maximum FOTA file size: 200KB
 #define MAX_CHUNKS (MAX_FOTA_FILE_SIZE / DEFAULT_CHUNK_SIZE + 1)  // Calculate max chunks based on file size and chunk size
 
 // Debug Configuration
