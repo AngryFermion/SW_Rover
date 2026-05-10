@@ -119,8 +119,8 @@ srec: $(TARGET)
 makefile_prefix = """
 # ==== Toolchain path ====
 
-S32DS_ROOT_DIR := C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620
-NXP_K144_RTM := C:/NXP/S32DS.3.5/S32DS/software/S32SDK_S32K1XX_RTM_4.0.1
+# S32DS_ROOT_DIR := C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620
+# NXP_K144_RTM := C:/NXP/S32DS.3.5/S32DS/software/S32SDK_S32K1XX_RTM_4.0.1
 PROJECT_NAME := SM_Rover_V1
 TOOLCHAIN_PATH := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/bin
 
@@ -277,7 +277,7 @@ def flash_with_jlink(elf_path: Path):
 # ==== Final Makefile Generation + Build + Flash ====
 def main():
 
-    # nxp_path = validate_env_vars()
+    nxp_path = validate_env_vars()
     local_files = collect_c_sources(C_SOURCE_DIRS)
     c_block = format_c_sources_block(RTM_C_SOURCES, local_files)
 
