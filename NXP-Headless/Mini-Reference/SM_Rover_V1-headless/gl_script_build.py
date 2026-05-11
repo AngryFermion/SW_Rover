@@ -1,0 +1,301 @@
+from pathlib import Path
+import subprocess
+import os
+
+#If this script is executing via Jenkins, then it expects
+#NXP_K144_RTM and S32DS_ROOT_DIR to be saved in jenkins env variables.
+
+MAKE = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin\make.exe"
+MSYS32_BIN = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin"
+
+# Always operate from the directory that contains this script,
+# regardless of where the user invokes it from.
+PROJECT_DIR = Path(__file__).resolve().parent
+os.chdir(PROJECT_DIR)
+
+
+# ==== Step 1: Add your local source directories ====
+C_SOURCE_DIRS = [
+    Path("src"),
+    Path("ancit_device_drivers"),
+    Path("ancit_lib/Digital"),
+    Path("ancit_lib/Others"),
+    Path("ancit_lib/Timers"),
+    Path("ancit_lib/UART"),
+    Path("ancit_lib/Ultrasonic"),
+    Path("ancit_lib/i2c"),
+    Path("board"),
+    Path("SDK/platform"),
+    Path("SDK/rtos/osif"),
+]
+
+# Files sourced from NXP_K144_RTM (not present locally in the project SDK/)
+# Written using the Make variable so the generated Makefile stays portable.
+RTM_C_SOURCES = [
+    "$(NXP_K144_RTM)/platform/devices/S32K144/startup/system_S32K144.c",
+    "$(NXP_K144_RTM)/platform/devices/startup.c",
+    "$(NXP_K144_RTM)/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.c",
+    "$(NXP_K144_RTM)/platform/drivers/src/interrupt/interrupt_manager.c",
+    "$(NXP_K144_RTM)/platform/drivers/src/pins/pins_driver.c",
+    "$(NXP_K144_RTM)/platform/drivers/src/pins/pins_port_hw_access.c",
+]
+
+# ==== Step 2: Collect .c files from local directories ====
+def collect_c_sources(source_dirs: list[Path]) -> list[str]:
+    root = PROJECT_DIR
+    sources = []
+
+    for src_dir in source_dirs:
+        if not src_dir.exists():
+            print(f"[warn] skipping missing path: {src_dir}")
+            continue
+        for path in src_dir.rglob("*.c"):
+            try:
+                rel_path = path.resolve().relative_to(root)
+            except ValueError:
+                rel_path = path.resolve()
+            sources.append(rel_path.as_posix())
+
+    return sorted(sources)
+
+# ==== Step 3: Format C_SOURCES block (RTM entries first, then local) ====
+def format_c_sources_block(rtm_files: list[str], local_files: list[str]) -> str:
+    all_files = rtm_files + local_files
+    if not all_files:
+        return "C_SOURCES :="
+    lines = ["C_SOURCES := \\"]
+    for i, f in enumerate(all_files):
+        if i == len(all_files) - 1:
+            lines.append(f"\t{f}")
+        else:
+            lines.append(f"\t{f} \\")
+    return "\n".join(lines)
+
+# ==== Step 4: Static final section ====
+static_tail = """
+ASM_SOURCES := \\
+    $(NXP_K144_RTM)/platform/devices/S32K144/startup/gcc/startup_S32K144.S
+
+# ==== Object files ====
+C_OBJS := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+ASM_OBJS := $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.S=.o)))
+OBJS := $(C_OBJS) $(ASM_OBJS)
+
+# ==== Source-to-object mapping ====
+SRC_TO_OBJ := \\
+  $(foreach src,$(C_SOURCES),$(BUILD_DIR)/$(notdir $(src:.c=.o))|$(src)) \\
+  $(foreach src,$(ASM_SOURCES),$(BUILD_DIR)/$(notdir $(src:.S=.o))|$(src))
+
+# ==== Default target ====
+all: $(TARGET)
+
+# ==== Link rule (group libs so __aeabi_* etc. resolve) ====
+$(TARGET): $(OBJS)
+\t$(LD) $(OBJS) $(LDFLAGS)  -o $@
+\t$(SIZE) $@
+
+
+# ==== Unified build rule for both .c and .S ====
+$(BUILD_DIR)/%.o:
+\t@mkdir -p $(BUILD_DIR)
+\t$(eval SRC := $(word 2,$(subst |, ,$(filter $@|%,$(SRC_TO_OBJ)))))
+\t$(CC) $(CFLAGS) $(INCLUDES) -c $(SRC) -o $@
+
+# ==== Clean ====
+clean:
+\trm -rf $(BUILD_DIR)
+
+# ==== Optional HEX output ====
+hex: $(TARGET)
+\t$(OBJCOPY) -O ihex $< $(BUILD_DIR)/$(PROJECT_NAME).hex
+
+# ======= SREC Output =============
+srec: $(TARGET)
+\t$(OBJCOPY) -O srec $< $(BUILD_DIR)/$(PROJECT_NAME).srec --srec-forceS3
+
+""".strip()
+
+# ==== Toolchain + Includes ====
+makefile_prefix = """
+# ==== Toolchain path ====
+
+# S32DS_ROOT_DIR := C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620
+# NXP_K144_RTM := C:/NXP/S32DS.3.5/S32DS/software/S32SDK_S32K1XX_RTM_4.0.1
+PROJECT_NAME := SM_Rover_V1
+TOOLCHAIN_PATH := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/bin
+
+
+
+# Toolchain roots (no spaces/backslashes)
+TOOLCHAIN_ROOT := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi
+SYSROOT := $(TOOLCHAIN_ROOT)/arm-none-eabi/newlib
+
+LIBRARIES_SUPPORT := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard/nosys.specs
+# Library dirs
+LIBDIR_GCC := $(TOOLCHAIN_ROOT)/lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard
+LIBDIR_NEWLIB := $(SYSROOT)/lib/thumb/v7e-m/fpv4-sp/hard
+SYSROOT_NEW := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard
+# ==== Tool commands ====
+CC := $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
+LD := $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
+OBJCOPY := $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
+SIZE := $(TOOLCHAIN_PATH)/arm-none-eabi-size
+
+# ==== Project and output ====
+BUILD_DIR := build
+TARGET := $(BUILD_DIR)/$(PROJECT_NAME).elf
+MAP_FILE := $(BUILD_DIR)/$(PROJECT_NAME).map
+LD_SCRIPT := Project_Settings/Linker_Files/S32K144_64_flash.ld
+
+# ==== Flags ====
+COMMON_ARCH := -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=$(LIBRARIES_SUPPORT)
+CFLAGS := $(COMMON_ARCH) \\
+    -std=c99 \\
+    -DCPU_S32K144HFT0VLLT \\
+    -DS32K144 \\
+    -DSDK_OS_BAREMETAL \\
+    -DDEV_ERROR_DETECT \\
+    -O1 -g3 \\
+    -pedantic -Wall -Wextra \\
+    -Wstrict-prototypes -Wsign-compare -Wunused \\
+    -ffunction-sections -fdata-sections -fno-common \\
+    -funsigned-bitfields -fshort-enums -fno-jump-tables -funsigned-char \\
+    -fmessage-length=0 \\
+    --sysroot="$(SYSROOT_NEW)"
+
+LDFLAGS := $(COMMON_ARCH) \\
+    -T"$(LD_SCRIPT)" \\
+    -nostartfiles \\
+    -Wl,-Map,"$(BUILD_DIR)/$(PROJECT_NAME).map" \\
+    -Wl,--gc-sections \\
+    -L"$(LIBDIR_GCC)" -L"$(LIBDIR_NEWLIB)" \\
+    -L"$(SYSROOT_NEW)" \\
+    -Wl,--start-group -lgcc -lc -lm -lnosys -Wl,--end-group
+
+
+
+# ==== Include paths ====
+INCLUDES := \\
+  -I./board \\
+  -I./src \\
+  -I./ancit_device_drivers \\
+  -I./ancit_lib/Digital \\
+  -I./ancit_lib/Others \\
+  -I./ancit_lib/Timers \\
+  -I./ancit_lib/UART \\
+  -I./ancit_lib/Ultrasonic \\
+  -I./ancit_lib/i2c/i2c_manager \\
+  -I./ancit_lib/i2c/oled \\
+  -I./MATLAB/extern/include \\
+  -I./MATLAB/rtw/c/src \\
+  -I./MATLAB/simulink/include \\
+  -I./SDK/platform/devices \\
+  -I./SDK/platform/devices/common \\
+  -I./SDK/platform/devices/S32K144/include \\
+  -I./SDK/platform/devices/S32K144/startup \\
+  -I./SDK/platform/drivers/inc \\
+  -I./SDK/platform/drivers/src/pins \\
+  -I./SDK/platform/drivers/src/flexcan \\
+  -I./SDK/platform/drivers/src/edma \\
+  -I./SDK/platform/drivers/src/interrupt \\
+  -I./SDK/platform/drivers/src/adc \\
+  -I./SDK/platform/drivers/src/ftm \\
+  -I./SDK/platform/drivers/src/lpuart \\
+  -I./SDK/platform/drivers/src/lptmr \\
+  -I./SDK/platform/drivers/src/lpi2c \\
+  -I./SDK/platform/drivers/src/clock/S32K1xx \\
+  -I./SDK/rtos/osif \\
+  -I $(NXP_K144_RTM)/platform \\
+  -I $(NXP_K144_RTM)/platform/devices \\
+  -I $(NXP_K144_RTM)/platform/devices/common \\
+  -I $(NXP_K144_RTM)/platform/devices/S32K144/include \\
+  -I $(NXP_K144_RTM)/platform/devices/S32K144/startup \\
+  -I $(NXP_K144_RTM)/platform/drivers/inc \\
+  -I $(NXP_K144_RTM)/platform/drivers/src/lptmr \\
+  -I $(NXP_K144_RTM)/platform/drivers/src/clock
+""".strip()
+
+
+def validate_env_vars():
+    nxp_rtm_path = os.environ.get("NXP_K144_RTM")
+    if not nxp_rtm_path:
+        print("[error] Environment variable NXP_K144_RTM is not set!")
+        print(" Please define it in Jenkins (pipeline environment block)")
+        print("Using default path:")
+        exit(1)
+
+    if not Path(nxp_rtm_path).exists():
+        print(f"[error] NXP_K144_RTM path does not exist: {nxp_rtm_path}")
+        exit(1)
+    print(f"[info] Using NXP_K144_RTM path: {nxp_rtm_path}")
+
+    s32ds_dir_path = os.environ.get("S32DS_ROOT_DIR")
+    if not s32ds_dir_path:
+        print("[error] Environment variable S32DS_ROOT_DIR is not set!")
+        print(" Please define it in Jenkins (pipeline environment block)")
+        print("Using default path:")
+        exit(1)
+
+    if not Path(s32ds_dir_path).exists():
+        print(f"[error] S32DS_ROOT_DIR path does not exist: {s32ds_dir_path}")
+        exit(1)
+    print(f"[info] Using S32DS_ROOT_DIR path: {s32ds_dir_path}")
+    return s32ds_dir_path
+
+def run_command(cmd, description):
+    print(f"\n Running: {description} ...")
+    env = os.environ.copy()
+    env["PATH"] = MSYS32_BIN + os.pathsep + env.get("PATH", "")
+    try:
+        subprocess.check_call(cmd, shell=True, env=env)
+        print(f"{description} succeeded.\n")
+    except subprocess.CalledProcessError as e:
+        print(f"{description} failed: {e}\n")
+        exit(1)
+
+# ==== Flash with J-Link ====
+def flash_with_jlink(elf_path: Path):
+    jlink_script = Path("flash.jlink")
+    with open(jlink_script, "w") as f:
+        f.write("r\n")
+        f.write("halt\n")
+        f.write(f"loadfile {elf_path.as_posix()}\n")
+        f.write("r\n")
+        f.write("go\n")
+        f.write("exit\n")
+
+    cmd = [
+        "tools\\JLink_V798h\\JLink.exe",
+        "-device", "S32K144",
+        "-if", "SWD",
+        "-speed", "4000",
+        "-CommanderScript", str(jlink_script)
+    ]
+
+    run_command(" ".join(cmd), "Flashing ELF with J-Link")
+
+# ==== Final Makefile Generation + Build + Flash ====
+def main():
+
+    nxp_path = validate_env_vars()
+    local_files = collect_c_sources(C_SOURCE_DIRS)
+    c_block = format_c_sources_block(RTM_C_SOURCES, local_files)
+
+    full_makefile = f"{makefile_prefix}\n\n# ==== Source files ====\n{c_block}\n\n{static_tail}"
+    Path("Makefile").write_text(full_makefile, encoding="utf-8")
+    print("Makefile generated successfully.\n")
+    print("Running Make\n")
+    print("===========================================================\n")
+
+    run_command(f'make clean', "Clean previous build")
+    run_command(f'make', "Build project")
+    run_command(f'make srec', "Generating SREC file")
+
+    # elf_file = Path("build") / "SM_Rover_V1.elf"
+    # if elf_file.exists():
+    #     flash_with_jlink(elf_file)
+    # else:
+    #     print(f"[error] ELF file not found at {elf_file}, skipping flash.\n")
+
+if __name__ == "__main__":
+    main()

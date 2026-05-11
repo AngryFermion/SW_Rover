@@ -1,0 +1,14 @@
+Overview
+--------
+The SmartWheels_EV1 template project provides a ready-to-use setup for development on the SmartWheels_EV1 board. It includes essential configuration files to simplify the hardware setup and customization for your specific application.
+
+
+Contents
+--------
+.mex File - Pre-configured file for setting up clocks, pins, and peripherals for the SmartWheels_EV1.
+
+.ecux File - Configuration file for use with SmartWheels_GenX, allowing you to customize ECU settings to suit different use cases.
+
+Version
+-------
+2.0.0

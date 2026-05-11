@@ -1,0 +1,23 @@
+{
+    "pkt": "device.json",
+    "pkt_ver": "0.3.0",
+
+    "dev_mac_addr": "ab.mn.xy.ab",
+    "dev_id": "METI123456789012",
+    "dev_vdd": 3.3,
+    "dev_reg_status": true,
+    "dev_debug_en": false,
+
+    "wf_ip_static": false,
+    "wf_ip_addr": "1.1.1.2",
+    "wf_gw": "1.1.1.1",
+    "wf_sn": "255.255.255.0",
+    "wf_dns": "1.1.1.1",
+
+    "wf_mode": "AP",
+    "wf_conn_ssid": "METI",
+    "wf_status": "CONNECTED",
+    "wf_int_status": "NOT CONNECTED",
+    "wf_rssi": 80,
+    "wf_conn_devs": 0
+}

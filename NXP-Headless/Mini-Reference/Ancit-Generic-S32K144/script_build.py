@@ -1,0 +1,321 @@
+from pathlib import Path
+import subprocess
+import os
+from srec_align import align_srec
+from srec_utils import pad_srec
+#If this script is executing via Jenkins, then it expect
+#NXP_K144_RTM and S32DS_ROOT_DIR to be saved in jenkins env variables.
+
+MAKE     = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin\make.exe"
+MSYS32_BIN = r"C:\NXP\S32DS.3.5\S32DS\build_tools\msys32\usr\bin"
+SREC_CAT = r"C:\Program Files\srecord\bin\srec_cat.exe"
+
+# Always operate from the directory that contains this script,
+# regardless of where the user invokes it from.
+PROJECT_DIR = Path(__file__).resolve().parent
+os.chdir(PROJECT_DIR)
+
+
+# ==== Step 1: Add your source directories ====
+C_SOURCE_DIRS = [
+    Path("src"),
+    Path("ancit_device_drivers"),
+    Path("ancit_lib/Analog"),
+    Path("ancit_lib/CAN"),
+    Path("ancit_lib/Digital"),
+    Path("ancit_lib/DWIN"),
+    Path("ancit_lib/Others"),
+    Path("ancit_lib/Timers"),
+    Path("ancit_lib/UART"),
+    Path("ancit_fota"),
+    Path("ancit_boot/BootMgr"),
+    Path("ancit_boot/NvmMgr"),
+    Path("board"),
+    Path("SDK/platform"),
+    Path("SDK/rtos/osif"),
+]
+
+# ==== Step 2: Collect .c files ====
+def collect_c_sources(source_dirs: list[Path]) -> list[str]:
+    root = PROJECT_DIR
+    sources = []
+
+    for src_dir in source_dirs:
+        if not src_dir.exists():
+            print(f"[warn] skipping missing path: {src_dir}")
+            continue
+        for path in src_dir.rglob("*.c"):
+            try:
+                rel_path = path.resolve().relative_to(root)
+            except ValueError:
+                rel_path = path.resolve()
+            sources.append(rel_path.as_posix())
+
+    return sorted(sources)
+
+# ==== Step 3: Format C_SOURCES block ====
+def format_c_sources_block(c_files: list[str]) -> str:
+    if not c_files:
+        return "C_SOURCES :="
+    lines = ["C_SOURCES := \\"]
+    for i, f in enumerate(c_files):
+        if i == len(c_files) - 1:
+            lines.append(f"\t{f}")
+        else:
+            lines.append(f"\t{f} \\")
+    return "\n".join(lines)
+
+# ==== Step 4: Static final section ====
+static_tail = """
+ASM_SOURCES := \\
+    Project_Settings/Startup_Code/startup_S32K144.S
+
+# ==== Object files ====
+C_OBJS := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+ASM_OBJS := $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.S=.o)))
+OBJS := $(C_OBJS) $(ASM_OBJS)
+
+# ==== Source-to-object mapping ====
+SRC_TO_OBJ := \\
+  $(foreach src,$(C_SOURCES),$(BUILD_DIR)/$(notdir $(src:.c=.o)):$(src)) \\
+  $(foreach src,$(ASM_SOURCES),$(BUILD_DIR)/$(notdir $(src:.S=.o)):$(src))
+
+# ==== Default target ====
+all: $(TARGET)
+
+# ==== Link rule (group libs so __aeabi_* etc. resolve) ====
+$(TARGET): $(OBJS)
+\t$(LD) $(OBJS) $(LDFLAGS)  -o $@
+\t$(SIZE) $@
+
+
+# ==== Unified build rule for both .c and .S ====
+$(BUILD_DIR)/%.o:
+\t@mkdir -p $(BUILD_DIR)
+\t$(eval SRC := $(word 2,$(subst :, ,$(filter $@:%,$(SRC_TO_OBJ)))))
+\t$(CC) $(CFLAGS) $(INCLUDES) -c $(SRC) -o $@
+
+# ==== Clean ====
+clean:
+\trm -rf $(BUILD_DIR)
+
+# ==== Optional HEX output ====
+hex: $(TARGET)
+\t$(OBJCOPY) -O ihex $< $(BUILD_DIR)/$(PROJECT_NAME).hex
+
+# ======= SREC Output =============
+srec: $(TARGET)
+\t$(OBJCOPY) -O srec $< $(BUILD_DIR)/$(PROJECT_NAME).srec --srec-forceS3
+
+""".strip()
+
+# ==== Toolchain + Includes ====
+makefile_prefix = """
+# ==== Toolchain path ====
+
+S32DS_ROOT_DIR := C:/NXP/S32DS.3.5/S32DS/build_tools/gcc_b1620
+NXP_K144_RTM := C:/NXP/S32DS.3.5/S32DS/software/S32SDK_S32K1XX_RTM_4.0.1
+PROJECT_NAME := SubSys_Mini_HeadLight
+TOOLCHAIN_PATH := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/bin
+
+
+
+# Toolchain roots (no spaces/backslashes)
+TOOLCHAIN_ROOT := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi
+SYSROOT := $(TOOLCHAIN_ROOT)/arm-none-eabi/newlib
+
+LIBRARIES_SUPPORT := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard/nosys.specs
+# Library dirs
+LIBDIR_GCC := $(TOOLCHAIN_ROOT)/lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard
+LIBDIR_NEWLIB := $(SYSROOT)/lib/thumb/v7e-m/fpv4-sp/hard
+SYSROOT_NEW := $(S32DS_ROOT_DIR)/gcc-6.3-arm32-eabi/arm-none-eabi/newlib/lib/thumb/v7e-m/fpv4-sp/hard
+# ==== Tool commands ====
+CC := $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
+LD := $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
+OBJCOPY := $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
+SIZE := $(TOOLCHAIN_PATH)/arm-none-eabi-size
+
+# ==== Project and output ====
+BUILD_DIR := build
+TARGET := $(BUILD_DIR)/$(PROJECT_NAME).elf
+MAP_FILE := $(BUILD_DIR)/$(PROJECT_NAME).map
+LD_SCRIPT := Project_Settings/Linker_Files/S32K144_64_flash.ld
+
+# ==== Flags ====
+COMMON_ARCH := -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=$(LIBRARIES_SUPPORT)
+CFLAGS := $(COMMON_ARCH) \\
+    -std=c99 \\
+    -DCPU_S32K144HFT0VLLT \\
+    -DS32K144 \\
+    -DSDK_OS_BAREMETAL \\
+    -DDEV_ERROR_DETECT \\
+    -O1 -g3 \\
+    -pedantic -Wall -Wextra \\
+    -Wstrict-prototypes -Wsign-compare -Wunused \\
+    -ffunction-sections -fdata-sections -fno-common \\
+    -funsigned-bitfields -fshort-enums -fno-jump-tables -funsigned-char \\
+    -fmessage-length=0 \\
+    --sysroot="$(SYSROOT_NEW)"
+
+LDFLAGS := $(COMMON_ARCH) \\
+    -T"$(LD_SCRIPT)" \\
+    -nostartfiles \\
+    -Wl,-Map,"$(BUILD_DIR)/$(PROJECT_NAME).map" \\
+    -Wl,--gc-sections \\
+    -L"$(LIBDIR_GCC)" -L"$(LIBDIR_NEWLIB)" \\
+    -L"$(SYSROOT_NEW)" \\
+    -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+
+
+
+# ==== Include paths ====
+INCLUDES := \\
+  -I./board \\
+  -I./src \\
+  -I./ancit_device_drivers \\
+  -I./ancit_lib/Analog \\
+  -I./ancit_lib/CAN \\
+  -I./ancit_lib/Digital \\
+  -I./ancit_lib/DWIN \\
+  -I./ancit_lib/Others \\
+  -I./ancit_lib/Timers \\
+  -I./ancit_lib/UART \\
+  -I./ancit_lib \\
+  -I./ancit_fota \\
+  -I./ancit_boot/BootMgr \\
+  -I./ancit_boot/NvmMgr \\
+  -I./SDK/platform/devices \\
+  -I./SDK/platform/devices/common \\
+  -I./SDK/platform/devices/S32K144/include \\
+  -I./SDK/platform/devices/S32K144/startup \\
+  -I./SDK/platform/drivers/inc \\
+  -I./SDK/platform/drivers/src/pins \\
+  -I./SDK/platform/drivers/src/flexcan \\
+  -I./SDK/platform/drivers/src/edma \\
+  -I./SDK/platform/drivers/src/interrupt \\
+  -I./SDK/platform/drivers/src/adc \\
+  -I./SDK/platform/drivers/src/ftm \\
+  -I./SDK/platform/drivers/src/interrupt \\
+  -I./SDK/platform/drivers/src/lpuart \\
+  -I./SDK/platform/drivers/src/lptmr \\
+  -I./SDK/platform/drivers/src/clock/S32K1xx \\
+  -I./SDK/rtos/osif \\
+  -I $(NXP_K144_RTM)/platform \\
+  -I $(NXP_K144_RTM)/platform/devices \\
+  -I $(NXP_K144_RTM)/platform/devices/common \\
+  -I $(NXP_K144_RTM)/platform/devices/S32K144/include \\
+  -I $(NXP_K144_RTM)/platform/devices/S32K144/startup \\
+  -I $(NXP_K144_RTM)/platform/drivers/inc \\
+  -I $(NXP_K144_RTM)/platform/drivers/src/lptmr \\
+  -I $(NXP_K144_RTM)/platform/drivers/src/clock
+""".strip()
+
+
+def validate_env_vars():
+    nxp_rtm_path = os.environ.get("NXP_K144_RTM")
+    if not nxp_rtm_path:
+        print("[error] Environment variable NXP_K144_RTM is not set!")
+        print(" Please define it in Jenkins (pipeline environment block)")
+        print("Using default path:") 
+        exit(1)
+        
+    if not Path(nxp_rtm_path).exists():
+        print(f"[error] NXP_K144_RTM path does not exist: {nxp_rtm_path}")
+        exit(1)
+    print(f"[info] Using NXP_K144_RTM path: {nxp_rtm_path}")
+    
+    s32ds_dir_path = os.environ.get("S32DS_ROOT_DIR")
+    if not s32ds_dir_path:
+        print("[error] Environment variable S32DS_ROOT_DIR is not set!")
+        print(" Please define it in Jenkins (pipeline environment block)")
+        print("Using default path:") 
+        exit(1)
+        
+    if not Path(s32ds_dir_path).exists():
+        print(f"[error] S32DS_ROOT_DIR path does not exist: {s32ds_dir_path}")
+        exit(1)
+    print(f"[info] Using S32DS_ROOT_DIR path: {s32ds_dir_path}")
+    return s32ds_dir_path
+
+def run_command(cmd, description):
+    print(f"\n Running: {description} ...")
+    env = os.environ.copy()
+    env["PATH"] = MSYS32_BIN + os.pathsep + env.get("PATH", "")
+    try:
+        subprocess.check_call(cmd, shell=True, env=env)
+        print(f"{description} succeeded.\n")
+    except subprocess.CalledProcessError as e:
+        print(f"{description} failed: {e}\n")
+        exit(1)
+
+# ==== Flash with J-Link ====
+def flash_with_jlink(elf_path: Path):
+    jlink_script = Path("flash.jlink")
+    with open(jlink_script, "w") as f:
+        f.write("r\n")
+        f.write("halt\n")
+        f.write(f"loadfile {elf_path.as_posix()}\n")
+        f.write("r\n")
+        f.write("go\n")
+        f.write("exit\n")
+
+    cmd = [
+        "tools\\JLink_V798h\\JLink.exe",
+        "-device", "S32K144",
+        "-if", "SWD",
+        "-speed", "4000",
+        "-CommanderScript", str(jlink_script)
+    ]
+
+    run_command(" ".join(cmd), "Flashing ELF with J-Link")
+
+# ==== SREC post-processing ====
+def srec_process(project_name: str):
+    build_dir   = Path("build")
+    temp_dir    = build_dir / "temp"
+    target_dir  = build_dir / "target"
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    input_srec  = build_dir  / f"{project_name}.srec"
+    temp_srec   = temp_dir   / f"{project_name}_temp.srec"
+    output_srec = target_dir / f"Image_{project_name}_padded.srec"
+
+    srec_cat_cmd = (
+        f'"{SREC_CAT}" "{input_srec}" -Motorola'
+        f' -Output_Block_Size 128 -Output_Block_Packing'
+        f' -address-length=4'
+        f' -o "{temp_srec}"'
+    )
+    run_command(srec_cat_cmd, "srec_cat block-align SREC")
+
+    print(f"\n Running: pad_srec ...")
+    pad_srec(str(temp_srec), str(output_srec))
+    print("pad_srec succeeded.\n")
+
+# ==== Final Makefile Generation + Build + Flash ====
+def main():
+
+    # nxp_path = validate_env_vars()
+    c_files = collect_c_sources(C_SOURCE_DIRS)
+    c_block = format_c_sources_block(c_files)
+    
+    full_makefile = f"{makefile_prefix}\n\n# ==== Source files ====\n{c_block}\n\n{static_tail}"
+    Path("Makefile").write_text(full_makefile, encoding="utf-8")
+    print("Makefile generated successfully.\n")
+    print("Running Make\n")
+    print("===========================================================\n")
+
+    run_command(f'"{MAKE}" clean', "Clean previous build")
+    run_command(f'"{MAKE}"', "Build project")
+    run_command(f'"{MAKE}" srec', "Generating SREC file")
+    srec_process("SubSys_Mini_HeadLight")
+
+    # elf_file = Path("build") / "SubSys_Mini_HeadLight.elf"
+    # if elf_file.exists():
+    #     flash_with_jlink(elf_file)
+    # else:
+    #     print(f"[error] ELF file not found at {elf_file}, skipping flash.\n")
+
+if __name__ == "__main__":
+    main()

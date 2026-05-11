@@ -1,0 +1,96 @@
+{
+  "register_maps": {
+    "4": {
+      "name": "Input Registers",
+      "description": "INPUT_REGISTERS - Read-only sensor data",
+      "base_address": 0,
+      "registers": [
+        {
+          "name": "OHT Level",
+          "addr": 0,
+          "count": 1,
+          "type": "uint16",
+          "div": 1,
+          "uom": "%",
+          "readonly": true,
+          "remarks": "Overhead tank level"
+        },
+        {
+          "name": "Pump1 Status",
+          "addr": 1,
+          "count": 1,
+          "type": "uint16",
+          "div": 1,
+          "uom": "VAL",
+          "readonly": true,
+          "remarks": "Pump 1 status",
+          "details": "0=Off, 1=On"
+        },
+        {
+          "name": "Sump Level",
+          "addr": 2,
+          "count": 1,
+          "type": "uint16",
+          "div": 1,
+          "uom": "%",
+          "readonly": true,
+          "remarks": "Sump tank level "
+        },
+        {
+          "name": "Dry Run Status",
+          "addr": 3,
+          "count": 1,
+          "type": "uint16",
+          "div": 1,
+          "uom": "VAL",
+          "readonly": true,
+          "remarks": "Dry run",
+          "details": "0=Normal, 1=Dry run"
+        }
+      ]
+    },
+    "3": {
+      "name": "Holding Registers",
+      "description": "HOLDING_REGISTERS - Read/write control data",
+      "base_address": 0,
+      "registers": [
+        {
+          "name": "Output1",
+          "addr": 0,
+          "count": 1,
+          "type": "uint16",
+          "div": 1,
+          "uom": "VAL",
+          "readonly": false,
+          "remarks": "Output1 control register",
+          "details": "0=Off, 1=On"
+        },
+        {
+          "name": "Output2",
+          "addr": 1,
+          "count": 1,
+          "type": "uint16",
+          "div": 1,
+          "uom": "VAL",
+          "readonly": false,
+          "remarks": "Output2 control register",
+          "details": "0=Off, 1=On"
+        },
+        {
+          "name": "System Mode",
+          "addr": 2,
+          "count": 1,
+          "type": "uint16",
+          "div": 1,
+          "uom": "VAL",
+          "readonly": false,
+          "remarks": "System operation mode - 0=Manual, 1=Auto",
+          "details": "Manual mode requires user intervention. Auto mode uses level sensors for pump control."
+        }
+      ]
+    }
+  }
+}
+
+
+

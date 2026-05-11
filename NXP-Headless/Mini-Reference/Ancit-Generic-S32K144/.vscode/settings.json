@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.cpp": "cpp",
+        "genx_runnables.h": "c",
+        "ancit_driver_digital_io.h": "c",
+        "device_registers.h": "c",
+        "genx_config.h": "c",
+        "clock.h": "c",
+        "clock_s32k1xx.h": "c",
+        "adc_hw_access.h": "c"
+    }
+}

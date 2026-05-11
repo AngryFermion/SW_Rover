@@ -1,0 +1,111 @@
+image: ubuntu:22.04
+
+stages:
+  - start
+  - fetch-code
+  - build-ecu
+  - push-ota
+  - end
+
+variables:
+  NXP_K144_RTM: "$CI_PROJECT_DIR/RTM/S32SDK_S32K1XX_RTM_4.0.1"
+  S32DS_ROOT_DIR: "$CI_PROJECT_DIR/GCC"
+
+before_script:
+  - apt-get update -y
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y git srecord python3 python3-pip curl unzip wget
+
+# ---------------------- START ----------------------
+Start Job:
+  stage: start
+  script:
+    - echo "========== STARTING CI PIPELINE =========="
+
+# ---------------------- FETCH CODE -------------------------
+Fetch Code:
+  stage: fetch-code
+  script:
+    ## RTM SDK
+    - echo "Downloading RTM Zip files"
+    - wget -O S32SDK_S32K1XX_RTM_4.0.1.zip "https://ancitconsult-my.sharepoint.com/:u:/g/personal/vishnu_ancitconsulting_com/EZriT--7tC5Aj-uPf4JdWd0Bk_7JtrJwIrPVsCU_7nRTvQ?e=STbYVI&download=1"
+    - mkdir -p RTM
+    - unzip -oq S32SDK_S32K1XX_RTM_4.0.1.zip -d RTM
+    - echo "RTM Path -> $NXP_K144_RTM"
+
+    # GCC Toolchain
+    - echo "Downloading NXP GCC 6.3 for Linux"
+    - wget -O gcc-6.3-arm32-eabi.zip "https://ancitconsult-my.sharepoint.com/:u:/g/personal/vishnu_ancitconsulting_com/ES5pl9aVeKpBmmvsXjCWkAwBROBKGvmwtJX-3X7PcawHfw?e=bmlPnE&download=1"
+    - mkdir -p GCC
+    - unzip -oq gcc-6.3-arm32-eabi.zip -d GCC
+    - echo "Path that contains the build tools and gcc -> $S32DS_ROOT_DIR"
+
+    # Git repo clone
+    - mkdir -p NXP_Dev
+    - cd NXP_Dev
+    - git clone https://$GH_TOKEN@github.com/AngryFermion/Ancit-CI-CD-FOTA-Mini.git
+    # - git clone https://$GH_TOKEN@github.com/AngryFermion/Ancit-Fota-Pipeline-SW-Headlights-Mini.git
+
+  artifacts:
+    paths:
+      - RTM
+      - GCC
+      - NXP_Dev
+    expire_in: 1 week
+
+# ---------------------- BUILD ECU ----------------------
+Build ECU:
+  stage: build-ecu
+  dependencies:
+    - Fetch Code
+  script:
+    - dpkg --add-architecture i386
+    - apt-get update
+    - apt-get install -y libc6:i386 libstdc++6:i386
+    - echo "32-bit libraries installed"
+    - pwd
+    - ls
+    - cd NXP_Dev/Ancit-CI-CD-FOTA-Mini/Ancit-Generic-S32K144
+    - mkdir -p build
+    - python3 script_build.py
+    - cd build
+    - mkdir -p temp target
+
+    ## Align using srecord#
+    - srec_cat SubSys_Mini_HeadLight.srec -Motorola -Output_Block_Size 128 -Output_Block_Packing -address-length=4 -o temp/SubSys_Mini_HeadLight_temp.srec
+
+    # Pad aligned SREC
+    - cd ..
+    - TS=$(date +%Y%m%d_%H%M%S)
+    - python3 srec_utils.py build/temp/SubSys_Mini_HeadLight_temp.srec build/target/Image_SubSys_Mini_HeadLight_${TS}.srec
+
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/NXP_Dev/Ancit-Fota-Pipeline-SW-Headlights-Mini/SubSys_Mini_HeadLight/build/SubSys_Mini_HeadLight.elf"
+      - "$CI_PROJECT_DIR/NXP_Dev/Ancit-Fota-Pipeline-SW-Headlights-Mini/SubSys_Mini_HeadLight/build/target/Image_SubSys_Mini_HeadLight_*.srec"
+      - NXP_Dev/Ancit-CI-CD-FOTA-Mini/Ancit-Generic-S32K144/build
+    expire_in: 1 week
+
+# ---------------------- PUSH OTA ----------------------
+Push OTA:
+  stage: push-ota
+  dependencies:
+    - Fetch Code
+    - Build ECU
+  script:
+    - cd NXP_Dev/Ancit-CI-CD-FOTA-Mini/Ancit-Generic-S32K144
+    - pip install paho-mqtt
+    - pip install --upgrade "paho-mqtt>=2.0"
+    - python3 publish_srec.py build/target/Image_SubSys_Mini_HeadLight_*.srec
+    #
+    # Check if the srec file has been ACK'd by ESP32
+    # If ACK'd properly then initate the bootloader using bootloader_publisher.py
+    # sleep for 1 second before running the bootlaoder code
+    - sleep 1
+    - python3 bootload_publisher.py
+    # - python3 mqtt_publish_image.py build/target/Image_SubSys_Mini_HeadLight_*.srec
+
+# ---------------------- END -----------------------
+End Job:
+  stage: end
+  script:
+    - echo "========== CI PIPELINE COMPLETED ==========="

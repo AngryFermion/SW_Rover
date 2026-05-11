@@ -1,0 +1,78 @@
+{
+  "navigation": {
+    "dashboard": {
+      "status": "hide",
+      "order": 1
+    },
+    "displayboard": {
+      "status": "show",
+      "order": 2
+    },
+    "modbus": {
+      "status": "remove",
+      "order": 3,
+      "subitems": {
+        "config": {
+          "status": "show",
+          "order": 1
+        },
+        "driver": {
+          "status": "show",
+          "order": 2
+        }
+      }
+    },
+    "sensor": {
+      "status": "remove",
+      "order": 4,
+      "subitems": {
+        "config": {
+          "status": "show",
+          "order": 1
+        }
+      }
+    },
+    "wifi": {
+      "status": "show",
+      "order": 5,
+      "subitems": {
+        "config": {
+          "status": "show",
+          "order": 1
+        }
+      }
+    },
+    "device": {
+      "status": "show",
+      "order": 6,
+      "subitems": {
+        "config": {
+          "status": "show",
+          "order": 1
+        },
+        "divider": {
+          "status": "show",
+          "order": 2
+        },
+        "restart": {
+          "status": "show",
+          "order": 3
+        }
+      }
+    },
+    "factory": {
+      "status": "hide",
+      "order": 7,
+      "subitems": {
+        "register": {
+          "status": "show",
+          "order": 1
+        },
+        "oem": {
+          "status": "show",
+          "order": 2
+        }
+      }
+    }
+  }
+}
