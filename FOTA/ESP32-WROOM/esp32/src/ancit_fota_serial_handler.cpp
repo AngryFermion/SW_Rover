@@ -18,6 +18,9 @@ void AncitFotaSerialHandler::init() {
   // Initialize Serial2 for FOTA transmission
   FOTA_SERIAL_HW.begin(FOTA_SERIAL_BAUD_RATE, SERIAL_8N1, FOTA_SERIAL_RX_PIN, FOTA_SERIAL_TX_PIN);
 
+  pinMode(FOTA_STATUS_LED_PIN, OUTPUT);
+  digitalWrite(FOTA_STATUS_LED_PIN, HIGH);
+
   g_Logger.Write(LogLevel::Debug, LogCategory::SER, "AncitFotaSerialHandler::init",
                    "Serial2 initialized for FOTA transmission (baud: %d, RX: %d, TX: %d)",
                    FOTA_SERIAL_BAUD_RATE, FOTA_SERIAL_RX_PIN, FOTA_SERIAL_TX_PIN);
@@ -318,6 +321,7 @@ bool AncitFotaSerialHandler::waitForOkResponse() {
 
       // Check for OK response
       if (response.endsWith("AOK") ) {
+        digitalWrite(FOTA_STATUS_LED_PIN, !digitalRead(FOTA_STATUS_LED_PIN));
         g_Logger.Write(LogLevel::Debug, LogCategory::SER, "AncitFotaSerialHandler::waitForOkResponse",
                          "Received OK response: %s", response.c_str());
         return true;

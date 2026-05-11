@@ -23,5 +23,6 @@
 
 #define MP_CFG_SW GPIO_NUM_34
 
+#define FOTA_STATUS_LED_PIN 2
 
 #endif
