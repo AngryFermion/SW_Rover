@@ -31,7 +31,7 @@ void genx_global_init(void) {
 
 	ggenx.Distance		= 		0;
 	ggenx.V_set			= 		100;
-	ggenx.D_min			= 		20;
+	ggenx.D_min			= 		40;
 	ggenx.PWM			= 		0;
 
 
