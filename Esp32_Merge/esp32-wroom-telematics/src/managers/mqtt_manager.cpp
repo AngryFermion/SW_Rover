@@ -1,0 +1,350 @@
+/**
+ * mqtt_manager.cpp — SmartWheels ESP32-WROOM Telematics
+ */
+
+#include "mqtt_manager.h"
+#include "uart_manager.h"
+#include "wifi_manager.h"
+#include "../config/system_config.h"
+#include <ArduinoJson.h>
+
+MQTTManager mqttManager;
+
+void mqttCallback(char* topic, byte* payload, unsigned int length) {
+    String msg = "";
+    for (unsigned int i = 0; i < length; i++) {
+        msg += (char)payload[i];
+    }
+
+    uartManager.loggerPrintf("[MQTT RX] Topic: %s | Msg: %s\n", topic, msg.c_str());
+
+    uartManager.dataWrite(msg.c_str(), msg.length());
+    uartManager.dataWrite("\r\n", 2);
+}
+
+MQTTManager::MQTTManager() : mqttClient(wifiClient) {
+    currentState          = MQTT_STATE_DISCONNECTED;
+    lastConnectionAttempt = 0;
+    reconnectionAttempts  = 0;
+    lastHealthPublish     = 0;
+    bufferWriteIndex      = 0;
+    bufferReadIndex       = 0;
+    bufferedMessageCount  = 0;
+
+    for (int i = 0; i < MQTT_BUFFER_SIZE; i++) {
+        messageBuffer[i].valid = false;
+    }
+}
+
+void MQTTManager::init() {
+    #if MQTT_DEBUG_ENABLED
+    uartManager.loggerWriteLine("[MQTT] Initializing...");
+    uartManager.loggerPrintf("[MQTT] Broker: %s:%d\n", MQTT_BROKER_ADDRESS, MQTT_BROKER_PORT);
+    uartManager.loggerPrintf("[MQTT] Client ID: %s\n", MQTT_CLIENT_ID);
+    uartManager.loggerPrintf("[MQTT] Device ID: %s\n", MQTT_DEVICE_ID);
+    #endif
+
+    mqttClient.setServer(MQTT_BROKER_ADDRESS, MQTT_BROKER_PORT);
+    mqttClient.setKeepAlive(MQTT_KEEP_ALIVE);
+    mqttClient.setBufferSize(MQTT_JSON_BUFFER_SIZE);
+    mqttClient.setCallback(mqttCallback);
+
+    #if MQTT_DEBUG_ENABLED
+    uartManager.loggerPrintf("[MQTT] Buffer: %d messages | Health interval: %d ms\n",
+                             MQTT_BUFFER_SIZE, MQTT_PUBLISH_HEALTH_INTERVAL);
+    uartManager.loggerWriteLine("[MQTT] Initialization complete");
+    #endif
+}
+
+void MQTTManager::update() {
+    handleConnectionState();
+
+    if (currentState == MQTT_STATE_CONNECTED) {
+        mqttClient.loop();
+
+        if (bufferedMessageCount > 0) {
+            processBufferedMessages();
+        }
+
+        unsigned long now = millis();
+        if (now - lastHealthPublish >= MQTT_PUBLISH_HEALTH_INTERVAL) {
+            publishDeviceHealth();
+            lastHealthPublish = now;
+        }
+    }
+}
+
+// ============================================================================
+// Connection state machine
+// ============================================================================
+
+void MQTTManager::handleConnectionState() {
+    switch (currentState) {
+        case MQTT_STATE_DISCONNECTED:
+            if (wifiManager.getState() == WIFI_STATE_CONNECTED) {
+                currentState = MQTT_STATE_CONNECTING;
+                #if MQTT_DEBUG_ENABLED
+                uartManager.loggerWriteLine("[MQTT] Attempting to connect...");
+                #endif
+            }
+            break;
+
+        case MQTT_STATE_CONNECTING:
+            if (connect()) {
+                currentState         = MQTT_STATE_CONNECTED;
+                reconnectionAttempts = 0;
+                #if MQTT_DEBUG_ENABLED
+                uartManager.loggerWriteLine("[MQTT] Connected successfully!");
+                #endif
+            } else {
+                currentState          = MQTT_STATE_ERROR;
+                lastConnectionAttempt = millis();
+            }
+            break;
+
+        case MQTT_STATE_CONNECTED:
+            if (!mqttClient.connected()) {
+                #if MQTT_DEBUG_ENABLED
+                uartManager.loggerWriteLine("[MQTT] Connection lost!");
+                #endif
+                currentState          = MQTT_STATE_RECONNECTING;
+                lastConnectionAttempt = millis();
+            }
+            break;
+
+        case MQTT_STATE_RECONNECTING:
+            attemptReconnection();
+            break;
+
+        case MQTT_STATE_ERROR:
+            if (millis() - lastConnectionAttempt >= MQTT_RECONNECT_DELAY) {
+                currentState = MQTT_STATE_CONNECTING;
+            }
+            break;
+    }
+}
+
+bool MQTTManager::connect() {
+    if (wifiManager.getState() != WIFI_STATE_CONNECTED) {
+        #if MQTT_DEBUG_ENABLED
+        uartManager.loggerWriteLine("[MQTT] ERROR: WiFi not connected");
+        #endif
+        return false;
+    }
+
+    bool connected = (strlen(MQTT_USERNAME) > 0 && strlen(MQTT_PASSWORD) > 0)
+        ? mqttClient.connect(MQTT_CLIENT_ID, MQTT_USERNAME, MQTT_PASSWORD, nullptr, 0, MQTT_CLEAN_SESSION, nullptr)
+        : mqttClient.connect(MQTT_CLIENT_ID);
+
+    if (connected) {
+        mqttClient.subscribe(MQTT_SUB_TOPIC);
+    } else {
+        #if MQTT_DEBUG_ENABLED
+        uartManager.loggerPrintf("[MQTT] Connection failed, rc=%d\n", mqttClient.state());
+        #endif
+    }
+    return connected;
+}
+
+void MQTTManager::attemptReconnection() {
+    if (millis() - lastConnectionAttempt < MQTT_RECONNECT_DELAY) return;
+
+    if (MQTT_MAX_RECONNECT_ATTEMPTS > 0 &&
+        reconnectionAttempts >= MQTT_MAX_RECONNECT_ATTEMPTS) {
+        #if MQTT_DEBUG_ENABLED
+        uartManager.loggerWriteLine("[MQTT] Max reconnection attempts reached");
+        #endif
+        currentState = MQTT_STATE_ERROR;
+        return;
+    }
+
+    #if MQTT_DEBUG_ENABLED
+    uartManager.loggerPrintf("[MQTT] Reconnection attempt %d...\n", reconnectionAttempts + 1);
+    #endif
+
+    if (connect()) {
+        currentState         = MQTT_STATE_CONNECTED;
+        reconnectionAttempts = 0;
+        #if MQTT_DEBUG_ENABLED
+        uartManager.loggerWriteLine("[MQTT] Reconnected successfully!");
+        #endif
+    } else {
+        reconnectionAttempts++;
+        lastConnectionAttempt = millis();
+    }
+}
+
+void MQTTManager::disconnect() {
+    if (mqttClient.connected()) {
+        mqttClient.disconnect();
+        #if MQTT_DEBUG_ENABLED
+        uartManager.loggerWriteLine("[MQTT] Disconnected");
+        #endif
+    }
+    currentState = MQTT_STATE_DISCONNECTED;
+}
+
+bool MQTTManager::isConnected() {
+    return (currentState == MQTT_STATE_CONNECTED && mqttClient.connected());
+}
+
+MQTTState MQTTManager::getState() { return currentState; }
+
+// ============================================================================
+// Publishing
+// ============================================================================
+
+bool MQTTManager::publishCANSignal(const char* signalName, long value) {
+    char fullTopic[128];
+    buildFullTopic(fullTopic, sizeof(fullTopic), MQTT_TOPIC_CAN_SIGNALS);
+
+    char payload[MQTT_JSON_CAN_BUFFER_SIZE];
+    buildCANSignalJSON(payload, sizeof(payload), signalName, value);
+
+    #if MQTT_DEBUG_ENABLED
+    uartManager.loggerPrintf("[MQTT] Publishing CAN signal: %s\n", payload);
+    #endif
+
+    if (isConnected() && MQTT_PUBLISH_CAN_IMMEDIATE) {
+        return publishMessage(fullTopic, payload, MQTT_QOS_CAN_SIGNALS, MQTT_RETAIN_CAN_SIGNALS);
+    } else if (MQTT_ENABLE_BUFFERING) {
+        return bufferMessage(fullTopic, payload, MQTT_QOS_CAN_SIGNALS, MQTT_RETAIN_CAN_SIGNALS);
+    }
+    return false;
+}
+
+bool MQTTManager::publishDeviceHealth() {
+    #ifdef PUBLISH_HEALTH
+    if (!isConnected()) return false;
+
+    char fullTopic[128];
+    buildFullTopic(fullTopic, sizeof(fullTopic), MQTT_TOPIC_DEVICE_HEALTH);
+
+    char payload[MQTT_JSON_HEALTH_BUFFER_SIZE];
+    buildDeviceHealthJSON(payload, sizeof(payload));
+
+    #if MQTT_DEBUG_ENABLED
+    uartManager.loggerPrintf("[MQTT] Publishing health: %s\n", payload);
+    #endif
+
+    return publishMessage(fullTopic, payload, MQTT_QOS_DEVICE_HEALTH, MQTT_RETAIN_DEVICE_HEALTH);
+    #else
+    return false;
+    #endif
+}
+
+bool MQTTManager::publishMessage(const char* topic, const char* payload,
+                                 uint8_t qos, bool retain) {
+    if (!isConnected()) return false;
+    bool success = mqttClient.publish(topic, payload, retain);
+    if (!success) {
+        #if MQTT_DEBUG_ENABLED
+        uartManager.loggerPrintf("[MQTT] Publish failed to topic: %s\n", topic);
+        #endif
+    }
+    return success;
+}
+
+// ============================================================================
+// Message buffer
+// ============================================================================
+
+bool MQTTManager::bufferMessage(const char* topic, const char* payload,
+                                uint8_t qos, bool retain) {
+    if (bufferedMessageCount >= MQTT_BUFFER_SIZE) {
+        if (MQTT_BUFFER_DROP_OLDEST) {
+            messageBuffer[bufferReadIndex].valid = false;
+            bufferReadIndex = (bufferReadIndex + 1) % MQTT_BUFFER_SIZE;
+            bufferedMessageCount--;
+            #if MQTT_DEBUG_ENABLED
+            uartManager.loggerWriteLine("[MQTT] Buffer full, dropped oldest message");
+            #endif
+        } else {
+            return false;
+        }
+    }
+
+    MQTTMessage* msg = &messageBuffer[bufferWriteIndex];
+    strncpy(msg->topic,   topic,   sizeof(msg->topic)   - 1);  msg->topic[sizeof(msg->topic)-1]     = '\0';
+    strncpy(msg->payload, payload, sizeof(msg->payload) - 1);  msg->payload[sizeof(msg->payload)-1] = '\0';
+    msg->qos    = qos;
+    msg->retain = retain;
+    msg->valid  = true;
+
+    bufferWriteIndex = (bufferWriteIndex + 1) % MQTT_BUFFER_SIZE;
+    bufferedMessageCount++;
+
+    #if MQTT_DEBUG_ENABLED
+    uartManager.loggerPrintf("[MQTT] Message buffered (%d/%d)\n",
+                             bufferedMessageCount, MQTT_BUFFER_SIZE);
+    #endif
+    return true;
+}
+
+void MQTTManager::processBufferedMessages() {
+    if (!isConnected() || bufferedMessageCount == 0) return;
+
+    MQTTMessage* msg = &messageBuffer[bufferReadIndex];
+    if (msg->valid) {
+        #if MQTT_DEBUG_ENABLED
+        uartManager.loggerPrintf("[MQTT] Publishing buffered message to: %s\n", msg->topic);
+        #endif
+        if (publishMessage(msg->topic, msg->payload, msg->qos, msg->retain)) {
+            msg->valid      = false;
+            bufferReadIndex = (bufferReadIndex + 1) % MQTT_BUFFER_SIZE;
+            bufferedMessageCount--;
+        }
+    }
+}
+
+int  MQTTManager::getBufferCount() { return bufferedMessageCount; }
+bool MQTTManager::isBufferFull()   { return (bufferedMessageCount >= MQTT_BUFFER_SIZE); }
+
+void MQTTManager::clearBuffer() {
+    for (int i = 0; i < MQTT_BUFFER_SIZE; i++) messageBuffer[i].valid = false;
+    bufferWriteIndex     = 0;
+    bufferReadIndex      = 0;
+    bufferedMessageCount = 0;
+    #if MQTT_DEBUG_ENABLED
+    uartManager.loggerWriteLine("[MQTT] Buffer cleared");
+    #endif
+}
+
+// ============================================================================
+// JSON builders
+// ============================================================================
+
+void MQTTManager::buildCANSignalJSON(char* buffer, size_t bufferSize,
+                                     const char* signalName, long value) {
+    StaticJsonDocument<MQTT_JSON_CAN_BUFFER_SIZE> doc;
+    doc["device_id"] = MQTT_DEVICE_ID;
+    doc["signal"]    = signalName;
+    doc["value"]     = value;
+    doc["timestamp"] = getTimestamp();
+    serializeJson(doc, buffer, bufferSize);
+}
+
+void MQTTManager::buildDeviceHealthJSON(char* buffer, size_t bufferSize) {
+    StaticJsonDocument<MQTT_JSON_HEALTH_BUFFER_SIZE> doc;
+    doc["device_id"]        = MQTT_DEVICE_ID;
+    doc["device_type"]      = MQTT_DEVICE_TYPE;
+    doc["firmware_version"] = MQTT_FIRMWARE_VERSION;
+    doc["timestamp"]        = getTimestamp();
+    doc["status"]           = "alive";
+    doc["wifi_connected"]   = (wifiManager.getState() == WIFI_STATE_CONNECTED);
+    if (wifiManager.getState() == WIFI_STATE_CONNECTED) {
+        doc["wifi_rssi"] = WiFi.RSSI();
+        doc["wifi_ssid"] = WiFi.SSID();
+    }
+    doc["uptime_ms"]         = millis();
+    doc["free_heap"]         = ESP.getFreeHeap();
+    doc["mqtt_buffer_count"] = bufferedMessageCount;
+    serializeJson(doc, buffer, bufferSize);
+}
+
+void MQTTManager::buildFullTopic(char* buffer, size_t bufferSize,
+                                  const char* relativeTopic) {
+    snprintf(buffer, bufferSize, "%s%s", MQTT_TOPIC_ROOT, relativeTopic);
+}
+
+unsigned long MQTTManager::getTimestamp() { return millis(); }
