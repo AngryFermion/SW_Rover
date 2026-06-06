@@ -1,0 +1,29 @@
+{
+  "pkt_ver": "2.0.0",
+  "dev_key": "a9bc6aeb666ee884dc34434ef467a749",
+  "registered": true,
+  "quickiot": {
+    "hw_version": "061-ss",
+    "fw_version": "20250922-1000",
+    "variant": "DISPLAY_BOARD",
+    "max_rtu_drivers": 0
+  },
+  "oem": {
+    "logo": "SERVEXL",
+    "product_name": "Digi Board",
+    "product_version": "1.0",
+    "footer_text": "SERVEXL",
+    "www": "https://www.servexl.in",
+    "wifi_pw": "17afe77d09d636bdaca3a491193cb660"
+  },
+  "reg_server": {
+    "url": "https://test.meti.in/test/index.php/quickiot/register_device",
+    "auth_type": "basic",
+    "username": "username",
+    "password": "password",
+    "token": "",
+    "content_type": "",
+    "app_key": "quickIoT",
+    "api_key": "4d5302f9e0c38f076673e62096db3a4a"
+  }
+}

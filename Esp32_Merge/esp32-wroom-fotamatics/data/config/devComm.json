@@ -1,0 +1,44 @@
+{
+  "pkt_ver": "1.2.0",
+  "enabled": true,
+  "dev_key": "992fd9adbfa6d4dd746f5e2bda519891",
+  "user": {
+    "device_name": "DigiBoard",
+    "comp_name": "ABC Pvt Ltd",
+    "timeZoneId": "Asia/Kolkata",
+    "timeZoneDiff": "5.5",
+    "lat": "12.2958",
+    "lon": "76.6394"
+  },
+  "live": {
+    "en": false,
+    "url": "scada.meti.in",
+    "port": 80,
+    "tx_interval": 10
+  },
+  "mqtt": {
+    "en": true,
+    "df": "1",
+    "encrypt": false,
+    "server": "broker.emqx.io",
+    "port": 1883,
+    "ka": 60,
+    "un": "rw",
+    "pw": "readwrite",
+    "qos": 1,
+    "pi": 10,
+    "ca_cert": ""
+  },
+  "http": {
+    "en": false,
+    "df": "1",
+    "url": "http://webhook.site/140210a8-b14b-42c2-8b06-73949633a0a7",
+    "port": 443,
+    "tx_interval": 10,
+    "auth_type": "none", 
+    "username": "username1", 
+    "password": "password1", 
+    "token": "",
+    "content_type": "application/json"
+  }
+}
