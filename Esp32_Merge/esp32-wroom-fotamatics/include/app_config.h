@@ -27,7 +27,7 @@
 #define APP_MODE_BOTH             3
 
 // ---- Change this line to switch modes ----
-#define FOTAMATICS_MODE  APP_MODE_TELEMATICS_ONLY
+#define FOTAMATICS_MODE  APP_MODE_BOTH
 // ------------------------------------------
 
 // Compile-time guard: catch invalid values
