@@ -47,7 +47,7 @@ instance:
         - PFlashSize: '0x80000'
         - DFlashBase: '0x10000000'
         - EERAMBase: '0x14000000'
-        - CallBack: 'NULL'
+        - CallBack: 'NULL_CALLBACK'
     - quick_selection: 'flash_default'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -68,7 +68,7 @@ const flash_user_config_t Flash_InitConfig0 =
     .PFlashSize = 0x80000U,
     .DFlashBase = 0x10000000U,
     .EERAMBase = 0x14000000U,
-    .CallBack = NULL
+    .CallBack = NULL_CALLBACK
 };
 
 

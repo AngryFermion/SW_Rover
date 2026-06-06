@@ -1,0 +1,69 @@
+#######################################
+# ESP32_CAN Library Keywords
+#######################################
+
+#######################################
+# Classes (KEYWORD1)
+#######################################
+
+ESP32_CAN	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+# Initialization
+begin	KEYWORD2
+end	KEYWORD2
+isInitialized	KEYWORD2
+
+# Message Transmission
+sendMessage	KEYWORD2
+sendStandardFrame	KEYWORD2
+sendExtendedFrame	KEYWORD2
+
+# Message Reception
+receiveMessage	KEYWORD2
+hasMessage	KEYWORD2
+setReceiveCallback	KEYWORD2
+checkMessages	KEYWORD2
+
+# Message Filtering
+setFilter	KEYWORD2
+setStandardFilter	KEYWORD2
+setExtendedFilter	KEYWORD2
+setRangeFilter	KEYWORD2
+setMultipleFilter	KEYWORD2
+clearFilter	KEYWORD2
+isFilterEnabled	KEYWORD2
+
+# Configuration
+setPins	KEYWORD2
+setSpeed	KEYWORD2
+
+# Status and Diagnostics
+getStatus	KEYWORD2
+printStatus	KEYWORD2
+getErrorCount	KEYWORD2
+
+# Utility Functions
+speedToString	KEYWORD2
+errorToString	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+# CAN Speeds
+CAN_SPEED_125KBPS	LITERAL1
+CAN_SPEED_250KBPS	LITERAL1
+CAN_SPEED_500KBPS	LITERAL1
+CAN_SPEED_1MBPS	LITERAL1
+
+#######################################
+# Data Types (KEYWORD3)
+#######################################
+
+can_speed_t	KEYWORD3
+can_message_t	KEYWORD3
+can_receive_callback_t	KEYWORD3

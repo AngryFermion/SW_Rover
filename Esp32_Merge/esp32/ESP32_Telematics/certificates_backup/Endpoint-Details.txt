@@ -1,0 +1,22 @@
+# AWS IoT Core Configuration
+AWS_IOT_ENDPOINT=abyj343g32dcn-ats.iot.us-east-1.amazonaws.com
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=ASIAXYKJUKEBL3CKABDF
+AWS_SECRET_ACCESS_KEY=GtOjAAXb7zYj/8lU5E82wpWZXg+P6RXnOhJhd770
+# Vehicle Configuration
+VEHICLE_ID=sdv-vehicle-001
+THING_NAME=sdv-vehicle-001
+VEHICLE_MODEL=Tesla Model S
+VEHICLE_VIN=1HGBH41JXMN109186
+
+
+# Certificate Paths (relative to project root)
+AWS_IOT_CERTIFICATE_PATH="./certs/certificate.pem.crt"
+AWS_IOT_PRIVATE_KEY_PATH="./certs/private.pem.key"
+AWS_IOT_ROOT_CA_PATH="./certs/AmazonRootCA1.pem"
+
+# MQTT Configuration
+MQTT_TOPIC_PREFIX=sdv/vehicles
+MQTT_PORT=8883
+MQTT_KEEP_ALIVE=60
+QOS_LEVEL=1
