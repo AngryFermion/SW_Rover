@@ -3,11 +3,13 @@
  */
 
 #include "telematics_manager.h"
+#include <ancit_fota_handler.h>
 #include <ancit_fota_serial_handler.h>
 #include <ancit_mqtt_client.h>
 #include <BT_LOGGER.h>
 #include <ArduinoJson.h>
 #include <esp_task_wdt.h>
+#include "app_config.h"
 
 TelematicsManager telematicsManager;
 
@@ -65,6 +67,15 @@ void TelematicsManager::init() {
 // ============================================================================
 
 void TelematicsManager::update() {
+#if FOTAMATICS_MODE == APP_MODE_BOTH
+    // Pause telematics only while FOTA chunks are downloading — MQTT bandwidth is
+    // needed for chunk ACKs. Once the hex lands on SPIFFS (READY_TO_TRANSMIT),
+    // MQTT and Serial1 are both free so telematics can resume.
+    // Serial1 contention during the bootload flash is handled below by
+    // ancitFotaSerialHandler.isTransmissionInProgress().
+    if (fotaHandler.getState() == FOTA_RECEIVING) return;
+#endif
+
 #ifdef USE_DUMMY_DATA
     generateDummyData();
 #else
