@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="S32K144" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_11 http://mcuxpresso.nxp.com/XSD/mex_configuration_11.xsd" uuid="8db2fde4-1292-4d9a-8988-377fce53276e" version="11" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="S32K144" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_15 http://mcuxpresso.nxp.com/XSD/mex_configuration_15.xsd" uuid="8db2fde4-1292-4d9a-8988-377fce53276e" version="15" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_15" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>S32K144</processor>
       <package>S32K144_LQFP100</package>
@@ -17,7 +17,7 @@
       <generate_registers_defines>false</generate_registers_defines>
    </preferences>
    <tools>
-      <pins name="Pins" version="11.0" enabled="true" update_project_code="true">
+      <pins name="Pins" version="15.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/pin_mux.c" update_enabled="true"/>
             <file path="board/pin_mux.h" update_enabled="true"/>
@@ -45,7 +45,7 @@
             </function>
          </functions_list>
       </pins>
-      <clocks name="Clocks" version="9.0" enabled="true" update_project_code="true">
+      <clocks name="Clocks" version="13.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/clock_config.c" update_enabled="true"/>
             <file path="board/clock_config.h" update_enabled="true"/>
@@ -223,46 +223,56 @@
             <processor_version>N/A</processor_version>
          </efuse_profile>
       </efuse>
-      <periphs name="Peripherals" version="11.0" enabled="true" update_project_code="true">
+      <gtm name="GTM" version="1.0" enabled="false" update_project_code="true">
+         <gtm_profile>
+            <processor_version>N/A</processor_version>
+         </gtm_profile>
+      </gtm>
+      <periphs name="Peripherals" version="14.0" enabled="true" update_project_code="true">
          <dependencies>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.lpuart" description="LPUART Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.lpuart" description="LPUART Driver is not found in the toolchain/IDE project. The project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data type="Boolean">true</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.lpuart" description="Unsupported version of the LPUART Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.lpuart" description="An unsupported version of the LPUART Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. The project might not compile correctly." problem_level="1" source="Peripherals">
                <feature name="version" evaluation="equivalent">
                   <data type="Version">1.0.0</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.osif" description="OSIF driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.osif" description="OSIF driver is not found in the toolchain/IDE project. The project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data type="Boolean">true</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.osif" description="Unsupported version of the OSIF driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.osif" description="An unsupported version of the OSIF driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. The project might not compile correctly." problem_level="1" source="Peripherals">
                <feature name="version" evaluation="equivalent">
                   <data type="Version">1.0.0</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.flash" description="FLASH Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.flash" description="FLASH Driver is not found in the toolchain/IDE project. The project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data type="Boolean">true</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.flash" description="Unsupported version of the FLASH Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.flash" description="An unsupported version of the FLASH Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. The project might not compile correctly." problem_level="1" source="Peripherals">
                <feature name="version" evaluation="equivalent">
                   <data type="Version">1.0.0</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.lpit" description="LPIT Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.lpit" description="LPIT Driver is not found in the toolchain/IDE project. The project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data type="Boolean">true</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.driver.lpit" description="Unsupported version of the LPIT Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.driver.lpit" description="An unsupported version of the LPIT Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. The project might not compile correctly." problem_level="1" source="Peripherals">
                <feature name="version" evaluation="equivalent">
                   <data type="Version">1.0.0</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="Tool" resourceId="Clocks" description="The Clocks tool is required by the Peripherals tool, but it is disabled." problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data>true</data>
                </feature>
             </dependency>
          </dependencies>
