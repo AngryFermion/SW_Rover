@@ -63,12 +63,13 @@ genx_global_init();
 
 
 void Task_While(void){
-	ggenx.Distance = genx_ultrason_get_distance_cm();
+
 }
 void Task_1ms(void) {
+	ggenx.Distance = genx_ultrason_get_distance_cm();
 
-#ifdef ADAS_USECASE_CONFIGURED
-if(mode == 4 && state == 1){
+//#ifdef ADAS_USECASE_CONFIGURED
+//if(mode == 4 && state == 1){
 	ANCIT_App_PreStep();
 	ACC_step();
 	ANCIT_App_PostStep();
@@ -76,15 +77,16 @@ if(mode == 4 && state == 1){
 	genx_PWM_LBM_updateDutyCycle(100 - ggenx.PWM);
 	genx_PWM_RFM_updateDutyCycle(100);
 	genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
-}
-#endif
+//}
+//#endif
+
 
 }
 
 void Task_10ms(void) {
 
-
 /*
+
 ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
 sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
 ggenx.PWM = pwm;

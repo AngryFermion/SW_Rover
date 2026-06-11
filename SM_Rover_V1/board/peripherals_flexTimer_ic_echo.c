@@ -55,7 +55,7 @@ instance:
         - arrayicConfig:
           - 0:
             - configName: 'flexTimer_ic_echo_ChannelConfig0'
-            - hwID: '6'
+            - hwID: '2'
             - operationMode: 'FTM_SIGNAL_MEASUREMENT'
             - edgeDetectMode: 'FTM_RISING_EDGE'
             - measureMode: 'FTM_PERIOD_ON_MEASUREMENT'
@@ -116,7 +116,7 @@ extern void callback_echo_received(ic_event_t event, void *userData);
 ftm_input_ch_param_t flexTimer_ic_echo_InputCaptureChannelConfig[1] =
 {
     {
-        6U, /* Channel id */
+        2U, /* Channel id */
         FTM_SIGNAL_MEASUREMENT, /* Input capture operation mode */
         FTM_RISING_EDGE, /* Edge alignment mode */
         FTM_PERIOD_ON_MEASUREMENT, /* Signal measurement operation type */
