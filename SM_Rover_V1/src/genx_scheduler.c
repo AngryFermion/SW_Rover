@@ -84,7 +84,7 @@ if(mode == 4 && state == 1){
 void Task_10ms(void) {
 
 
-
+/*
 ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
 sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
 ggenx.PWM = pwm;
@@ -124,7 +124,7 @@ else{
 	genx_PWM_LBM_updateDutyCycle(100);
 	genx_PWM_RFM_updateDutyCycle(100);
 	genx_PWM_RBM_updateDutyCycle(100);
-}
+}*/
 
 } 
 

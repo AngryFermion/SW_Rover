@@ -32,8 +32,8 @@ pin_labels:
 - {pin_num: '99', pin_signal: PTA9, label: WIFI_TX}
 - {pin_num: '29', pin_signal: PTC3, label: LPUART0_TX}
 - {pin_num: '30', pin_signal: PTC2, label: LPUART0_RX}
-- {pin_num: '1', pin_signal: PTE16, label: FTM2_OUTPUT_CH7, identifier: FTM2_OUTPUT_CH7}
-- {pin_num: '2', pin_signal: PTE15, label: FTM2_OUTPUT_CH6}
+- {pin_num: '1', pin_signal: PTE16, label: Trigger_2, identifier: FTM2_OUTPUT_CH7}
+- {pin_num: '2', pin_signal: PTE15, label: ECHO_2}
 - {pin_num: '62', pin_signal: PTA17, label: WIFI_RST}
 - {pin_num: '75', pin_signal: PTB10, label: IMU_RST, identifier: IMU_RST}
 - {pin_num: '52', pin_signal: PTC10, label: KL15_MCU}
@@ -48,7 +48,7 @@ pin_labels:
 - {pin_num: '42', pin_signal: PTD8, label: DEBUG_PIN}
 - {pin_num: '32', pin_signal: PTD6, label: SPARE4}
 - {pin_num: '36', pin_signal: PTD10, label: SPARE2}
-- {pin_num: '34', pin_signal: PTD12, label: ECHO}
+- {pin_num: '34', pin_signal: PTD12, label: ECHO_1}
 - {pin_num: '8', pin_signal: PTE5, label: CAN0_TX}
 - {pin_num: '9', pin_signal: PTE4, label: CAN0_RX}
 - {pin_num: '80', pin_signal: PTC7, label: LPUART1_TX}
@@ -56,7 +56,7 @@ pin_labels:
 - {pin_num: '4', pin_signal: PTD0, label: RGB_LED_BLUE, identifier: L_BLUE}
 - {pin_num: '21', pin_signal: PTD16, label: RGB_LED_GREEN}
 - {pin_num: '22', pin_signal: PTD15, label: RGB_LED_RED}
-- {pin_num: '35', pin_signal: PTD11, label: Trigger}
+- {pin_num: '35', pin_signal: PTD11, label: Trigger_1}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -105,6 +105,8 @@ BOARD_InitPins:
   - {pin_num: '55', peripheral: LPUART1, signal: txd, pin_signal: PTC9, direction: OUTPUT}
   - {pin_num: '35', peripheral: PORTD, signal: 'port, 11', pin_signal: PTD11, direction: OUTPUT}
   - {pin_num: '34', peripheral: FTM2, signal: 'ch, 2', pin_signal: PTD12, direction: INPUT}
+  - {pin_num: '2', peripheral: FTM2, signal: 'ch, 6', pin_signal: PTE15, direction: INPUT}
+  - {pin_num: '1', peripheral: PORTE, signal: 'port, 16', pin_signal: PTE16, identifier: '', direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -345,6 +347,34 @@ pin_settings_config_t g_pin_mux_InitConfigArr0[NUM_OF_CONFIGURED_PINS0] = {
         .clearIntFlag    = false,
         .gpioBase        = NULL,
         .digitalFilter   = false,
+    },
+    {
+        .base            = PORTE,
+        .pinPortIdx      = 15U,
+        .pullConfig      = PORT_INTERNAL_PULL_NOT_ENABLED,
+        .driveSelect     = PORT_LOW_DRIVE_STRENGTH,
+        .passiveFilter   = false,
+        .mux             = PORT_MUX_ALT4,
+        .pinLock         = false,
+        .intConfig       = PORT_DMA_INT_DISABLED,
+        .clearIntFlag    = false,
+        .gpioBase        = NULL,
+        .digitalFilter   = false,
+    },
+    {
+        .base            = PORTE,
+        .pinPortIdx      = 16U,
+        .pullConfig      = PORT_INTERNAL_PULL_NOT_ENABLED,
+        .driveSelect     = PORT_LOW_DRIVE_STRENGTH,
+        .passiveFilter   = false,
+        .mux             = PORT_MUX_AS_GPIO,
+        .pinLock         = false,
+        .intConfig       = PORT_DMA_INT_DISABLED,
+        .clearIntFlag    = false,
+        .gpioBase        = PTE,
+        .direction       = GPIO_OUTPUT_DIRECTION,
+        .digitalFilter   = false,
+        .initValue       = 0U,
     },
     {
         .base            = PORTE,
