@@ -63,8 +63,8 @@ genx_global_init();
 
 
 void Task_While(void){
-	ggenx.Distance = genx_ultrason_get_distance_cm();
-
+	  float dist = genx_ultrason_get_distance_cm();
+	  ggenx.Distance = (dist > 0.0f) ? (uint8_t)dist : 255U;
 }
 void Task_1ms(void) {
 #ifdef ADAS_USECASE_CONFIGURED

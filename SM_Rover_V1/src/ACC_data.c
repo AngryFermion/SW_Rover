@@ -75,17 +75,17 @@ P_ACC_T ACC_P = {
   /* Expression: 12
    * Referenced by: '<Root>/Tg'
    */
-  20.0,
+  0.0,
 
   /* Expression: 5
    * Referenced by: '<Root>/Rate Limiter'
    */
-  5.0,
+  0.5,
 
   /* Expression: -8
    * Referenced by: '<Root>/Rate Limiter'
    */
-  -8.0,
+  -20.0,
 
   /* Expression: 0
    * Referenced by: '<Root>/Rate Limiter'

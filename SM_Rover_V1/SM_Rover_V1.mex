@@ -174,6 +174,12 @@
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
+                  <pin peripheral="LPUART0" signal="rxd" pin_num="54" pin_signal="PTB0"/>
+                  <pin peripheral="LPUART0" signal="txd" pin_num="53" pin_signal="PTB1">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
                </pins>
             </function>
          </functions_list>
@@ -580,7 +586,7 @@
                         </struct>
                      </config_set>
                   </instance>
-                  <instance name="lpuart_1" uuid="22f7bedc-206c-4a23-9796-7af318a1424b" type="lpuart_config" type_id="lpuart" mode="general" peripheral="LPUART_1" enabled="true" comment="" custom_name_enabled="true" editing_lock="false" from_use_case="NS_lpuart">
+                  <instance name="lpuart_1" uuid="22f7bedc-206c-4a23-9796-7af318a1424b" type="lpuart_config" type_id="lpuart" mode="general" peripheral="LPUART_0" enabled="true" comment="" custom_name_enabled="true" editing_lock="false" from_use_case="NS_lpuart">
                      <config_set name="lpuart_driver">
                         <setting name="lpuart_state_name" value="lpUartState0"/>
                         <array name="lpuart_configuration">

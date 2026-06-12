@@ -30,7 +30,7 @@ extern "C" {
 #define FTM2_OUTPUT_CH7_PORT    PTE
 #define FTM2_OUTPUT_CH7_PIN     16U
 /*! @brief User number of configured pins */
-#define NUM_OF_CONFIGURED_PINS0 21
+#define NUM_OF_CONFIGURED_PINS0 23
 /*! @brief User configuration structure */
 extern pin_settings_config_t g_pin_mux_InitConfigArr0[NUM_OF_CONFIGURED_PINS0];
 
