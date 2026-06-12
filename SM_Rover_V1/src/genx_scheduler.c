@@ -64,9 +64,9 @@ genx_global_init();
 
 void Task_While(void){
 	ggenx.Distance = genx_ultrason_get_distance_cm();
+
 }
 void Task_1ms(void) {
-
 #ifdef ADAS_USECASE_CONFIGURED
 if(mode == 4 && state == 1){
 	ANCIT_App_PreStep();
@@ -79,15 +79,14 @@ if(mode == 4 && state == 1){
 }
 #endif
 
+
 }
 
 void Task_10ms(void) {
 
-
-
 ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
 sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
-ggenx.PWM = pwm;
+//ggenx.PWM = pwm;
 if(state == 1){
 	if(mode ==1 || mode == 2){
 		ancit_smartkit_dc();

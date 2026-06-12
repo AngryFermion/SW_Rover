@@ -22,11 +22,11 @@
 #include <stdbool.h>
 
 /* Pin definitions - Trigger on PTB9, Echo on PTB8 (FTM3_CH0) */
-#define US_TRIGGER_PORT     PTD
-#define US_TRIGGER_PIN      11U
+#define US_TRIGGER_PORT     PTE
+#define US_TRIGGER_PIN      16U
 
 #define US_ECHO_FTM_INSTANCE    INST_FLEXTIMER_IC_ECHO  /* FTM3 = instance 3 */
-#define US_ECHO_FTM_CHANNEL     2U                       /* CH0 on PTB8 */
+#define US_ECHO_FTM_CHANNEL     6U                       /* CH0 on PTB8 */
 
 /* Timing constants */
 #define US_TRIGGER_DURATION_US  20U     /* HC-SR04 requires minimum 10us trigger pulse, using 15us for safety margin */

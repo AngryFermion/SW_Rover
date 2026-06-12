@@ -33,12 +33,13 @@ void ancit_uart_message_setup(void) {
 	//uartBuffer[len++] = '!';
 	//uartBuffer[len++] = ',';
 
-		len += sprintf(&uartBuffer[len], "obstruction, %d,", ggenx.Distance);
-	    len += sprintf(&uartBuffer[len], "PWM, %d", ggenx.PWM);
+	len += sprintf(&uartBuffer[len], "obstruction,%d\n", ggenx.Distance);
+	len += sprintf(&uartBuffer[len], "PWM,%d", ggenx.PWM);
+	uartBuffer[len++] = '\n';
 
 
 	//uartBuffer[len++] = '\r';
-	uartBuffer[len++] = '\n';
+	//uartBuffer[len++] = '\n';
 
 	ancit_uart_conn_EnqueueString(uartBuffer, len);
 }
