@@ -18,7 +18,7 @@
 // ===== DATA SOURCE =====
 // Uncomment to generate synthetic CAN signals internally (no MCU / UART wiring needed).
 // Comment out to receive real data from the MCU over Serial1.
-// #define USE_DUMMY_DATA
+#define USE_DUMMY_DATA
 
 // Interval between dummy signal emissions (ms) — only used when USE_DUMMY_DATA is defined.
 #define TELEMATICS_DUMMY_INTERVAL_MS   1000
