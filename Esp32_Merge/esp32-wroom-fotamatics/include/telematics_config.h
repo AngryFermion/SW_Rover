@@ -36,7 +36,7 @@
 #define TELEMATICS_TOPIC_CONTROL       "SmartKit/Control"
 
 // ===== DEVICE ID (used in JSON payloads) =====
-#define TELEMATICS_DEVICE_ID  "WROOM_001"
+#define TELEMATICS_DEVICE_ID  "MA3ZZ20G0T1234567"
 
 // ===== JSON BUFFER =====
 #define TELEMATICS_JSON_BUFFER_SIZE  256

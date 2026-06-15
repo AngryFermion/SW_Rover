@@ -1,0 +1,698 @@
+/* ═══════════════════════════════════════════════════════════════
+   SmartWheels Dashboard — style.css
+   Dark automotive theme
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Variables ──────────────────────────────────────────────── */
+:root {
+  --bg:           #080b12;
+  --card-bg:      #0d1120;
+  --card-border:  #1a2035;
+  --track:        #141828;
+  --pill-bg:      #111523;
+
+  --text:         #dde3f5;
+  --text-dim:     #6472a0;
+  --text-muted:   #2e3550;
+
+  --r1:           #2196f3;   /* Rover Alpha — blue */
+  --r2:           #ff6d00;   /* Rover Beta  — orange */
+
+  --green:        #00e676;
+  --amber:        #ffab40;
+  --red:          #ff5252;
+
+  --radius:       12px;
+  --gap:          16px;
+  --font:         -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --mono:         'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 16px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  font-size: 26px;
+  color: var(--r1);
+  line-height: 1;
+}
+
+.header-brand h1 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.brand-sub {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-top: 2px;
+}
+
+/* Architecture pill strip */
+.arch-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  background: var(--pill-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.pill-hw {
+  color: var(--r1);
+  border-color: rgba(33, 150, 243, 0.35);
+  background: rgba(33, 150, 243, 0.07);
+}
+
+.pill-arrow {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* MQTT status indicator */
+.mqtt-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.mqtt-status.connected .status-dot  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.mqtt-status.offline .status-dot    { background: var(--amber); }
+.mqtt-status.error .status-dot      { background: var(--red); }
+.mqtt-status.connected .status-text { color: var(--green); }
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.rover-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  max-width: 1200px;
+  margin: 20px auto 0;
+  padding: 0 var(--gap);
+}
+
+.panel-section {
+  max-width: 1200px;
+  margin: var(--gap) auto 0;
+  padding: 0 var(--gap);
+}
+
+/* ── Rover Card ─────────────────────────────────────────────── */
+.rover-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  transition: border-color 0.4s;
+}
+
+.rover-card:nth-child(1) { border-top: 3px solid var(--r1); }
+.rover-card:nth-child(2) { border-top: 3px solid var(--r2); }
+
+.rover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rover-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.rover-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.rover-1 { color: var(--r1); }
+.rover-2 { color: var(--r2); }
+
+.mode-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(107, 114, 160, 0.18);
+  color: var(--text-dim);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+
+.mode-badge.live {
+  background: rgba(0, 230, 118, 0.14);
+  color: var(--green);
+}
+
+.mode-badge.waiting {
+  background: rgba(255, 171, 64, 0.14);
+  color: var(--amber);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* View toggle button (Full ↔ Simple) */
+.view-toggle-btn {
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--card-border);
+  color: var(--text-dim);
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+
+.view-toggle-btn:hover {
+  background: rgba(255,255,255,0.09);
+  color: var(--text);
+  border-color: #2a3050;
+}
+
+/* Simple view: hide extra signal rows (RPM, Throttle, Brake, Steering) */
+.rover-card.simple-view .sig-extra {
+  display: none;
+}
+
+/* Health indicator */
+.rover-health {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.health-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+.health-dot.online  { background: var(--green); box-shadow: 0 0 8px rgba(0,230,118,0.5); animation: pulse-green 2.5s ease-in-out infinite; }
+.health-dot.warn    { background: var(--amber);  box-shadow: 0 0 6px rgba(255,171,64,0.5); }
+.health-dot.offline { background: var(--red); }
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 5px rgba(0,230,118,0.35); }
+  50%       { box-shadow: 0 0 12px rgba(0,230,118,0.75); }
+}
+
+.health-label {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* VIN row */
+.vin-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+}
+
+.vin-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.vin-value {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+  flex: 1;
+  letter-spacing: 0.6px;
+}
+
+.vin-beat {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* ── Rover Body ─────────────────────────────────────────────── */
+.rover-body {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+/* ── Speed Gauge ────────────────────────────────────────────── */
+.gauge-wrap {
+  flex-shrink: 0;
+  width: 165px;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.gauge-track {
+  fill: none;
+  stroke: var(--track);
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+
+.gauge-arc {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+  transition: stroke 0.3s;
+}
+
+.rover-1-stroke { stroke: var(--r1); }
+.rover-2-stroke { stroke: var(--r2); }
+
+.gauge-number {
+  fill: var(--text);
+  font-size: 38px;
+  font-weight: 800;
+  text-anchor: middle;
+  font-family: var(--font);
+  letter-spacing: -1.5px;
+}
+
+.gauge-unit {
+  fill: var(--text-dim);
+  font-size: 10.5px;
+  text-anchor: middle;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.gauge-sublabel {
+  fill: var(--text-muted);
+  font-size: 9.5px;
+  text-anchor: middle;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+/* ── Signal bars ────────────────────────────────────────────── */
+.signals-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.signal-row {
+  display: grid;
+  grid-template-columns: 62px 1fr 56px;
+  align-items: center;
+  gap: 8px;
+}
+
+.sig-name {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.sig-bar-wrap {
+  height: 5px;
+  background: var(--track);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sig-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: var(--r1);
+  transition: width 0.25s ease-out, background-color 0.3s;
+}
+
+.rover-1-bar { background: var(--r1); }
+.rover-2-bar { background: var(--r2); }
+.brake-bar   { background: var(--red); }
+
+.sig-val {
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 600;
+  font-family: var(--mono);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── ACC row ────────────────────────────────────────────────── */
+.acc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.acc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  background: rgba(0,230,118,0.10);
+  color: var(--green);
+  border: 1px solid rgba(0,230,118,0.22);
+  transition: all 0.3s;
+}
+
+.acc-badge.braking {
+  background: rgba(255,82,82,0.10);
+  color: var(--red);
+  border-color: rgba(255,82,82,0.22);
+}
+
+.acc-badge.adaptive {
+  background: rgba(255,171,64,0.10);
+  color: var(--amber);
+  border-color: rgba(255,171,64,0.22);
+}
+
+.acc-icon { font-size: 9px; }
+
+.fw-info { display: flex; align-items: center; gap: 6px; }
+
+.fw-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.fw-ver {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--text-dim);
+}
+
+/* ── Section card ───────────────────────────────────────────── */
+.section-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.section-icon { font-size: 14px; }
+
+.section-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+}
+
+/* ── FOTA Controls ──────────────────────────────────────────── */
+.fota-ctrl-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ctrl-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.ctrl-select {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  font-size: 12.5px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  min-width: 200px;
+  outline: none;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: border-color 0.2s;
+}
+
+.ctrl-select:focus { border-color: var(--r1); }
+
+.fota-btn {
+  padding: 8px 18px;
+  background: var(--r1);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: background 0.2s, transform 0.1s, opacity 0.2s;
+  white-space: nowrap;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fota-btn:hover:not(:disabled)  { background: #42a5f5; }
+.fota-btn:active:not(:disabled) { transform: scale(0.97); }
+.fota-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Progress bar */
+.fota-progress-wrap { margin-bottom: 12px; }
+
+.fota-bar-bg {
+  height: 4px;
+  background: var(--track);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.fota-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--r1), var(--green));
+  border-radius: 2px;
+  transition: width 0.5s ease-out;
+}
+
+.fota-progress-lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* Log terminal */
+.fota-log {
+  background: #05070e;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  height: 165px;
+  overflow-y: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.75;
+  color: var(--text-muted);
+  scroll-behavior: smooth;
+}
+
+.log-placeholder { font-style: italic; color: var(--text-muted); }
+.log-upload   { color: #64b5f6; }
+.log-bootload { color: #81c784; }
+.log-error    { color: var(--red); }
+.log-complete { color: var(--green); font-weight: 600; }
+.log-ts       { color: #2a3050; margin-right: 7px; }
+
+/* ── CI/CD Pipeline ─────────────────────────────────────────── */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+}
+
+.pipeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 13px 16px;
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  min-width: 108px;
+  text-align: center;
+  transition: border-color 0.35s, background 0.35s, box-shadow 0.35s;
+  flex-shrink: 0;
+}
+
+.pipeline-stage.active {
+  border-color: var(--r1);
+  background: rgba(33,150,243,0.07);
+  box-shadow: 0 0 14px rgba(33,150,243,0.18);
+}
+
+.pipeline-stage.done {
+  border-color: rgba(0,230,118,0.38);
+  background: rgba(0,230,118,0.05);
+}
+
+.pipeline-stage.failed {
+  border-color: rgba(255,82,82,0.38);
+  background: rgba(255,82,82,0.05);
+}
+
+.stage-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.pipeline-stage.active .stage-icon { animation: pop-in 0.4s ease; }
+
+@keyframes pop-in {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.stage-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.1px;
+}
+
+.stage-sub {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  letter-spacing: 0.1px;
+}
+
+.stage-status {
+  font-size: 13px;
+  min-height: 16px;
+  line-height: 16px;
+}
+
+.pipeline-stage.done   .stage-status { color: var(--green); }
+.pipeline-stage.failed .stage-status { color: var(--red); }
+
+.pipeline-arrow {
+  font-size: 15px;
+  color: var(--text-muted);
+  padding: 0 3px;
+  flex-shrink: 0;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 5px; height: 5px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--card-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a3050; }

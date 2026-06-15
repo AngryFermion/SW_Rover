@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartWheels — Autonomous Fleet Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══ HEADER ═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-brand">
+    <div class="brand-icon">⬡</div>
+    <div>
+      <h1>SmartWheels</h1>
+      <p class="brand-sub">Autonomous Fleet · FaaS Platform</p>
+    </div>
+  </div>
+
+  <div class="arch-pills">
+    <span class="pill pill-hw">S32K144</span>
+    <span class="pill-arrow">→</span>
+    <span class="pill">UART</span>
+    <span class="pill-arrow">→</span>
+    <span class="pill pill-hw">ESP32</span>
+    <span class="pill-arrow">→</span>
+    <span class="pill">MQTT</span>
+    <span class="pill-arrow">→</span>
+    <span class="pill">Cloud</span>
+  </div>
+
+  <div id="mqtt-status" class="mqtt-status offline">
+    <span class="status-dot"></span>
+    <span class="status-text">Connecting…</span>
+  </div>
+</header>
+
+<!-- ═══ ROVER CARDS ══════════════════════════════════════════════════════════ -->
+<div class="rover-grid">
+
+  <!-- ─── Rover Alpha ─────────────────────────────────────────────────────── -->
+  <div class="rover-card" id="rover-card-1">
+    <div class="rover-header">
+      <div class="rover-title">
+        <span class="rover-name rover-1">Rover Alpha</span>
+        <span class="mode-badge waiting" id="mode-1">WAITING</span>
+        <button class="view-toggle-btn" id="view-btn-1" onclick="toggleView(1)">⊟ Simple</button>
+      </div>
+      <div class="rover-health">
+        <div class="health-dot online" id="health-dot-1"></div>
+        <span class="health-label" id="health-label-1">Initializing…</span>
+      </div>
+    </div>
+
+    <div class="vin-row">
+      <span class="vin-label">VIN</span>
+      <span class="vin-value" id="vin-1">MA3ZZ20G0T1234567</span>
+      <span class="vin-beat" id="vin-beat-1">heartbeat: —</span>
+    </div>
+
+    <div class="rover-body">
+      <!-- Speed gauge -->
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 185" class="gauge-svg" aria-label="Speed gauge Rover Alpha">
+          <!-- Static background arc: -135° → +135° (270° sweep), CX=100 CY=95 R=72 -->
+          <path class="gauge-track" d="M 49.09 145.91 A 72 72 0 1 1 150.91 145.91"/>
+          <!-- Dynamic value arc (updated by JS) -->
+          <path id="gauge-val-1" class="gauge-arc rover-1-stroke" d=""/>
+          <!-- Tick marks (injected by JS) -->
+          <g id="ticks-1"></g>
+          <!-- Readout -->
+          <text id="speed-num-1" x="100" y="118" class="gauge-number">0</text>
+          <text x="100" y="137" class="gauge-unit">km/h</text>
+          <text x="100" y="153" class="gauge-sublabel">SPEED</text>
+        </svg>
+      </div>
+
+      <!-- Signal bars -->
+      <div class="signals-panel">
+        <div class="signal-row">
+          <span class="sig-name">Distance</span>
+          <div class="sig-bar-wrap"><div class="sig-bar" id="dist-bar-1" style="background:#00e676"></div></div>
+          <span class="sig-val" id="dist-val-1">— cm</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">RPM</span>
+          <div class="sig-bar-wrap"><div class="sig-bar rover-1-bar" id="rpm-bar-1"></div></div>
+          <span class="sig-val" id="rpm-val-1">—</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">Throttle</span>
+          <div class="sig-bar-wrap"><div class="sig-bar rover-1-bar" id="thr-bar-1"></div></div>
+          <span class="sig-val" id="thr-val-1">— %</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">Brake</span>
+          <div class="sig-bar-wrap"><div class="sig-bar brake-bar" id="brk-bar-1"></div></div>
+          <span class="sig-val" id="brk-val-1">— %</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">Steering</span>
+          <div class="sig-bar-wrap"><div class="sig-bar rover-1-bar" id="str-bar-1"></div></div>
+          <span class="sig-val" id="str-val-1">— °</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-row">
+      <div class="acc-badge" id="acc-badge-1">
+        <span class="acc-icon">◉</span>
+        <span id="acc-text-1">ACC CRUISE</span>
+      </div>
+      <div class="fw-info">
+        <span class="fw-label">FW</span>
+        <span class="fw-ver" id="fw-ver-1">v1.2.0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Rover Beta ──────────────────────────────────────────────────────── -->
+  <div class="rover-card" id="rover-card-2">
+    <div class="rover-header">
+      <div class="rover-title">
+        <span class="rover-name rover-2">Rover Beta</span>
+        <span class="mode-badge" id="mode-2">DEMO</span>
+        <button class="view-toggle-btn" id="view-btn-2" onclick="toggleView(2)">⊟ Simple</button>
+      </div>
+      <div class="rover-health">
+        <div class="health-dot online" id="health-dot-2"></div>
+        <span class="health-label" id="health-label-2">Initializing…</span>
+      </div>
+    </div>
+
+    <div class="vin-row">
+      <span class="vin-label">VIN</span>
+      <span class="vin-value" id="vin-2">WROOM_002</span>
+      <span class="vin-beat" id="vin-beat-2">heartbeat: —</span>
+    </div>
+
+    <div class="rover-body">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 185" class="gauge-svg" aria-label="Speed gauge Rover Beta">
+          <path class="gauge-track" d="M 49.09 145.91 A 72 72 0 1 1 150.91 145.91"/>
+          <path id="gauge-val-2" class="gauge-arc rover-2-stroke" d=""/>
+          <g id="ticks-2"></g>
+          <text id="speed-num-2" x="100" y="118" class="gauge-number">0</text>
+          <text x="100" y="137" class="gauge-unit">km/h</text>
+          <text x="100" y="153" class="gauge-sublabel">SPEED</text>
+        </svg>
+      </div>
+
+      <div class="signals-panel">
+        <div class="signal-row">
+          <span class="sig-name">Distance</span>
+          <div class="sig-bar-wrap"><div class="sig-bar" id="dist-bar-2" style="background:#00e676"></div></div>
+          <span class="sig-val" id="dist-val-2">— cm</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">RPM</span>
+          <div class="sig-bar-wrap"><div class="sig-bar rover-2-bar" id="rpm-bar-2"></div></div>
+          <span class="sig-val" id="rpm-val-2">—</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">Throttle</span>
+          <div class="sig-bar-wrap"><div class="sig-bar rover-2-bar" id="thr-bar-2"></div></div>
+          <span class="sig-val" id="thr-val-2">— %</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">Brake</span>
+          <div class="sig-bar-wrap"><div class="sig-bar brake-bar" id="brk-bar-2"></div></div>
+          <span class="sig-val" id="brk-val-2">— %</span>
+        </div>
+        <div class="signal-row sig-extra">
+          <span class="sig-name">Steering</span>
+          <div class="sig-bar-wrap"><div class="sig-bar rover-2-bar" id="str-bar-2"></div></div>
+          <span class="sig-val" id="str-val-2">— °</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-row">
+      <div class="acc-badge" id="acc-badge-2">
+        <span class="acc-icon">◉</span>
+        <span id="acc-text-2">ACC CRUISE</span>
+      </div>
+      <div class="fw-info">
+        <span class="fw-label">FW</span>
+        <span class="fw-ver" id="fw-ver-2">v1.1.0</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /rover-grid -->
+
+<!-- ═══ FOTA PANEL ═══════════════════════════════════════════════════════════ -->
+<section class="panel-section">
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title"><span class="section-icon">⬆</span> Firmware Over-The-Air Update</h2>
+      <span class="section-sub">FaaS · S32K144 UART Bootloader triggered via ESP32 MQTT</span>
+    </div>
+
+    <div class="fota-ctrl-row">
+      <div class="ctrl-group">
+        <label class="ctrl-label" for="srec-select">Firmware File (.srec)</label>
+        <select id="srec-select" class="ctrl-select">
+          <option value="">Loading…</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <label class="ctrl-label" for="target-select">Target VIN</label>
+        <select id="target-select" class="ctrl-select">
+          <option value="MA3ZZ20G0T1234567">MA3ZZ20G0T1234567 — Rover Alpha</option>
+          <option value="WROOM_002">WROOM_002 — Rover Beta</option>
+        </select>
+      </div>
+      <button id="fota-btn" class="fota-btn" onclick="triggerFota()">
+        ⬆&nbsp; Trigger FOTA
+      </button>
+    </div>
+
+    <div id="fota-progress-wrap" class="fota-progress-wrap" style="display:none">
+      <div class="fota-bar-bg">
+        <div class="fota-bar-fill" id="fota-bar"></div>
+      </div>
+      <span class="fota-progress-lbl" id="fota-progress-lbl">Preparing…</span>
+    </div>
+
+    <div class="fota-log" id="fota-log">
+      <span class="log-placeholder">FOTA log will appear here — start server.py and trigger FOTA above.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CI/CD PIPELINE ═══════════════════════════════════════════════════════ -->
+<section class="panel-section">
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title"><span class="section-icon">⬡</span> CI/CD Pipeline — GitLab → Fleet FOTA</h2>
+      <span class="section-sub">Automated firmware delivery · Click "Trigger FOTA" to animate</span>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-stage" id="stage-0">
+        <div class="stage-icon">📦</div>
+        <div class="stage-name">git push</div>
+        <div class="stage-sub">GitLab trigger</div>
+        <div class="stage-status" id="ss-0"></div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+
+      <div class="pipeline-stage" id="stage-1">
+        <div class="stage-icon">🔨</div>
+        <div class="stage-name">Build</div>
+        <div class="stage-sub">Compile .srec</div>
+        <div class="stage-status" id="ss-1"></div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+
+      <div class="pipeline-stage" id="stage-2">
+        <div class="stage-icon">🔒</div>
+        <div class="stage-name">Sign</div>
+        <div class="stage-sub">Binary signing</div>
+        <div class="stage-status" id="ss-2"></div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+
+      <div class="pipeline-stage" id="stage-3">
+        <div class="stage-icon">☁️</div>
+        <div class="stage-name">Upload</div>
+        <div class="stage-sub">publish_srec.py</div>
+        <div class="stage-status" id="ss-3"></div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+
+      <div class="pipeline-stage" id="stage-4">
+        <div class="stage-icon">📡</div>
+        <div class="stage-name">Flash</div>
+        <div class="stage-sub">bootload_publisher</div>
+        <div class="stage-status" id="ss-4"></div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+
+      <div class="pipeline-stage" id="stage-5">
+        <div class="stage-icon">✅</div>
+        <div class="stage-name">Verify</div>
+        <div class="stage-sub">VIN ACK · Health</div>
+        <div class="stage-status" id="ss-5"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
