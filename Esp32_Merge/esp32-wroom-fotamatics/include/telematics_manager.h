@@ -42,7 +42,7 @@ private:
 #ifdef USE_DUMMY_DATA
     unsigned long lastDummyPublish;
     int           dummySignalIdx;
-    long          dummyValues[5];
+    long          dummyValues[6];
 
     void generateDummyData();
 #endif

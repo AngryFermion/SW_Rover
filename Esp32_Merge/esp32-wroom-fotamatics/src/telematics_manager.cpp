@@ -18,11 +18,11 @@ TelematicsManager telematicsManager;
 // ============================================================================
 #ifdef USE_DUMMY_DATA
 
-static const char* DUMMY_NAMES[]  = {"Speed", "ENGINE_RPM", "THROTTLE", "BRAKE", "STEERING_ANGLE"};
-static const long  DUMMY_MIN[]    = {0,    800,  0,   0, -90};
-static const long  DUMMY_MAX[]    = {120, 6000, 100, 100,  90};
-static const long  DUMMY_STEP[]   = {5,    200,   5,   10,  15};
-static const int   DUMMY_COUNT    = 5;
+static const char* DUMMY_NAMES[]  = {"Speed", "ENGINE_RPM", "THROTTLE", "BRAKE", "STEERING_ANGLE", "Distance"};
+static const long  DUMMY_MIN[]    = {0,    800,  0,   0, -90,  20};
+static const long  DUMMY_MAX[]    = {120, 6000, 100, 100,  90, 400};
+static const long  DUMMY_STEP[]   = {5,    200,   5,   10,  15,  20};
+static const int   DUMMY_COUNT    = 6;
 
 #endif // USE_DUMMY_DATA
 
