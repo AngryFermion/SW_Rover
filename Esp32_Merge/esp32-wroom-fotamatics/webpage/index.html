@@ -203,10 +203,13 @@
 
     <div class="fota-ctrl-row">
       <div class="ctrl-group">
-        <label class="ctrl-label" for="srec-select">Firmware File (.srec)</label>
-        <select id="srec-select" class="ctrl-select">
-          <option value="">Loading…</option>
-        </select>
+        <label class="ctrl-label" for="version-select">Firmware Version</label>
+        <div class="ctrl-version-row">
+          <select id="version-select" class="ctrl-select">
+            <option value="">Loading releases…</option>
+          </select>
+          <button class="ctrl-refresh-btn" onclick="loadReleases()" title="Refresh releases">↻</button>
+        </div>
       </div>
       <div class="ctrl-group">
         <label class="ctrl-label" for="target-select">Target VIN</label>

@@ -384,37 +384,83 @@ function runPipeline(uploadOk, bootOk) {
   })();
 }
 
+// ── Manual version entry (fallback when GitLab listing is unavailable) ────────
+function enableManualVersionEntry() {
+  const wrap = document.querySelector('.ctrl-version-row');
+  if (!wrap) return;
+  wrap.innerHTML = `
+    <input id="version-input" class="ctrl-select" type="text"
+           placeholder="e.g. 1.0.42" style="flex:1"
+           oninput="syncManualVersion(this.value)" />
+    <button class="ctrl-refresh-btn" onclick="loadReleases()" title="Retry GitLab">↻</button>`;
+  // Keep version-select in sync so triggerFota can still read it
+  const hidden = document.createElement('select');
+  hidden.id    = 'version-select';
+  hidden.style.display = 'none';
+  wrap.appendChild(hidden);
+  logFota('Enter the version manually (e.g. 1.0.42) — listing unavailable.', 'error');
+}
+
+function syncManualVersion(val) {
+  const sel = document.getElementById('version-select');
+  if (!sel) return;
+  sel.innerHTML = '';
+  if (val.trim()) {
+    const opt = document.createElement('option');
+    opt.value = JSON.stringify({
+      source: 'gitlab', version: val.trim(),
+      package_name: 'smartwheels-s32k144-sm-rover'
+    });
+    opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
 // ── FOTA trigger ──────────────────────────────────────────────────────────────
 let fotaBusy = false;
 
 async function triggerFota() {
   if (fotaBusy) return;
 
-  const srecSel  = document.getElementById('srec-select');
-  const srecPath = srecSel.value;
-  if (!srecPath) { logFota('No .srec file selected.', 'error'); return; }
+  const verSel  = document.getElementById('version-select');
+  const verRaw  = verSel.value;
+  if (!verRaw) { logFota('No firmware version selected.', 'error'); return; }
 
+  const release   = JSON.parse(verRaw);
+  const targetVin = document.getElementById('target-select').value;
   const btn       = document.getElementById('fota-btn');
   const progWrap  = document.getElementById('fota-progress-wrap');
   const progBar   = document.getElementById('fota-bar');
   const progLbl   = document.getElementById('fota-progress-lbl');
-  const targetVin = document.getElementById('target-select').value;
 
   fotaBusy = true;
   btn.disabled = true;
   progWrap.style.display = 'block';
   progBar.style.width = '5%';
   progLbl.textContent = 'Starting FOTA…';
-  logFota(`Targeting ${targetVin} | ${srecPath.split(/[\\/]/).pop()}`, '');
+  logFota(`Target VIN: ${targetVin}  |  Version: ${release.version}`, '');
 
-  // Trigger via server.py
+  // Route: GitLab release → /api/deploy; local file → /api/fota/trigger (legacy)
   let ok = false;
   try {
-    const resp = await fetch('/api/fota/trigger', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ srec_path: srecPath })
-    });
+    let resp;
+    if (release.source === 'gitlab') {
+      resp = await fetch('/api/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vin:          targetVin,
+          package_name: release.package_name || 'smartwheels-s32k144-sm-rover',
+          version:      release.version
+        })
+      });
+    } else {
+      resp = await fetch('/api/fota/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ srec_path: release.path })
+      });
+    }
     const json = await resp.json();
     if (json.error) throw new Error(json.error);
     ok = true;
@@ -491,26 +537,60 @@ async function triggerFota() {
   };
 }
 
-// ── SREC file list ────────────────────────────────────────────────────────────
-async function loadSrecList() {
-  const sel = document.getElementById('srec-select');
+// ── Firmware release list (GitLab Package Registry or local fallback) ─────────
+async function loadReleases() {
+  const sel = document.getElementById('version-select');
+  sel.innerHTML = '<option value="">Loading…</option>';
+  let resp;
   try {
-    const resp = await fetch('/api/srec/list');
-    const files = await resp.json();
-    sel.innerHTML = '';
-    if (files.length === 0) {
-      sel.innerHTML = '<option value="">No .srec files found in temp/</option>';
-    } else {
-      files.forEach(f => {
-        const opt = document.createElement('option');
-        opt.value       = f.path;
-        opt.textContent = `${f.name}  (${(f.size / 1024).toFixed(1)} KB)`;
-        sel.appendChild(opt);
-      });
-    }
+    resp = await fetch('/api/releases');
   } catch (_) {
     sel.innerHTML = '<option value="">server.py not running</option>';
-    logFota('server.py not detected — start it with:  python server.py', 'error');
+    logFota('Cannot reach server.py — open http://localhost:5000 (not file://)', 'error');
+    logFota('Then run:  python webpage/server.py', 'error');
+    return;
+  }
+
+  try {
+    const data = await resp.json();
+
+    if (data.error) {
+      logFota(`GitLab API error: ${data.error}`, 'error');
+      if (data.url_tried) logFota(`URL tried: ${data.url_tried}`, 'error');
+      if (data.hint)      logFota(`Hint: ${data.hint}`, 'error');
+      if (data.manual_entry) {
+        enableManualVersionEntry();
+      } else {
+        sel.innerHTML = '<option value="">GitLab error — see log</option>';
+      }
+      return;
+    }
+
+    const list = data.releases || [];
+    sel.innerHTML = '';
+
+    if (list.length === 0) {
+      sel.innerHTML = `<option value="">No releases found${data.source === 'local' ? ' in temp/' : ''}</option>`;
+      if (data.warning) logFota(data.warning, 'error');
+      return;
+    }
+
+    list.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = JSON.stringify(r);
+      if (r.source === 'local') {
+        opt.textContent = `${r.version}  (${(r.size / 1024).toFixed(1)} KB)  [local]`;
+      } else {
+        const date = r.created_at ? r.created_at.slice(0, 10) : '';
+        opt.textContent = `${r.version}  ·  ${date}  [GitLab]`;
+      }
+      sel.appendChild(opt);
+    });
+
+    if (data.warning) logFota(data.warning, 'error');
+  } catch (e) {
+    sel.innerHTML = '<option value="">Parse error — see log</option>';
+    logFota(`Unexpected response from server.py: ${e.message}`, 'error');
   }
 }
 
@@ -539,7 +619,7 @@ function init() {
   animLoop();
   setInterval(monitorHealth, 2000);
   connectMqtt();
-  loadSrecList();
+  loadReleases();
 }
 
 document.addEventListener('DOMContentLoaded', init);
