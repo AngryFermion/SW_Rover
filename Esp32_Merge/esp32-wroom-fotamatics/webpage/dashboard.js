@@ -342,9 +342,14 @@ function logFota(msg, cls) {
 
   const ts = new Date().toTimeString().slice(0, 8);
   const line = document.createElement('div');
+  if (cls === 'error') line.classList.add('log-line-error');
   line.innerHTML = `<span class="log-ts">[${ts}]</span><span class="${cls ? 'log-' + cls : ''}">${esc(msg)}</span>`;
   log.appendChild(line);
   log.scrollTop = log.scrollHeight;
+}
+
+function toggleDiagnostics(show) {
+  document.getElementById('fota-log').classList.toggle('hide-errors', !show);
 }
 
 function esc(s) {
@@ -385,24 +390,24 @@ function runPipeline(uploadOk, bootOk) {
 }
 
 // ── Manual version entry (fallback when GitLab listing is unavailable) ────────
-function enableManualVersionEntry() {
-  const wrap = document.querySelector('.ctrl-version-row');
+function enableManualVersionEntry(n) {
+  const wrap = document.getElementById(`version-row-${n}`);
   if (!wrap) return;
+  const roverName = n === 1 ? 'Alpha' : 'Beta';
   wrap.innerHTML = `
-    <input id="version-input" class="ctrl-select" type="text"
+    <input id="version-input-${n}" class="ctrl-select card-fota-select" type="text"
            placeholder="e.g. 1.0.42" style="flex:1"
-           oninput="syncManualVersion(this.value)" />
+           oninput="syncManualVersion(this.value, ${n})" />
     <button class="ctrl-refresh-btn" onclick="loadReleases()" title="Retry GitLab">↻</button>`;
-  // Keep version-select in sync so triggerFota can still read it
   const hidden = document.createElement('select');
-  hidden.id    = 'version-select';
+  hidden.id    = `version-select-${n}`;
   hidden.style.display = 'none';
   wrap.appendChild(hidden);
-  logFota('Enter the version manually (e.g. 1.0.42) — listing unavailable.', 'error');
+  logFota(`Rover ${roverName}: enter version manually (e.g. 1.0.42) — listing unavailable.`, 'error');
 }
 
-function syncManualVersion(val) {
-  const sel = document.getElementById('version-select');
+function syncManualVersion(val, n) {
+  const sel = document.getElementById(`version-select-${n}`);
   if (!sel) return;
   sel.innerHTML = '';
   if (val.trim()) {
@@ -417,28 +422,29 @@ function syncManualVersion(val) {
 }
 
 // ── FOTA trigger ──────────────────────────────────────────────────────────────
-let fotaBusy = false;
+const fotaBusy = { 1: false, 2: false };
 
-async function triggerFota() {
-  if (fotaBusy) return;
+async function triggerFota(n) {
+  if (fotaBusy[n]) return;
 
-  const verSel  = document.getElementById('version-select');
+  const verSel  = document.getElementById(`version-select-${n}`);
   const verRaw  = verSel.value;
   if (!verRaw) { logFota('No firmware version selected.', 'error'); return; }
 
-  const release   = JSON.parse(verRaw);
-  const targetVin = document.getElementById('target-select').value;
-  const btn       = document.getElementById('fota-btn');
-  const progWrap  = document.getElementById('fota-progress-wrap');
-  const progBar   = document.getElementById('fota-bar');
-  const progLbl   = document.getElementById('fota-progress-lbl');
+  const release    = JSON.parse(verRaw);
+  const targetVin  = n === 1 ? VIN_ALPHA : VIN_BETA;
+  const roverName  = n === 1 ? 'Alpha' : 'Beta';
+  const btn        = document.getElementById(`fota-btn-${n}`);
+  const progWrap   = document.getElementById('fota-progress-wrap');
+  const progBar    = document.getElementById('fota-bar');
+  const progLbl    = document.getElementById('fota-progress-lbl');
 
-  fotaBusy = true;
+  fotaBusy[n] = true;
   btn.disabled = true;
   progWrap.style.display = 'block';
   progBar.style.width = '5%';
-  progLbl.textContent = 'Starting FOTA…';
-  logFota(`Target VIN: ${targetVin}  |  Version: ${release.version}`, '');
+  progLbl.textContent = `Starting FOTA → Rover ${roverName}…`;
+  logFota(`── Rover ${roverName} | VIN: ${targetVin}  |  Version: ${release.version} ──`, '');
 
   // Route: GitLab release → /api/deploy; local file → /api/fota/trigger (legacy)
   let ok = false;
@@ -468,7 +474,7 @@ async function triggerFota() {
     logFota(`Cannot reach server.py: ${err.message}`, 'error');
     logFota('Run:  python server.py  in the webpage/ folder, then retry.', 'error');
     progLbl.textContent = 'Error — server.py not running';
-    fotaBusy = false;
+    fotaBusy[n] = false;
     btn.disabled = false;
     return;
   }
@@ -489,10 +495,10 @@ async function triggerFota() {
 
     if (stage === 'done') {
       es.close();
-      fotaBusy = false;
+      fotaBusy[n] = false;
       btn.disabled = false;
       progBar.style.width = '100%';
-      progLbl.textContent = 'Complete ✓';
+      progLbl.textContent = `Rover ${roverName} — Complete ✓`;
       runPipeline(uploadDone, bootDone);
       return;
     }
@@ -520,7 +526,7 @@ async function triggerFota() {
     }
     if (stage === 'error') {
       es.close();
-      fotaBusy = false;
+      fotaBusy[n] = false;
       btn.disabled = false;
       progLbl.textContent = `Error: ${msg}`;
       runPipeline(uploadDone, false);
@@ -528,10 +534,10 @@ async function triggerFota() {
   };
 
   es.onerror = () => {
-    if (fotaBusy) {
+    if (fotaBusy[n]) {
       es.close();
       logFota('SSE stream closed', 'error');
-      fotaBusy = false;
+      fotaBusy[n] = false;
       btn.disabled = false;
     }
   };
@@ -539,13 +545,17 @@ async function triggerFota() {
 
 // ── Firmware release list (GitLab Package Registry or local fallback) ─────────
 async function loadReleases() {
-  const sel = document.getElementById('version-select');
-  sel.innerHTML = '<option value="">Loading…</option>';
+  const sels = [
+    document.getElementById('version-select-1'),
+    document.getElementById('version-select-2')
+  ];
+  sels.forEach(s => { s.innerHTML = '<option value="">Loading…</option>'; });
+
   let resp;
   try {
     resp = await fetch('/api/releases');
   } catch (_) {
-    sel.innerHTML = '<option value="">server.py not running</option>';
+    sels.forEach(s => { s.innerHTML = '<option value="">server.py not running</option>'; });
     logFota('Cannot reach server.py — open http://localhost:5000 (not file://)', 'error');
     logFota('Then run:  python webpage/server.py', 'error');
     return;
@@ -559,37 +569,41 @@ async function loadReleases() {
       if (data.url_tried) logFota(`URL tried: ${data.url_tried}`, 'error');
       if (data.hint)      logFota(`Hint: ${data.hint}`, 'error');
       if (data.manual_entry) {
-        enableManualVersionEntry();
+        enableManualVersionEntry(1);
+        enableManualVersionEntry(2);
       } else {
-        sel.innerHTML = '<option value="">GitLab error — see log</option>';
+        sels.forEach(s => { s.innerHTML = '<option value="">GitLab error — see log</option>'; });
       }
       return;
     }
 
     const list = data.releases || [];
-    sel.innerHTML = '';
 
     if (list.length === 0) {
-      sel.innerHTML = `<option value="">No releases found${data.source === 'local' ? ' in temp/' : ''}</option>`;
+      const msg = `<option value="">No releases found${data.source === 'local' ? ' in temp/' : ''}</option>`;
+      sels.forEach(s => { s.innerHTML = msg; });
       if (data.warning) logFota(data.warning, 'error');
       return;
     }
 
-    list.forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = JSON.stringify(r);
-      if (r.source === 'local') {
-        opt.textContent = `${r.version}  (${(r.size / 1024).toFixed(1)} KB)  [local]`;
-      } else {
-        const date = r.created_at ? r.created_at.slice(0, 10) : '';
-        opt.textContent = `${r.version}  ·  ${date}  [GitLab]`;
-      }
-      sel.appendChild(opt);
+    sels.forEach(sel => {
+      sel.innerHTML = '';
+      list.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify(r);
+        if (r.source === 'local') {
+          opt.textContent = `${r.version}  (${(r.size / 1024).toFixed(1)} KB)  [local]`;
+        } else {
+          const date = r.created_at ? r.created_at.slice(0, 10) : '';
+          opt.textContent = `${r.version}  ·  ${date}  [GitLab]`;
+        }
+        sel.appendChild(opt);
+      });
     });
 
     if (data.warning) logFota(data.warning, 'error');
   } catch (e) {
-    sel.innerHTML = '<option value="">Parse error — see log</option>';
+    sels.forEach(s => { s.innerHTML = '<option value="">Parse error — see log</option>'; });
     logFota(`Unexpected response from server.py: ${e.message}`, 'error');
   }
 }

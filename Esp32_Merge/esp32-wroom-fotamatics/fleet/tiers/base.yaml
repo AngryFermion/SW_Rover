@@ -1,0 +1,18 @@
+tier: base
+description: "Core telematics only — remote visibility with no active features"
+
+features:
+  REMOTE_DIAG:       true    # telemetry over MQTT (always on)
+  OTA:               true    # FOTA / FaaS delivery (always on)
+  ACC:               false
+  SPEED_LIMITER:     false
+  ECO_MODE:          false
+  LANE_KEEP:         false
+  SPORT_MODE:        false
+  PREDICTIVE_BRAKE:  false
+
+compile_flags:
+  - FEATURE_REMOTE_DIAG
+  - FEATURE_OTA
+
+package_suffix: base

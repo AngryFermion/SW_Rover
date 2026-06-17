@@ -1,0 +1,200 @@
+image: ubuntu:22.04
+
+stages:
+  - start
+  - fetch-code
+  - build-ecu
+  - publish-package
+  - end
+
+variables:
+  NXP_K144_RTM: "$CI_PROJECT_DIR/RTM/S32SDK_S32K1XX_RTM_4.0.1"
+  S32DS_ROOT_DIR: "$CI_PROJECT_DIR/GCC"
+
+  PACKAGE_NAME: "smartwheels-s32k144-sm-rover"
+  PACKAGE_VERSION: "1.0.${CI_PIPELINE_IID}"
+  FIRMWARE_FILE: "Image_SM_Rover_V1_padded.srec"
+  PROJECT_BUILD_DIR: "$CI_PROJECT_DIR/NXP_Dev/VT-EU/NXP-Headless/Mini-Reference/SM_Rover_V1-headless"
+  FIRMWARE_DIR: "$CI_PROJECT_DIR/NXP_Dev/VT-EU/NXP-Headless/Mini-Reference/SM_Rover_V1-headless/build/target"
+
+before_script:
+  - apt-get update -y
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y git srecord python3 python3-pip curl unzip wget
+
+# ---------------------- START -----------------------
+Start Job:
+  stage: start
+  script:
+    - echo "========== STARTING CI PIPELINE =========="
+    - echo "Pipeline ID      -> $CI_PIPELINE_ID"
+    - echo "Pipeline IID     -> $CI_PIPELINE_IID"
+    - echo "Commit SHA       -> $CI_COMMIT_SHA"
+    - echo "Commit Short SHA -> $CI_COMMIT_SHORT_SHA"
+    - echo "Branch           -> $CI_COMMIT_REF_NAME"
+    - echo "Package Name     -> $PACKAGE_NAME"
+    - echo "Package Version  -> $PACKAGE_VERSION"
+
+# ---------------------- FETCH CODE -------------------------
+Fetch Code:
+  stage: fetch-code
+  script:
+    # RTM SDK
+    - echo "Downloading RTM Zip files"
+    - wget -O S32SDK_S32K1XX_RTM_4.0.1.zip "https://ancitconsult-my.sharepoint.com/:u:/g/personal/vishnu_ancitconsulting_com/EZriT--7tC5Aj-uPf4JdWd0Bk_7JtrJwIrPVsCU_7nRTvQ?e=STbYVI&download=1"
+    - mkdir -p RTM
+    - unzip -oq S32SDK_S32K1XX_RTM_4.0.1.zip -d RTM
+    - echo "RTM Path -> $NXP_K144_RTM"
+
+    # GCC Toolchain
+    - echo "Downloading NXP GCC 6.3 for Linux"
+    - wget -O gcc-6.3-arm32-eabi.zip "https://ancitconsult-my.sharepoint.com/:u:/g/personal/vishnu_ancitconsulting_com/ES5pl9aVeKpBmmvsXjCWkAwBROBKGvmwtJX-3X7PcawHfw?e=bmlPnE&download=1"
+    - mkdir -p GCC
+    - unzip -oq gcc-6.3-arm32-eabi.zip -d GCC
+    - echo "Path that contains the build tools and GCC -> $S32DS_ROOT_DIR"
+
+    # Git repo clone
+    - mkdir -p NXP_Dev
+    - cd NXP_Dev
+    - git clone -b main https://github.com/AngryFermion/VT-EU.git
+    - ls -lh
+
+  artifacts:
+    paths:
+      - RTM
+      - GCC
+      - NXP_Dev
+    expire_in: 1 week
+
+# ---------------------- BUILD ECU -------------------------
+Build ECU:
+  stage: build-ecu
+  dependencies:
+    - Fetch Code
+  script:
+    - dpkg --add-architecture i386
+    - apt-get update
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y libc6:i386 libstdc++6:i386
+    - echo "32-bit libraries installed"
+
+    - echo "Current directory:"
+    - pwd
+    - ls -lh
+
+    - echo "Entering project build directory"
+    - cd "$PROJECT_BUILD_DIR"
+    - ls -lh
+
+    - mkdir -p build
+    - python3 gl_script_build.py
+
+    - cd build
+    - mkdir -p temp target
+
+    # Align using srecord
+    - echo "Aligning SREC using srec_cat"
+    - srec_cat SM_Rover_V1.srec -Motorola -Output_Block_Size 128 -Output_Block_Packing -address-length=4 -o temp/SM_Rover_V1_temp.srec
+
+    # Pad aligned SREC
+    - cd ..
+    - echo "Padding aligned SREC"
+    - python3 srec_utils.py build/temp/SM_Rover_V1_temp.srec build/target/Image_SM_Rover_V1_padded.srec
+
+    # Generate checksum
+    - echo "Generating SHA256 checksum"
+    - sha256sum build/target/Image_SM_Rover_V1_padded.srec | awk '{print $1}' > build/target/checksum.txt
+
+    # Generate metadata
+    - echo "Generating metadata.json"
+    - |
+      cat > build/target/metadata.json <<EOF
+      {
+        "firmware_name": "smartwheels-s32k144-sm-rover",
+        "version": "${PACKAGE_VERSION}",
+        "target": "S32K144",
+        "board": "S32K144EVB",
+        "application": "SM_Rover_V1",
+        "artifact": "Image_SM_Rover_V1_padded.srec",
+        "checksum_file": "checksum.txt",
+        "package_registry": "GitLab Generic Package Registry",
+        "package_name": "${PACKAGE_NAME}",
+        "pipeline_id": "${CI_PIPELINE_ID}",
+        "pipeline_iid": "${CI_PIPELINE_IID}",
+        "commit_sha": "${CI_COMMIT_SHA}",
+        "commit_short_sha": "${CI_COMMIT_SHORT_SHA}",
+        "branch": "${CI_COMMIT_REF_NAME}",
+        "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+        "status": "ready"
+      }
+      EOF
+
+    - echo "Generated firmware release files:"
+    - ls -lh build/target
+    - echo "metadata.json:"
+    - cat build/target/metadata.json
+    - echo "checksum.txt:"
+    - cat build/target/checksum.txt
+
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/NXP_Dev/VT-EU/NXP-Headless/Mini-Reference/SM_Rover_V1-headless/build/target/Image_SM_Rover_V1_padded.srec"
+      - "$CI_PROJECT_DIR/NXP_Dev/VT-EU/NXP-Headless/Mini-Reference/SM_Rover_V1-headless/build/target/checksum.txt"
+      - "$CI_PROJECT_DIR/NXP_Dev/VT-EU/NXP-Headless/Mini-Reference/SM_Rover_V1-headless/build/target/metadata.json"
+      - "$CI_PROJECT_DIR/NXP_Dev/VT-EU/NXP-Headless/Mini-Reference/SM_Rover_V1-headless/build"
+    expire_in: 1 week
+
+# ---------------------- PUBLISH TO GITLAB PACKAGE REGISTRY -------------------------
+Publish Firmware Package:
+  stage: publish-package
+  dependencies:
+    - Build ECU
+  script:
+    - echo "========== PUBLISHING FIRMWARE TO GITLAB PACKAGE REGISTRY =========="
+    - echo "Package name    -> $PACKAGE_NAME"
+    - echo "Package version -> $PACKAGE_VERSION"
+    - echo "Firmware dir    -> $FIRMWARE_DIR"
+    - echo "Firmware file   -> $FIRMWARE_FILE"
+
+    - echo "Checking firmware release files"
+    - ls -lh "$FIRMWARE_DIR"
+
+    - test -f "$FIRMWARE_DIR/$FIRMWARE_FILE"
+    - test -f "$FIRMWARE_DIR/checksum.txt"
+    - test -f "$FIRMWARE_DIR/metadata.json"
+
+    - echo "Uploading firmware SREC"
+    - |
+      curl --fail --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+        --upload-file "$FIRMWARE_DIR/$FIRMWARE_FILE" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/$PACKAGE_VERSION/$FIRMWARE_FILE"
+
+    - echo "Uploading checksum.txt"
+    - |
+      curl --fail --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+        --upload-file "$FIRMWARE_DIR/checksum.txt" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/$PACKAGE_VERSION/checksum.txt"
+
+    - echo "Uploading metadata.json"
+    - |
+      curl --fail --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+        --upload-file "$FIRMWARE_DIR/metadata.json" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/$PACKAGE_VERSION/metadata.json"
+
+    - echo "========== PACKAGE PUBLISHED SUCCESSFULLY =========="
+    - echo "GitLab Package Registry:"
+    - echo "$CI_PROJECT_URL/-/packages"
+    - echo "Firmware download API path:"
+    - echo "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/$PACKAGE_VERSION/$FIRMWARE_FILE"
+    - echo "Metadata download API path:"
+    - echo "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/$PACKAGE_VERSION/metadata.json"
+    - echo "Checksum download API path:"
+    - echo "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/$PACKAGE_VERSION/checksum.txt"
+
+# ---------------------- END -------------------------
+End Job:
+  stage: end
+  script:
+    - echo "========== CI PIPELINE COMPLETED =========="
+    - echo "Package Name     -> $PACKAGE_NAME"
+    - echo "Package Version  -> $PACKAGE_VERSION"
+    - echo "Firmware File    -> $FIRMWARE_FILE"
+    - echo "Package Registry -> $CI_PROJECT_URL/-/packages"

@@ -1,0 +1,24 @@
+tier: premium
+description: "Full feature set — all active safety, performance, and autonomy features"
+
+features:
+  REMOTE_DIAG:       true
+  OTA:               true
+  ACC:               true
+  SPEED_LIMITER:     true
+  ECO_MODE:          true
+  LANE_KEEP:         true    # lateral correction via steering
+  SPORT_MODE:        true    # high-response throttle + dynamic braking
+  PREDICTIVE_BRAKE:  true    # ultrasonic-triggered pre-charge braking
+
+compile_flags:
+  - FEATURE_REMOTE_DIAG
+  - FEATURE_OTA
+  - FEATURE_ACC
+  - FEATURE_SPEED_LIMITER
+  - FEATURE_ECO_MODE
+  - FEATURE_LANE_KEEP
+  - FEATURE_SPORT_MODE
+  - FEATURE_PREDICTIVE_BRAKE
+
+package_suffix: premium

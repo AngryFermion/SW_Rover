@@ -92,6 +92,11 @@ void TelematicsManager::update() {
 #ifndef USE_DUMMY_DATA
 
 void TelematicsManager::processSerial() {
+    // Process at most ONE complete line per update() tick.
+    // Draining all available bytes in one shot triggers back-to-back
+    // MqttClient_Publish() calls without yielding, starving MqttClient_Loop()
+    // of the mutex and causing the broker to drop the connection.
+    // The 50 ms task delay between ticks keeps the UART buffer clear.
     while (TELEMATICS_SERIAL.available() > 0) {
         char c = TELEMATICS_SERIAL.read();
 
@@ -100,6 +105,7 @@ void TelematicsManager::processSerial() {
                 lineBuffer[lineBufferIdx] = '\0';
                 parseLine(lineBuffer);
                 lineBufferIdx = 0;
+                break;  // yield — next line handled on next tick
             }
         } else if (c == '\r') {
             // skip
@@ -139,9 +145,6 @@ void TelematicsManager::parseLine(const char* line) {
     } else {
         value = strtol(valStr, nullptr, 10);
     }
-
-    g_Logger.Write(LogLevel::Debug, LogCategory::OTHERS, "TelematicsManager",
-                   "UART RX: %s = %ld", signalName, value);
 
     publishCANSignal(signalName, value);
 }

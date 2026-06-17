@@ -1,0 +1,21 @@
+tier: standard
+description: "Active safety features — ACC, speed management, eco driving"
+
+features:
+  REMOTE_DIAG:       true
+  OTA:               true
+  ACC:               true    # adaptive cruise control
+  SPEED_LIMITER:     true    # geofence-based speed cap
+  ECO_MODE:          true    # reduced throttle response profile
+  LANE_KEEP:         false
+  SPORT_MODE:        false
+  PREDICTIVE_BRAKE:  false
+
+compile_flags:
+  - FEATURE_REMOTE_DIAG
+  - FEATURE_OTA
+  - FEATURE_ACC
+  - FEATURE_SPEED_LIMITER
+  - FEATURE_ECO_MODE
+
+package_suffix: standard

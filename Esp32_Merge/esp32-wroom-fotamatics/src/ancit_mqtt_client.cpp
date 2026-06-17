@@ -258,7 +258,9 @@ bool MqttClient_IsConnected() { return mqttClient.connected(); }
 
 void MqttClient_Loop() {
     if (mqttMutex == NULL) return;
-    if (xSemaphoreTake(mqttMutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+    // 200 ms timeout matches MqttClient_Publish — ensures loop() always gets
+    // the mutex even when one publish is in progress (TCP write ~20-30 ms).
+    if (xSemaphoreTake(mqttMutex, pdMS_TO_TICKS(200)) == pdTRUE) {
         if (!mqttClient.connected()) MqttClient_Reconnect();
         mqttClient.loop();
         xSemaphoreGive(mqttMutex);

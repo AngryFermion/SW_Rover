@@ -116,6 +116,16 @@
         <span class="fw-ver" id="fw-ver-1">v1.0.0 (Base Variant)</span>
       </div>
     </div>
+
+    <div class="card-fota-row">
+      <div class="ctrl-version-row" id="version-row-1">
+        <select id="version-select-1" class="ctrl-select card-fota-select">
+          <option value="">Loading releases…</option>
+        </select>
+        <button class="ctrl-refresh-btn" onclick="loadReleases()" title="Refresh releases">↻</button>
+      </div>
+      <button id="fota-btn-1" class="fota-btn" onclick="triggerFota(1)">⬆ FaaS</button>
+    </div>
   </div>
 
   <!-- ─── Rover Beta ──────────────────────────────────────────────────────── -->
@@ -189,6 +199,16 @@
         <span class="fw-ver" id="fw-ver-2">v2.0.0 (Base Variant)</span>
       </div>
     </div>
+
+    <div class="card-fota-row">
+      <div class="ctrl-version-row" id="version-row-2">
+        <select id="version-select-2" class="ctrl-select card-fota-select">
+          <option value="">Loading releases…</option>
+        </select>
+        <button class="ctrl-refresh-btn" onclick="loadReleases()" title="Refresh releases">↻</button>
+      </div>
+      <button id="fota-btn-2" class="fota-btn fota-btn-r2" onclick="triggerFota(2)">⬆ FaaS</button>
+    </div>
   </div>
 
 </div><!-- /rover-grid -->
@@ -197,30 +217,12 @@
 <section class="panel-section">
   <div class="section-card">
     <div class="section-header">
-      <h2 class="section-title"><span class="section-icon">⬆</span> Firmware Over-The-Air Update</h2>
-      <span class="section-sub">FaaS · S32K144 UART Bootloader triggered via ESP32 MQTT</span>
-    </div>
-
-    <div class="fota-ctrl-row">
-      <div class="ctrl-group">
-        <label class="ctrl-label" for="version-select">Firmware Version</label>
-        <div class="ctrl-version-row">
-          <select id="version-select" class="ctrl-select">
-            <option value="">Loading releases…</option>
-          </select>
-          <button class="ctrl-refresh-btn" onclick="loadReleases()" title="Refresh releases">↻</button>
-        </div>
-      </div>
-      <div class="ctrl-group">
-        <label class="ctrl-label" for="target-select">Target VIN</label>
-        <select id="target-select" class="ctrl-select">
-          <option value="MA3ZZ20G0T1234567">MA3ZZ20G0T1234567 — Rover Alpha</option>
-          <option value="WROOM_002">WROOM_002 — Rover Beta</option>
-        </select>
-      </div>
-      <button id="fota-btn" class="fota-btn" onclick="triggerFota()">
-        ⬆&nbsp; Trigger FOTA
-      </button>
+      <h2 class="section-title"><span class="section-icon">⬆</span> FOTA Progress &amp; Log</h2>
+      <span class="section-sub">FaaS · S32K144 UART Bootloader · trigger from each rover card above</span>
+      <label class="diag-toggle-label">
+        <input type="checkbox" id="diag-toggle" onchange="toggleDiagnostics(this.checked)">
+        Show diagnostics
+      </label>
     </div>
 
     <div id="fota-progress-wrap" class="fota-progress-wrap" style="display:none">
@@ -230,7 +232,7 @@
       <span class="fota-progress-lbl" id="fota-progress-lbl">Preparing…</span>
     </div>
 
-    <div class="fota-log" id="fota-log">
+    <div class="fota-log hide-errors" id="fota-log">
       <span class="log-placeholder">FOTA log will appear here — start server.py and trigger FOTA above.</span>
     </div>
   </div>
@@ -241,7 +243,7 @@
   <div class="section-card">
     <div class="section-header">
       <h2 class="section-title"><span class="section-icon">⬡</span> CI/CD Pipeline — GitLab → Fleet FOTA</h2>
-      <span class="section-sub">Automated firmware delivery · Click "Trigger FOTA" to animate</span>
+      <span class="section-sub">Automated firmware delivery · Trigger FOTA from a rover card to animate</span>
     </div>
 
     <div class="pipeline">

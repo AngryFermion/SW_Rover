@@ -136,9 +136,11 @@ void WifiManager_Reconnect(void) {
                    "Performing WiFi reconnection...");
 
   esp_wifi_disconnect();
-  WiFi.disconnect();
-  delay(1000);  // Give time for cleanup
-  WiFi.reconnect();
+  WiFi.disconnect(false);
+  delay(500);
+  // WiFi.reconnect() does not re-supply credentials and is unreliable on ESP32.
+  // Re-calling SetupStation forces a clean WiFi.begin(ssid, pass).
+  WifiManager_SetupStation(false);
 }
 
 void WifiManager_CheckStatus(void) {
@@ -283,8 +285,10 @@ void WifiManager_SetupStation(bool serverStart) {
   WifiManager_SafeModeChange(WIFI_STA);
 
 #if BLE_ENABLED
-  // IMPORTANT: WiFi modem sleep MUST be enabled when using BLE
-  WiFi.setSleep(true);  // Enable modem sleep for BLE coexistence
+  // MIN_MODEM sleep lets the radio listen to every DTIM beacon (coexists with BLE)
+  // without the aggressive duty-cycling of full modem sleep that drops connections
+  // under sustained MQTT traffic.
+  esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
 #endif
 
   // Disconnect any existing connection before starting new one
@@ -506,10 +510,11 @@ void WifiManager_StoreIp(void) {
 void WifiManager_Task(void *param) {
   EventBits_t events;
 
-  WifiManager_event_group = xEventGroupCreate();
+  // Event group is already created in WifiManager_Start() — do not recreate it here.
+  // Creating a second group would overwrite the global handle and leak the first one.
   if (WifiManager_event_group == NULL) {
     g_Logger.Write(LogLevel::Error, LogCategory::WIFI, "WifiManager_Task",
-                     "Failed to create event group");
+                     "Event group not initialised — was WifiManager_Start() called?");
     vTaskDelete(NULL);
     return;
   }
@@ -538,15 +543,11 @@ static void WifiManager_HandleEvent1000ms(void) {
   // If not in test mode, check for forced AP mode entry
   if ((xEventGroupGetBits(WifiManager_event_group) &
        EVENT_WIFI_TEST_MODE_BIT) == 0) {
-    // check_forced_ap_mode_entry();
     WifiManager_CheckForcedApEntry();
-
-    // Narayan - this has to be checked
-    //  forced_ap_mode_timeout();
   }
 
   if (WiFi.getMode() == WIFI_STA) {
-    // wifi_check_status();
+    WifiManager_CheckStatus();
   }
 }
 

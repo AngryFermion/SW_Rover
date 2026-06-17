@@ -1,0 +1,18 @@
+vin:   WROOM_002
+alias: Rover Beta
+tier:  standard
+
+# Per-VIN compile-flag overrides
+overrides:
+  SPEED_LIMITER: false   # customer opted out of speed cap
+
+telematics:
+  device_id:    WROOM_002
+  mqtt_broker:  broker.emqx.io
+  mqtt_port:    1883
+  esp32_model:  ESP32-WROOM
+
+subscription:
+  customer: NXP Demo Fleet
+  plan:     standard
+  expires:  2027-06-01

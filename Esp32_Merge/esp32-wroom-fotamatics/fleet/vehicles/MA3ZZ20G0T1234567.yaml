@@ -1,0 +1,17 @@
+vin:   MA3ZZ20G0T1234567
+alias: Rover Alpha
+tier:  premium
+
+# Per-VIN compile-flag overrides (use sparingly — prefer tier changes)
+overrides: {}
+
+telematics:
+  device_id:    MA3ZZ20G0T1234567
+  mqtt_broker:  broker.emqx.io
+  mqtt_port:    1883
+  esp32_model:  ESP32-WROOM
+
+subscription:
+  customer: NXP Demo Fleet
+  plan:     premium
+  expires:  2027-06-01

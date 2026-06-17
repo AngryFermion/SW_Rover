@@ -1,0 +1,140 @@
+# SmartWheels — Fleet CI/CD Pipeline
+# In production this lives at the repo root as .gitlab-ci.yml
+#
+# Flow:
+#   1. resolve  — diff which vehicle YAMLs changed → collect affected tiers
+#   2. build    — compile one binary per unique tier (not per VIN)
+#   3. sign     — SHA-256 + metadata.json per binary
+#   4. publish  — push to GitLab Package Registry
+#   5. deploy   — trigger FOTA for every VIN whose tier was rebuilt
+
+stages:
+  - resolve
+  - build
+  - sign
+  - publish
+  - deploy
+
+variables:
+  TOOLCHAIN:    arm-none-eabi-gcc
+  MCU_TARGET:   S32K144
+  PACKAGE_NAME: smartwheels-s32k144-sm-rover
+  SREC_DIR:     build/
+
+# ── 1. Resolve ─────────────────────────────────────────────────────────────────
+# Reads changed fleet/vehicles/*.yaml files, outputs the unique set of tiers
+# that need rebuilding and the list of VINs to FOTA afterward.
+resolve:
+  stage: resolve
+  image: python:3.11-slim
+  script:
+    - pip install pyyaml --quiet
+    - |
+      python3 fleet/scripts/resolve_tiers.py \
+        --changed "$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA -- fleet/vehicles/)" \
+        --vehicles fleet/vehicles/ \
+        --tiers    fleet/tiers/ \
+        --out      build/plan.json
+    - cat build/plan.json
+  artifacts:
+    paths:
+      - build/plan.json
+  rules:
+    - changes:
+        - fleet/vehicles/**
+        - fleet/tiers/**
+        - src/**
+        - include/**
+
+# ── 2. Build ───────────────────────────────────────────────────────────────────
+# Compiles one .srec per tier listed in build/plan.json.
+# Compile flags come from the tier YAML; per-VIN overrides are NOT baked in
+# here — they are handled at runtime via a config region in flash.
+.build_tier: &build_tier
+  stage: build
+  image: nxp-s32ds:latest   # self-hosted runner with S32 Design Studio toolchain
+  needs: [resolve]
+  script:
+    - |
+      TIER_FLAGS=$(python3 fleet/scripts/flags_for_tier.py --tier $TIER --tiers fleet/tiers/)
+      make -C src/ TARGET=$MCU_TARGET CFLAGS="$TIER_FLAGS" OUT=$SREC_DIR/${TIER}.srec
+  artifacts:
+    paths:
+      - build/*.srec
+
+build:base:
+  <<: *build_tier
+  variables:
+    TIER: base
+
+build:standard:
+  <<: *build_tier
+  variables:
+    TIER: standard
+
+build:premium:
+  <<: *build_tier
+  variables:
+    TIER: premium
+
+# ── 3. Sign ────────────────────────────────────────────────────────────────────
+sign:
+  stage: sign
+  image: python:3.11-slim
+  needs: [build:base, build:standard, build:premium]
+  script:
+    - |
+      for srec in build/*.srec; do
+        TIER=$(basename $srec .srec)
+        sha256sum $srec | awk '{print $1}' > build/${TIER}.sha256
+        python3 fleet/scripts/gen_metadata.py \
+          --tier    $TIER \
+          --version $CI_COMMIT_TAG \
+          --target  $MCU_TARGET \
+          --sha256  build/${TIER}.sha256 \
+          --out     build/${TIER}_metadata.json
+      done
+  artifacts:
+    paths:
+      - build/*.sha256
+      - build/*_metadata.json
+
+# ── 4. Publish ─────────────────────────────────────────────────────────────────
+publish:
+  stage: publish
+  image: curlimages/curl:latest
+  needs: [sign]
+  script:
+    - |
+      VERSION=$CI_COMMIT_TAG
+      for TIER in base standard premium; do
+        PKG="${PACKAGE_NAME}-${TIER}"
+        BASE_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PKG}/${VERSION}"
+        curl --fail -H "JOB-TOKEN: $CI_JOB_TOKEN" \
+          --upload-file build/${TIER}.srec           "${BASE_URL}/${TIER}.srec"
+        curl --fail -H "JOB-TOKEN: $CI_JOB_TOKEN" \
+          --upload-file build/${TIER}.sha256         "${BASE_URL}/checksum.txt"
+        curl --fail -H "JOB-TOKEN: $CI_JOB_TOKEN" \
+          --upload-file build/${TIER}_metadata.json  "${BASE_URL}/metadata.json"
+      done
+  rules:
+    - if: $CI_COMMIT_TAG   # only publish on tagged releases
+
+# ── 5. Deploy ──────────────────────────────────────────────────────────────────
+# For each VIN in the plan whose tier was just published, fire FOTA via the
+# dashboard API (server.py) or directly over MQTT.
+deploy:
+  stage: deploy
+  image: python:3.11-slim
+  needs: [publish]
+  script:
+    - pip install pyyaml requests --quiet
+    - |
+      python3 fleet/scripts/trigger_fota.py \
+        --plan     build/plan.json \
+        --version  $CI_COMMIT_TAG \
+        --api-url  $SMARTWHEELS_API_URL \
+        --api-key  $SMARTWHEELS_API_KEY
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual   # require human approval before pushing firmware to fleet

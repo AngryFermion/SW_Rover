@@ -455,6 +455,23 @@ body {
 
 .acc-icon { font-size: 9px; }
 
+/* Per-card FOTA trigger row */
+.card-fota-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--card-border);
+}
+
+.card-fota-select {
+  min-width: 0;
+  flex: 1;
+  font-size: 11.5px;
+  padding: 5px 9px;
+  height: 34px;
+}
+
 .fw-info { display: flex; align-items: center; gap: 6px; }
 
 .fw-label {
@@ -588,6 +605,9 @@ body {
 .fota-btn:active:not(:disabled) { transform: scale(0.97); }
 .fota-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
+.fota-btn.fota-btn-r2 { background: var(--r2); }
+.fota-btn.fota-btn-r2:hover:not(:disabled) { background: #ff9a40; }
+
 /* Progress bar */
 .fota-progress-wrap { margin-bottom: 12px; }
 
@@ -633,6 +653,26 @@ body {
 .log-error    { color: var(--red); }
 .log-complete { color: var(--green); font-weight: 600; }
 .log-ts       { color: #2a3050; margin-right: 7px; }
+
+.fota-log.hide-errors .log-line-error { display: none; }
+
+.diag-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-left: auto;
+  user-select: none;
+}
+
+.diag-toggle-label:hover { color: var(--text-dim); }
+
+.diag-toggle-label input[type="checkbox"] {
+  accent-color: var(--r1);
+  cursor: pointer;
+}
 
 /* ── CI/CD Pipeline ─────────────────────────────────────────── */
 .pipeline {
