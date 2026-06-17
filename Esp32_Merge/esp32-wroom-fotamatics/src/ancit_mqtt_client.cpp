@@ -24,8 +24,12 @@ PubSubClient     mqttClient(wifiClient);
 
 MqttConfig mqtt_config;
 
-static TaskHandle_t mqttTaskHandle = NULL;
-static char mqtt_ca_cert_buffer[2048] = {0};
+static TaskHandle_t     mqttTaskHandle = NULL;
+static char             mqtt_ca_cert_buffer[2048] = {0};
+// Mutex: PubSubClient is not thread-safe. Both the MQTT task (loop) and the
+// telematics task (publish) run on Core 1 — unguarded concurrent access
+// corrupts socket state and causes broker disconnects.
+static SemaphoreHandle_t mqttMutex = NULL;
 
 static const char TOPIC_TELEMATICS_STATUS[] = "SmartWheelsNS/telematics/status";
 
@@ -223,7 +227,12 @@ bool MqttClient_Publish(const char* topic, const char* payload, bool retain) {
         g_Logger.Write(LogLevel::Error, LogCategory::MQTT, "Publish", "Not connected");
         return false;
     }
+    if (mqttMutex == NULL || xSemaphoreTake(mqttMutex, pdMS_TO_TICKS(200)) != pdTRUE) {
+        g_Logger.Write(LogLevel::Warn, LogCategory::MQTT, "Publish", "Mutex timeout — skipped");
+        return false;
+    }
     bool ok = mqttClient.publish(topic, payload, retain);
+    xSemaphoreGive(mqttMutex);
     if (ok) {
         g_Logger.Write(LogLevel::Debug, LogCategory::MQTT, "Publish",
                        "%s → %s", topic, payload);
@@ -248,12 +257,17 @@ bool MqttClient_Subscribe(const char* topic) {
 bool MqttClient_IsConnected() { return mqttClient.connected(); }
 
 void MqttClient_Loop() {
-    if (!mqttClient.connected()) MqttClient_Reconnect();
-    mqttClient.loop();
+    if (mqttMutex == NULL) return;
+    if (xSemaphoreTake(mqttMutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+        if (!mqttClient.connected()) MqttClient_Reconnect();
+        mqttClient.loop();
+        xSemaphoreGive(mqttMutex);
+    }
     vTaskDelay(pdMS_TO_TICKS(10));
 }
 
 void MqttClient_Init(const MqttConfig& config) {
+    if (mqttMutex == NULL) mqttMutex = xSemaphoreCreateMutex();
     MqttClient_SetClientId();
     MqttClient_ConfigureConnection();
 }

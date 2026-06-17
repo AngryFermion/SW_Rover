@@ -27,7 +27,7 @@ typedef enum {
 #define ANCIT_LED_TASK_STACK_SIZE                 (1*1024)
 #define ANCIT_MODBUS_TASK_STACK_SIZE              (2*1024)
 #define ANCIT_NEER_TASK_STACK_SIZE                (2*1024)
-#define ANCIT_MQTT_APP_STACK_SIZE                 (4*1024)
+#define ANCIT_MQTT_APP_STACK_SIZE                 (8*1024)
 #define ANCIT_HTTP_APP_STACK_SIZE                 (4*1024)
 #define ANCIT_TELEMATICS_TASK_STACK_SIZE          (3*1024)  // UART parsing + JSON + MQTT publish
 

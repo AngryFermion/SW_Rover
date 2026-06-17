@@ -267,7 +267,7 @@ function connectMqtt() {
   catch (e) { setMqttStatus('error', 'MQTT unavailable'); return; }
 
   client.on('connect', () => {
-    setMqttStatus('connected', 'MQTT Live');
+    setMqttStatus('connected', 'Live');
     client.subscribe([T_TELEM, T_HEALTH, T_FOTA_P, T_LWT]);
   });
   client.on('error',     () => setMqttStatus('error',   'Connection error'));
