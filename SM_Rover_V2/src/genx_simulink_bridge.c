@@ -18,7 +18,7 @@ void ANCIT_App_Init(void)
 /* -------------------------------------------------------------- */
 void ANCIT_App_PreStep(void)
 {
-    ACC_U.Distance = ((real_T)(ggenx.Ultra_Distance))- 10;
+    ACC_U.Distance = ((real_T)(ggenx.Ultra_Distance));
     ACC_U.V_set = ((real_T)(ggenx.Vset));
     ACC_U.D_min = ((real_T)(ggenx.Dmin));
 }
