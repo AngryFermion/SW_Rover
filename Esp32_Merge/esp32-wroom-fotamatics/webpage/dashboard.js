@@ -6,7 +6,11 @@
 // 'simple' → Speed gauge + Distance only
 const DEFAULT_SIGNAL_VIEW = 'full'; // 'full' | 'simple'
 
-const MQTT_URL  = 'ws://broker.emqx.io:8083/mqtt';
+// API_BASE: set by config.js when hosted on an external site (e.g. ancitconsulting.com).
+// Leave empty when running locally via server.py — relative paths work fine.
+const API_BASE = (typeof SW_API_BASE !== 'undefined' && SW_API_BASE) ? SW_API_BASE.replace(/\/$/, '') : '';
+
+const MQTT_URL  = 'wss://broker.emqx.io:8084/mqtt';
 const MQTT_OPTS = {
   username: 'rw',
   password: 'readwrite',
@@ -451,7 +455,7 @@ async function triggerFota(n) {
   try {
     let resp;
     if (release.source === 'gitlab') {
-      resp = await fetch('/api/deploy', {
+      resp = await fetch(API_BASE + '/api/deploy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -461,7 +465,7 @@ async function triggerFota(n) {
         })
       });
     } else {
-      resp = await fetch('/api/fota/trigger', {
+      resp = await fetch(API_BASE + '/api/fota/trigger', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ srec_path: release.path })
@@ -487,7 +491,7 @@ async function triggerFota(n) {
 
   let uploadDone = false, bootDone = false;
 
-  const es = new EventSource('/api/fota/stream');
+  const es = new EventSource(API_BASE + '/api/fota/stream');
 
   es.onmessage = (e) => {
     const d = JSON.parse(e.data);
@@ -553,7 +557,7 @@ async function loadReleases() {
 
   let resp;
   try {
-    resp = await fetch('/api/releases');
+    resp = await fetch(API_BASE + '/api/releases');
   } catch (_) {
     sels.forEach(s => { s.innerHTML = '<option value="">server.py not running</option>'; });
     logFota('Cannot reach server.py — open http://localhost:5000 (not file://)', 'error');
