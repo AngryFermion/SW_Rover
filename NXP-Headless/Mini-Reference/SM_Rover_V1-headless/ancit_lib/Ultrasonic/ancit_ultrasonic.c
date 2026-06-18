@@ -22,6 +22,7 @@
 
 #ifdef ULTRASONIC_CONFIGURED
 
+#include <math.h>   /* Added by Sasi - 2026-06-15 */
 #include "sdk_project_config.h"
 #include "peripherals_flexTimer_ic_echo.h"
 #include "ftm_common.h"
@@ -30,6 +31,11 @@
 
 /* FTM state structure required by the SDK driver */
 static ftm_state_t ftm3_ic_state;
+
+/* Stability filter buffer - Added by Sasi - 2026-06-15 */
+static float   us_filter_buf[US_FILTER_SIZE];
+static uint8_t us_filter_idx   = 0U;
+static uint8_t us_filter_count = 0U;
 
 /* Ultrasonic driver state */
 static ultrasonic_state_t us_state = {
@@ -115,6 +121,14 @@ void ancit_ultrasonic_init(void)
     us_state.last_distance_cm = 0.0f;
     us_state.temperature_c = 22.0f;
     us_state.measurement_valid = false;
+
+    /* Reset filter - Added by Sasi - 2026-06-15 */
+    us_filter_idx   = 0U;
+    us_filter_count = 0U;
+    for (uint8_t i = 0U; i < US_FILTER_SIZE; i++)
+    {
+        us_filter_buf[i] = 0.0f;
+    }
 }
 
 /*
@@ -182,16 +196,38 @@ void ancit_ultrasonic_main(void)
         float speed = 331.3f + 0.606f * us_state.temperature_c;
         float distance_cm = ((float)pulse_us * speed) / 20000.0f;
 
+        /* Median filter (3-sample) - Added by Sasi - 2026-06-15
+         * Always outputs middle value — rejects single bad readings with no glitch */
         if (distance_cm > US_MAX_RANGE_CM)
         {
-            /* Beyond sensor range — treat as no object detected */
             us_state.last_distance_cm = 0.0f;
             us_state.measurement_valid = false;
+            us_filter_count = 0U;
         }
         else
         {
-            us_state.last_distance_cm = distance_cm;
-            us_state.measurement_valid = true;
+            us_filter_buf[us_filter_idx] = distance_cm;
+            us_filter_idx = (us_filter_idx + 1U) % US_FILTER_SIZE;
+            if (us_filter_count < US_FILTER_SIZE)
+            {
+                us_filter_count++;
+            }
+
+            if (us_filter_count >= US_FILTER_SIZE)
+            {
+                /* 3-element sort network to find median */
+                float a = us_filter_buf[0];
+                float b = us_filter_buf[1];
+                float c = us_filter_buf[2];
+                float tmp;
+                if (a > b) { tmp = a; a = b; b = tmp; }
+                if (b > c) { tmp = b; b = c; c = tmp; }
+                if (a > b) { tmp = a; a = b; b = tmp; }
+                (void)a; (void)c;
+
+                us_state.last_distance_cm = b;
+                us_state.measurement_valid = true;
+            }
         }
     }
     else if (us_state.echo_timed_out)

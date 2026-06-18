@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *  
  */
@@ -34,9 +34,9 @@
 
 
 #define MAX_TASKS		3
+void Task_While(void);
 
 void genx_scheduler_init(void);
-void Task_While(void);
 // This macro replaces calls to genx_scheduler_main() with a direct call to ancit_scheduler_main().
 #define genx_scheduler_main() ancit_scheduler_main()
 

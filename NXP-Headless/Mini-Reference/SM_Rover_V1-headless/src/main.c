@@ -52,7 +52,6 @@
 #ifdef I2C_MANAGER_CONFIGURED
 #include "genx_i2c_manager.h"
 #endif
-
 #include "genx_ultrason.h"
 
 volatile int exit_code = 0;
@@ -79,6 +78,9 @@ int main(void) {
 	genx_PWM_Init();
 #endif
 
+#ifdef ULTRASONIC_CONFIGURED
+    genx_ultrason_init();
+#endif
 
 #ifdef I2C_MANAGER_CONFIGURED
 	genx_i2c_manager_init();
@@ -87,10 +89,6 @@ int main(void) {
 #ifdef SCHEDULER_CONFIGURED
 	genx_scheduler_init();
 #endif //SCHEDULER_CONFIGURED
-
-#ifdef ULTRASONIC_CONFIGURED
-    genx_ultrason_init();
-#endif
 
 #ifdef SIMULINK_BRIDGE_CONFIGURED
 	/* Initialize Simulink model */
@@ -121,7 +119,8 @@ ancit_uart_conn_main();
 #ifdef ULTRASONIC_CONFIGURED
     genx_ultrason_main();
 #endif
-	Task_While();
+
+    Task_While();
 
 		//Toggle the Debug Pin PTD8 to indicate end of main loop
 		//Toggles every main loop execution

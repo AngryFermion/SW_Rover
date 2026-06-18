@@ -7,9 +7,9 @@
  *
  * Code generation for model "ACC".
  *
- * Model version              : 1.15
+ * Model version              : 1.22
  * Simulink Coder version : 24.2 (R2024b) 21-Jun-2024
- * C source code generated on : Fri May  8 11:57:33 2026
+ * C source code generated on : Mon May 11 13:30:22 2026
  *
  * Target selection: grt.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -131,7 +131,7 @@ void ACC_step(void)
   rt_UpdateTXYLogVars(ACC_M->rtwLogInfo, (&ACC_M->Timing.taskTime0));
 
   /* signal main to stop simulation */
-  {                                    /* Sample time: [0.2s, 0.0s] */
+  {                                    /* Sample time: [0.01s, 0.0s] */
     if ((rtmGetTFinal(ACC_M)!=-1) &&
         !((rtmGetTFinal(ACC_M)-ACC_M->Timing.taskTime0) >
           ACC_M->Timing.taskTime0 * (DBL_EPSILON))) {
@@ -165,7 +165,7 @@ void ACC_initialize(void)
   (void) memset((void *)ACC_M, 0,
                 sizeof(RT_MODEL_ACC_T));
   rtmSetTFinal(ACC_M, -1);
-  ACC_M->Timing.stepSize0 = 0.2;
+  ACC_M->Timing.stepSize0 = 0.01;
 
   /* Setup for data logging */
   {

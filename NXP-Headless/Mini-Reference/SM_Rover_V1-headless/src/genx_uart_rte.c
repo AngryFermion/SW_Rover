@@ -15,30 +15,30 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *
  */
 #include "genx_uart_rte.h"
+#include "ancit_uart_rte.h"
 #include "genx_common.h"
 #include <string.h>
 #include <stdio.h>
 
 void ancit_uart_message_setup(void) {
-	/* Queue RTE variables to UART as CSV */
 	char uartBuffer[256];
-	uint8_t len = 0;
+	uint16_t len = 0;
 
-	/* Start character */
-	//uartBuffer[len++] = '!';
-	//uartBuffer[len++] = ',';
+		len += sprintf(&uartBuffer[len], "Distance,%d\n", ggenx.Ultra_Distance);
+	len += sprintf(&uartBuffer[len], "Vset,%d\n", ggenx.Vset);
+	len += sprintf(&uartBuffer[len], "Speed,%d\n", ggenx.PWM);
+	len += sprintf(&uartBuffer[len], "Dmin,%d\n", ggenx.Dmin);
 
-		len += sprintf(&uartBuffer[len], "obstruction, %d,", ggenx.Distance);
-	    len += sprintf(&uartBuffer[len], "PWM, %d", ggenx.PWM);
-
-
-	//uartBuffer[len++] = '\r';
-	uartBuffer[len++] = '\n';
 
 	ancit_uart_conn_EnqueueString(uartBuffer, len);
+}
+
+void ancit_uart_command_receive(char *cmd) {
+		// No UART commands configured
+
 }

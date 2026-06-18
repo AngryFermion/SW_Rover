@@ -6,21 +6,32 @@
  */
 #include <ancit_driver_uart.h>
 #include "ancit_uart_rte.h"
+#include "genx_uart_rte.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "ancit_timer.h"
+#include "genx_common.h"
 
 #ifdef UART_RTE_CONFIGURED
 
-// Global state variable
+// ── TX state ────────────────────────────────────────────────────────────────
 ext_uart_tx_state_t current_state = ANCIT_UART_CONN_TX_IDLE;
 
 static StringQueue txQueue;
 static char currentString[MAX_STRING_LENGTH];
 static uint8_t currentStringLength;
 
+// ── RX state ────────────────────────────────────────────────────────────────
+static uint8_t rx_byte;
+static char rx_cmd_buffer[MAX_RX_CMD_LENGTH];
+static uint8_t rx_cmd_idx = 0;
+static volatile uint8_t rx_frame_ready = 0;
+static char rx_dispatch_buf[MAX_RX_CMD_LENGTH];
+
+// ── TX state machine ─────────────────────────────────────────────────────────
 void ancit_uart_conn_sm(void) {
 	static uint32_t bytesRemaining;
 
@@ -33,15 +44,12 @@ void ancit_uart_conn_sm(void) {
 		break;
 
 	case ANCIT_UART_CONN_TX_START:
-		/* Send data via LPUART */
 		ancit_driver_uart_SendData(EXT_UART, (uint8_t*) currentString,
 				currentStringLength);
-
 		current_state = ANCIT_UART_CONN_TX_WAIT_FOR_COMPLETE;
 		break;
 
 	case ANCIT_UART_CONN_TX_WAIT_FOR_COMPLETE:
-		// Check if messsage is sent
 		if (ancit_driver_uart_GetTransmitStatus(EXT_UART, &bytesRemaining)
 				!= STATUS_SUCCESS) {
 			//wait till busy
@@ -55,49 +63,73 @@ void ancit_uart_conn_sm(void) {
 		break;
 
 	case ANCIT_UART_CONN_TX_DONE:
-		// Perform any cleanup or final steps
-		current_state = ANCIT_UART_CONN_TX_IDLE; // Return to idle or end the process
+		current_state = ANCIT_UART_CONN_TX_IDLE;
 		break;
 	}
 }
 
-// Enqueue string for transmission
-bool ancit_uart_conn_EnqueueString(const char *str, uint8_t length) {
-	if (txQueue.count >= QUEUE_SIZE) {
-		return false;  // Queue is full, cannot enqueue more strings
-	}
+// ── RX byte callback (called from LPUART ISR) ─────────────────────────────
+void ancit_uart_rx_byte_cb(void *driverState, uart_event_t event, void *param) {
+	(void)driverState;
+	(void)param;
 
-	memcpy(txQueue.buffer[txQueue.tail], str, length);
-	txQueue.length[txQueue.tail] = length;  // Store the given length
-	txQueue.tail = (txQueue.tail + 1) % QUEUE_SIZE;
-	txQueue.count++;
-	return true;  // Successfully enqueued the string
+	if (event == UART_EVENT_RX_FULL) {
+		char c = (char)rx_byte;
+		if (c == RX_CMD_DELIMITER || rx_cmd_idx >= MAX_RX_CMD_LENGTH - 1) {
+			// Strip trailing \r if present
+			if (rx_cmd_idx > 0 && rx_cmd_buffer[rx_cmd_idx - 1] == '\r') {
+				rx_cmd_idx--;
+			}
+			rx_cmd_buffer[rx_cmd_idx] = '\0';
+			rx_cmd_idx = 0;
+			rx_frame_ready = 1;
+		} else if (c != '\r') {
+			rx_cmd_buffer[rx_cmd_idx++] = c;
+		}
+		// Re-arm for next byte
+		ancit_driver_uart_ReceiveData(EXT_UART, &rx_byte, 1);
+	}
 }
 
-// Dequeue string for transmission
+// ── Command dispatcher ────────────────────────────────────────────────────────
+void ancit_uart_cmd_dispatch(const char *cmd) {
+	ancit_uart_command_receive((char *)cmd);
+}
+
+// ── Queue helpers ─────────────────────────────────────────────────────────────
+bool ancit_uart_conn_EnqueueString(const char *str, uint8_t length) {
+	if (txQueue.count >= QUEUE_SIZE) {
+		return false;
+	}
+	memcpy(txQueue.buffer[txQueue.tail], str, length);
+	txQueue.length[txQueue.tail] = length;
+	txQueue.tail = (txQueue.tail + 1) % QUEUE_SIZE;
+	txQueue.count++;
+	return true;
+}
+
 void ancit_uart_conn_DequeueString(char *str, uint8_t *length) {
 	if (txQueue.count > 0) {
 		memcpy(str, txQueue.buffer[txQueue.head],
 				txQueue.length[txQueue.head]);
-
-		*length = txQueue.length[txQueue.head];  // Get the length
+		*length = txQueue.length[txQueue.head];
 		txQueue.head = (txQueue.head + 1) % QUEUE_SIZE;
 		txQueue.count--;
 	}
 }
 
-// Check if queue is empty
 bool ancit_uart_conn_IsQueueEmpty(void) {
 	return txQueue.count == 0;
 }
 
+// ── Start / Main ──────────────────────────────────────────────────────────────
 void ancit_uart_conn_start(void) {
-	//Start the UART Hardware
 	ancit_driver_uart_Init(EXT_UART, &lpUartState0, &lpuart_0_InitConfig0);
-
-//	ancit_init_timeout(&uart_conn_delay_ctr, uart_conn_set_delay_test);
-	//Initialize the state machine to idle
 	current_state = ANCIT_UART_CONN_TX_IDLE;
+
+	// Install RX callback and arm for first byte
+	ancit_driver_uart_InstallRxCallback(EXT_UART, ancit_uart_rx_byte_cb, NULL);
+	ancit_driver_uart_ReceiveData(EXT_UART, &rx_byte, 1);
 
 #ifdef DWIN_DISPLAY_CONFIGURED
 	ancit_dwin_tx_start();
@@ -111,7 +143,14 @@ void ancit_uart_conn_main(void) {
 	ancit_dwin_rx_main();
 #endif
 
+	// Process any complete RX command frame
+	if (rx_frame_ready) {
+		memcpy(rx_dispatch_buf, rx_cmd_buffer, MAX_RX_CMD_LENGTH);
+		rx_frame_ready = 0;
+		ancit_uart_cmd_dispatch(rx_dispatch_buf);
+	}
+
 	ancit_uart_conn_sm();
 }
 
-#endif //UART_CONN_CONFIGURED
+#endif //UART_RTE_CONFIGURED

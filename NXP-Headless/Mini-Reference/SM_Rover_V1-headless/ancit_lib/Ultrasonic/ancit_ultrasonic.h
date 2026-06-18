@@ -30,10 +30,15 @@
 
 /* Timing constants */
 #define US_TRIGGER_DURATION_US  20U     /* HC-SR04 requires minimum 10us trigger pulse, using 15us for safety margin */
-#define US_MEASUREMENT_INTERVAL_MS  100U /* Measurement every 100ms */
+#define US_MEASUREMENT_INTERVAL_MS  60U  /* Measurement every 60ms (HC-SR04 min safe cycle: 60ms) */
 
 /* Max valid range in cm. Readings above this are treated as invalid (no object detected) */
 #define US_MAX_RANGE_CM         400.0f  /* HC-SR04 rated max range: 4 meters */
+
+/* Stability filter: require this many consecutive readings within tolerance before accepting */
+/* Added by Sasi - 2026-06-15 */
+#define US_FILTER_SIZE          3
+#define US_FILTER_TOLERANCE_CM  3.0f  /* unused — kept for reference */
 
 /* Ultrasonic driver state */
 typedef struct {

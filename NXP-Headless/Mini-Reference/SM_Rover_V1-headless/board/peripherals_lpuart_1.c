@@ -40,7 +40,7 @@ instance:
 - from_use_case: 'NS_lpuart'
 - type_id: 'lpuart'
 - functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'LPUART_1'
+- peripheral: 'LPUART_0'
 - config_sets:
   - lpuart_driver:
     - lpuart_state_name: 'lpUartState0'

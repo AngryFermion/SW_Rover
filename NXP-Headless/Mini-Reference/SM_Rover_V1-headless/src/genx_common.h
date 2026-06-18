@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *  
  */
@@ -23,12 +23,11 @@
 #ifndef GENX_COMMON_H_
 #define GENX_COMMON_H_
 #include "stdint.h"
-
 typedef struct {
-		uint8_t Distance;
-	uint8_t V_set;
-	uint8_t D_min;
+	uint16_t Ultra_Distance;
+	uint8_t Vset;
 	uint8_t PWM;
+	uint8_t Dmin;
 
 } global_genx_t;
  

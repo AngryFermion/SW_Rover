@@ -26,9 +26,10 @@ MqttConfig mqtt_config;
 
 static TaskHandle_t     mqttTaskHandle = NULL;
 static char             mqtt_ca_cert_buffer[2048] = {0};
-// Mutex: PubSubClient is not thread-safe. Both the MQTT task (loop) and the
-// telematics task (publish) run on Core 1 — unguarded concurrent access
-// corrupts socket state and causes broker disconnects.
+// Recursive mutex: PubSubClient is not thread-safe. Both the MQTT task (loop)
+// and the telematics task (publish) run on Core 1 — unguarded concurrent access
+// corrupts socket state. Recursive allows publishChunkAck() to re-enter
+// MqttClient_Publish() from inside the mqttClient.loop() callback.
 static SemaphoreHandle_t mqttMutex = NULL;
 
 static const char TOPIC_TELEMATICS_STATUS[] = "SmartWheelsNS/telematics/status";
@@ -227,12 +228,12 @@ bool MqttClient_Publish(const char* topic, const char* payload, bool retain) {
         g_Logger.Write(LogLevel::Error, LogCategory::MQTT, "Publish", "Not connected");
         return false;
     }
-    if (mqttMutex == NULL || xSemaphoreTake(mqttMutex, pdMS_TO_TICKS(200)) != pdTRUE) {
+    if (mqttMutex == NULL || xSemaphoreTakeRecursive(mqttMutex, pdMS_TO_TICKS(200)) != pdTRUE) {
         g_Logger.Write(LogLevel::Warn, LogCategory::MQTT, "Publish", "Mutex timeout — skipped");
         return false;
     }
     bool ok = mqttClient.publish(topic, payload, retain);
-    xSemaphoreGive(mqttMutex);
+    xSemaphoreGiveRecursive(mqttMutex);
     if (ok) {
         g_Logger.Write(LogLevel::Debug, LogCategory::MQTT, "Publish",
                        "%s → %s", topic, payload);
@@ -260,16 +261,16 @@ void MqttClient_Loop() {
     if (mqttMutex == NULL) return;
     // 200 ms timeout matches MqttClient_Publish — ensures loop() always gets
     // the mutex even when one publish is in progress (TCP write ~20-30 ms).
-    if (xSemaphoreTake(mqttMutex, pdMS_TO_TICKS(200)) == pdTRUE) {
+    if (xSemaphoreTakeRecursive(mqttMutex, pdMS_TO_TICKS(200)) == pdTRUE) {
         if (!mqttClient.connected()) MqttClient_Reconnect();
         mqttClient.loop();
-        xSemaphoreGive(mqttMutex);
+        xSemaphoreGiveRecursive(mqttMutex);
     }
     vTaskDelay(pdMS_TO_TICKS(10));
 }
 
 void MqttClient_Init(const MqttConfig& config) {
-    if (mqttMutex == NULL) mqttMutex = xSemaphoreCreateMutex();
+    if (mqttMutex == NULL) mqttMutex = xSemaphoreCreateRecursiveMutex();
     MqttClient_SetClientId();
     MqttClient_ConfigureConnection();
 }

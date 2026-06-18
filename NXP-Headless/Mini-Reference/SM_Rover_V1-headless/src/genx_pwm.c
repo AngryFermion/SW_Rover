@@ -31,8 +31,7 @@ PWM_registration_params_t genx_pwm_reg[TOTAL_PWM_INSTANCES] = {
 		.pInitConfig_s32ds = &flexTimer_pwm_0_InitConfig,   //S32DS auto-generated
 		.pPwmConfig_s32ds = &flexTimer_pwm_0_PwmConfig,     //S32DS auto-generated
 		.pStateStruct_genx = &genx_pwm_0_ftmStateStruct,    //Genx_tool generated, Pointer to state structure
-        .uFrequencyHZ = 1000,
-
+		.uFrequencyHZ = 1000,
 		/* Channel configurations */
 		.channels = {
 			// Channel 2: LFM

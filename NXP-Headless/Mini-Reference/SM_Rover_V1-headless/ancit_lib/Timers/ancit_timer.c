@@ -42,10 +42,9 @@ void ancit_one_ms_handler(void) {
 #ifdef SCHEDULER_CONFIGURED
 	ancit_scheduler_one_ms();
 #endif //SCHEDULER_CONFIGURED
+
 #ifdef ULTRASONIC_CONFIGURED
-
     ancit_ultrasonic_one_ms();
-
 #endif
 }
 

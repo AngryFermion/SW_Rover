@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *  
  */
@@ -29,7 +29,6 @@
 #include "stdio.h"
 #include "genx_ultrason.h"
 
-
 #ifdef UNIFIED_DIAGNOSTICS_SERVICES_CONFIGURED
 #include "cantp.h"
 #include "diagSess.h"
@@ -40,14 +39,11 @@ uint32_t mill_sec_value = 0;
 
 #endif
 
-
+#ifdef SCHEDULER_CONFIGURED
 //#include "genx_runnables.h"
 #ifdef SIMULINK_BRIDGE_CONFIGURED
 #include "genx_simulink_bridge.h"
 #endif /* SIMULINK_BRIDGE_CONFIGURED */
-
-#ifdef SCHEDULER_CONFIGURED
-//#include "genx_runnables.h"
 #ifdef UART_RTE_CONFIGURED
 #include "genx_uart_rte.h"
 #endif
@@ -61,71 +57,69 @@ genx_global_init();
 #endif
 } 
 
-
 void Task_While(void){
-	ggenx.Distance = genx_ultrason_get_distance_cm();
+	ggenx.Ultra_Distance = genx_ultrason_get_distance_cm();
 }
+
 void Task_1ms(void) {
 
+#ifdef SIMULINK_BRIDGE_CONFIGURED
 #ifdef ADAS_USECASE_CONFIGURED
 if(mode == 4 && state == 1){
 	ANCIT_App_PreStep();
 	ACC_step();
 	ANCIT_App_PostStep();
 	genx_PWM_LFM_updateDutyCycle(100);
-	genx_PWM_LBM_updateDutyCycle(100 - ggenx.PWM);
+	genx_PWM_LBM_updateDutyCycle(100 - (ggenx.PWM/2));
 	genx_PWM_RFM_updateDutyCycle(100);
-	genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
+	genx_PWM_RBM_updateDutyCycle(100 - (ggenx.PWM/2));
 }
 #endif
-
-}
+#endif /* SIMULINK_BRIDGE_CONFIGURED */
+} 
 
 void Task_10ms(void) {
+	ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 20U);
+	sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
 
-
-
-ancit_driver_uart_ReceiveData(INST_LPUART_1, buffer, 10U);
-sscanf((char *)buffer, "%d,%d,%d,%d", &mode, &state, &dir, &pwm);
-ggenx.PWM = pwm;
-if(state == 1){
-	if(mode ==1 || mode == 2){
-		ancit_smartkit_dc();
-	}
-#ifdef ADAS_USECASE_CONFIGURED
-	if(mode == 3){
-		ancit_uart_message_setup();
-		if(ggenx.Distance < 50){
+	//ggenx.PWM = pwm;
+	if(state == 1){
+		if(mode ==1 || mode == 2){
+			ancit_smartkit_dc();
+		}
+	#ifdef ADAS_USECASE_CONFIGURED
+		if(mode == 3){
+			ancit_uart_message_setup();
+			if(ggenx.Ultra_Distance < 50){
+				genx_PWM_LFM_updateDutyCycle(100);
+				genx_PWM_LBM_updateDutyCycle(100);
+				genx_PWM_RFM_updateDutyCycle(100);
+				genx_PWM_RBM_updateDutyCycle(100);
+			}
+			else{
+				genx_PWM_LFM_updateDutyCycle(100);
+				genx_PWM_LBM_updateDutyCycle(100 - ggenx.PWM);
+				genx_PWM_RFM_updateDutyCycle(100);
+				genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
+			}
+		}
+		if(mode == 4){
+			ancit_uart_message_setup();
+		}
+	#endif
+		else{
 			genx_PWM_LFM_updateDutyCycle(100);
 			genx_PWM_LBM_updateDutyCycle(100);
 			genx_PWM_RFM_updateDutyCycle(100);
 			genx_PWM_RBM_updateDutyCycle(100);
 		}
-		else{
-			genx_PWM_LFM_updateDutyCycle(100);
-			genx_PWM_LBM_updateDutyCycle(100 - ggenx.PWM);
-			genx_PWM_RFM_updateDutyCycle(100);
-			genx_PWM_RBM_updateDutyCycle(100 - ggenx.PWM);
-		}
 	}
-	if(mode == 4){
-		ancit_uart_message_setup();
-	}
-#endif
 	else{
 		genx_PWM_LFM_updateDutyCycle(100);
 		genx_PWM_LBM_updateDutyCycle(100);
 		genx_PWM_RFM_updateDutyCycle(100);
 		genx_PWM_RBM_updateDutyCycle(100);
 	}
-}
-else{
-	genx_PWM_LFM_updateDutyCycle(100);
-	genx_PWM_LBM_updateDutyCycle(100);
-	genx_PWM_RFM_updateDutyCycle(100);
-	genx_PWM_RBM_updateDutyCycle(100);
-}
-
 } 
 
 

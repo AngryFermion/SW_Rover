@@ -270,9 +270,6 @@ void FotaHandler::handleChunk(String topicStr, byte* payload, unsigned int lengt
     return;
   }
 
-  // Flush to ensure data is written to flash
-  fotaFile.flush();
-
   receivedChunks++;
   receivedChunkFlags[chunkNum] = true;
 
@@ -460,11 +457,15 @@ void FotaHandler::publishChunkAck(int chunkNum, bool success) {
   String ackPayload;
   serializeJson(ackDoc, ackPayload);
 
-  // Publish ACK with QoS 0 for speed (fire and forget)
-  MqttClient_Publish(TOPIC_DEVICE_FOTA_ACK.c_str(), ackPayload.c_str(), MQTT_NO_RETAIN);
+  bool published = MqttClient_Publish(TOPIC_DEVICE_FOTA_ACK.c_str(), ackPayload.c_str(), MQTT_NO_RETAIN);
 
-  g_Logger.Write(LogLevel::Debug, LogCategory::MQTT, "FotaHandler::publishChunkAck",
-                   "ACK sent for chunk %d: %s", chunkNum, success ? "OK" : "ERROR");
+  if (published) {
+    g_Logger.Write(LogLevel::Debug, LogCategory::MQTT, "FotaHandler::publishChunkAck",
+                     "ACK sent for chunk %d: %s", chunkNum, success ? "OK" : "ERROR");
+  } else {
+    g_Logger.Write(LogLevel::Error, LogCategory::MQTT, "FotaHandler::publishChunkAck",
+                     "ACK FAILED for chunk %d — publish returned false", chunkNum);
+  }
 }
 
 // MQTT Integration functions

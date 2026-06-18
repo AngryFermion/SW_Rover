@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *  
  */
@@ -67,16 +67,14 @@
 
 //#define TELEMATICS_CONFIGURED 
 
-#define SIMULINK_BRIDGE_CONFIGURED
-
-#define ULTRASONIC_CONFIGURED
+#define SIMULINK_BRIDGE_CONFIGURED 
 
 //#define AUTOSAR_CONFIGURED 
 
+//#define ANCIT_CAN_GATEWAY_ENABLED 
 #define ULTRASONIC_CONFIGURED
 
 #define ADAS_USECASE_CONFIGURED
-
 /***********************************************
  * ANCIT_Peripheral_Enablement_Stop
  ***********************************************/
