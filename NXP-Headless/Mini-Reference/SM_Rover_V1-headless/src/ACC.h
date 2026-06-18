@@ -7,9 +7,9 @@
  *
  * Code generation for model "ACC".
  *
- * Model version              : 1.15
+ * Model version              : 1.22
  * Simulink Coder version : 24.2 (R2024b) 21-Jun-2024
- * C source code generated on : Fri May  8 11:57:33 2026
+ * C source code generated on : Mon May 11 13:30:22 2026
  *
  * Target selection: grt.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -127,7 +127,7 @@ struct P_ACC_T_ {
   real_T Gain5_Gain;                   /* Expression: 1
                                         * Referenced by: '<Root>/Gain5'
                                         */
-  real_T Tg_Gain;                      /* Expression: 12
+  real_T Tg_Gain;                      /* Expression: 30
                                         * Referenced by: '<Root>/Tg'
                                         */
   real_T RateLimiter_RisingLim;        /* Expression: 5

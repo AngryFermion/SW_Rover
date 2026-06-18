@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *
  */
@@ -24,11 +24,11 @@
 #define GENX_UART_RTE_H_
 
 #include <stdint.h>
-#include "ancit_uart_rte.h"
 
-#define UART_RTE_VARIABLE_COUNT 2
+#define UART_RTE_VARIABLE_COUNT 4
 
 
 void ancit_uart_message_setup(void);
+void ancit_uart_command_receive(char *cmd);
 
 #endif /* GENX_UART_RTE_H_ */

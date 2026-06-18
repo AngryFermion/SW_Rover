@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *
  */
@@ -51,30 +51,30 @@
 // Formatters directly access the variables declared above
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
-void OLED_Distance_get_formatted_val(char *buffer, uint8_t bufferSize) {
-	uint16_t Distance;
+void OLED_Ultra_Distance_get_formatted_val(char *buffer, uint8_t bufferSize) {
+	uint16_t Ultra_Distance;
 
-	Distance = ggenx.Distance;
+	Ultra_Distance = ggenx.Ultra_Distance;
 
-	snprintf(buffer, bufferSize, "%3d", Distance);
+	snprintf(buffer, bufferSize, "%3d", Ultra_Distance);
 }
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
-void OLED_V_set_get_formatted_val(char *buffer, uint8_t bufferSize) {
-	uint16_t V_set;
+void OLED_Vset_get_formatted_val(char *buffer, uint8_t bufferSize) {
+	uint16_t Vset;
 
-	V_set = ggenx.V_set;
+	Vset = ggenx.Vset;
 
-	snprintf(buffer, bufferSize, "%3d", V_set);
+	snprintf(buffer, bufferSize, "%3d", Vset);
 }
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
-void OLED_D_min_get_formatted_val(char *buffer, uint8_t bufferSize) {
-	uint16_t D_min;
+void OLED_Dmin_get_formatted_val(char *buffer, uint8_t bufferSize) {
+	uint16_t Dmin;
 
-	D_min = ggenx.D_min;
+	Dmin = ggenx.Dmin;
 
-	snprintf(buffer, bufferSize, "%3d", D_min);
+	snprintf(buffer, bufferSize, "%3d", Dmin);
 }
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
@@ -123,7 +123,7 @@ oled_element_reg_t oled_element_reg[OLED_ELEMENT_MAX] =
 .value_callback = NULL, .buffer_size = 0 },
 { .type = OLED_ELEMENT_VARIABLE, .x = 65, .y = 10, .font =
 						OLED_FONT_6x8, .const_text = NULL,
-OLED_Distance_get_formatted_val, .buffer_size = 16 },
+OLED_Ultra_Distance_get_formatted_val, .buffer_size = 16 },
 { .type = OLED_ELEMENT_CONST_TEXT, .x = 10, .y = 20, .font =
 						OLED_FONT_6x8, .const_text = "V_set",
 .value_callback = NULL, .buffer_size = 0 },
@@ -132,7 +132,7 @@ OLED_Distance_get_formatted_val, .buffer_size = 16 },
 .value_callback = NULL, .buffer_size = 0 },
 { .type = OLED_ELEMENT_VARIABLE, .x = 65, .y = 20, .font =
 						OLED_FONT_6x8, .const_text = NULL,
-OLED_V_set_get_formatted_val, .buffer_size = 16 },
+OLED_Vset_get_formatted_val, .buffer_size = 16 },
 { .type = OLED_ELEMENT_CONST_TEXT, .x = 10, .y = 30, .font =
 						OLED_FONT_6x8, .const_text = "D_min",
 .value_callback = NULL, .buffer_size = 0 },
@@ -141,7 +141,7 @@ OLED_V_set_get_formatted_val, .buffer_size = 16 },
 .value_callback = NULL, .buffer_size = 0 },
 { .type = OLED_ELEMENT_VARIABLE, .x = 65, .y = 30, .font =
 						OLED_FONT_6x8, .const_text = NULL,
-OLED_D_min_get_formatted_val, .buffer_size = 16 },
+OLED_Dmin_get_formatted_val, .buffer_size = 16 },
 { .type = OLED_ELEMENT_CONST_TEXT, .x = 10, .y = 40, .font =
 						OLED_FONT_6x8, .const_text = "PWM",
 .value_callback = NULL, .buffer_size = 0 },

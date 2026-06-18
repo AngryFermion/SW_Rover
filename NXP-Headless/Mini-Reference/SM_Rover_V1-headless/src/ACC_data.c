@@ -7,9 +7,9 @@
  *
  * Code generation for model "ACC".
  *
- * Model version              : 1.15
+ * Model version              : 1.22
  * Simulink Coder version : 24.2 (R2024b) 21-Jun-2024
- * C source code generated on : Fri May  8 11:57:33 2026
+ * C source code generated on : Mon May 11 13:30:22 2026
  *
  * Target selection: grt.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -25,7 +25,7 @@ P_ACC_T ACC_P = {
   /* Expression: 0.000005
    * Referenced by: '<Root>/Kp_d'
    */
-  0.00005,
+  5.0E-6,
 
   /* Expression: 1/0.01
    * Referenced by: '<Root>/Ts'
@@ -42,10 +42,10 @@ P_ACC_T ACC_P = {
    */
   0.01,
 
-  /* Expression: 0.000008
+  /* Expression: 1.0
    * Referenced by: '<Root>/Kp_v'
    */
-  0.0005,
+  1,
 
   /* Expression: 0
    * Referenced by: '<Root>/Unit Delay'
@@ -72,20 +72,20 @@ P_ACC_T ACC_P = {
    */
   1.0,
 
-  /* Expression: 12
+  /* Expression: 30
    * Referenced by: '<Root>/Tg'
    */
-  20.0,
+  50.0,
 
-  /* Expression: 5
+  /* Expression: 0.133
    * Referenced by: '<Root>/Rate Limiter'
    */
-  5.0,
+  0.2,
 
-  /* Expression: -8
+  /* Expression: -160.0
    * Referenced by: '<Root>/Rate Limiter'
    */
-  -8.0,
+  -100,
 
   /* Expression: 0
    * Referenced by: '<Root>/Rate Limiter'

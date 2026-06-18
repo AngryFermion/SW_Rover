@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *
  */
@@ -54,13 +54,13 @@
 // Example:
 #define OLED_Distance_IDX	0
 #define OLED_:_IDX	1
-#define OLED_Distance_IDX	2
+#define OLED_Ultra_Distance_IDX	2
 #define OLED_V_set_IDX	3
 #define OLED_:_IDX	4
-#define OLED_V_set_IDX	5
+#define OLED_Vset_IDX	5
 #define OLED_D_min_IDX	6
 #define OLED_:_IDX	7
-#define OLED_D_min_IDX	8
+#define OLED_Dmin_IDX	8
 #define OLED_PWM_IDX	9
 #define OLED_:_IDX	10
 #define OLED_PWM_IDX	11
@@ -92,13 +92,13 @@ extern uint16_t OLED_ADC_VOLTAGE;
 // Example:
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
-void OLED_Distance_get_formatted_val(char *buffer, uint8_t bufferSize);
+void OLED_Ultra_Distance_get_formatted_val(char *buffer, uint8_t bufferSize);
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
-void OLED_V_set_get_formatted_val(char *buffer, uint8_t bufferSize);
+void OLED_Vset_get_formatted_val(char *buffer, uint8_t bufferSize);
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
-void OLED_D_min_get_formatted_val(char *buffer, uint8_t bufferSize);
+void OLED_Dmin_get_formatted_val(char *buffer, uint8_t bufferSize);
 // Code generation tool will insert formatter function implementations here
 // Formatters directly access the variables declared above
 void OLED_PWM_get_formatted_val(char *buffer, uint8_t bufferSize);

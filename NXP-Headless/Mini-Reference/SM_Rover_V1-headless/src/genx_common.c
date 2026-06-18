@@ -15,7 +15,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  
- * Created on: 08-05-2026
+ * Created on: 15-06-2026
  *     Author: SasiPrasanthSakhinal
  *  
  */
@@ -27,13 +27,10 @@
 global_genx_t ggenx;
  
 void genx_global_init(void) {
-
-
-	ggenx.Distance		= 		0;
-	ggenx.V_set			= 		100;
-	ggenx.D_min			= 		50;
-	ggenx.PWM			= 		0;
-
+		ggenx.Ultra_Distance= 0;
+	ggenx.Vset= 60;
+	ggenx.PWM= 0;
+	ggenx.Dmin= 30;
 
 }
 
