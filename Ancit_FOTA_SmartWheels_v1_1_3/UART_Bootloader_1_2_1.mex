@@ -24,6 +24,10 @@
          </generated_project_files>
          <pins_profile>
             <processor_version>0.0.0</processor_version>
+            <external_user_signals>
+               <routingDetailsColumns/>
+               <properties/>
+            </external_user_signals>
             <power_domains/>
          </pins_profile>
          <functions_list>
@@ -35,8 +39,8 @@
                </options>
                <dependencies/>
                <pins>
-                  <pin peripheral="LPUART0" signal="rxd" pin_num="54" pin_signal="PTB0"/>
-                  <pin peripheral="LPUART0" signal="txd" pin_num="53" pin_signal="PTB1">
+                  <pin peripheral="LPUART0" signal="rxd" pin_num="30" pin_signal="PTC2"/>
+                  <pin peripheral="LPUART0" signal="txd" pin_num="29" pin_signal="PTC3">
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
@@ -224,6 +228,7 @@
          </efuse_profile>
       </efuse>
       <gtm name="GTM" version="1.0" enabled="false" update_project_code="true">
+         <generated_project_files/>
          <gtm_profile>
             <processor_version>N/A</processor_version>
          </gtm_profile>

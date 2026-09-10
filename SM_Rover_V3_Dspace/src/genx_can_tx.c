@@ -33,10 +33,36 @@ tx_state_t sm_state;
 can_tx_message_t can_tx_messages[CAN_TX_MSG_MAX];
 
 #include "smartwheels_rover.h"
+#include "genx_ids_alert.h"
 #include "genx_common.h"
 
 
 struct smartwheels_rover_rover_acc_status_t can_tx_msg_rover_acc_status_instance;
+
+struct genx_ids_alert_ids_alert_t can_tx_msg_ids_alert_instance;
+
+
+/***********************************************
+* ANCIT_CG_TxMsg_Stub_Start
+***********************************************/
+
+
+//IDS CAN TX Area
+
+/**
+* Message ID : 0x7FF
+* DLC : 8;
+**/
+void ancit_can_setup_tx_message_IDS_Alert(uint8_t idx) {
+	can_tx_messages[idx].dataInfo.data_length = 8;
+	can_tx_msg_ids_alert_instance.violation_type=genx_ids_alert_ids_alert_violation_type_encode(0.0);
+	can_tx_msg_ids_alert_instance.offending_id=genx_ids_alert_ids_alert_offending_id_encode(0.0);
+	can_tx_msg_ids_alert_instance.reserved1=genx_ids_alert_ids_alert_reserved1_encode(0.0);
+	can_tx_msg_ids_alert_instance.reserved2=genx_ids_alert_ids_alert_reserved2_encode(0.0);
+	can_tx_msg_ids_alert_instance.reserved3=genx_ids_alert_ids_alert_reserved3_encode(0.0);
+
+	genx_ids_alert_ids_alert_pack(can_tx_messages[idx].tx_data,&can_tx_msg_ids_alert_instance,8);
+}
 
 
 /***********************************************
@@ -82,6 +108,15 @@ can_tx_message_registration_params_t tx_reg[CAN_TX_MSG_MAX] = {
 .msg_type = CAN_TX_MSG_TYPE_CYCLIC,// 
 .set_interval_ms = 10.0,// 
 .setupMessage = ancit_can_setup_tx_message_ROVER_ACC_STATUS// 
+},
+{.idx = CAN_TX_MSG_IDX_IDS_Alert,//
+.instance_id =0,//
+.msg_id_type = FLEXCAN_MSG_ID_STD,//
+.msg_id = 0x7FF,//
+.enabled = true, //
+.msg_type = CAN_TX_MSG_TYPE_ON_START,//
+.set_interval_ms = 0.0,//
+.setupMessage = ancit_can_setup_tx_message_IDS_Alert//
 }
 
 };

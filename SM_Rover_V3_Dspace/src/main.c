@@ -69,6 +69,10 @@
 #endif
 #include "genx_ultrason.h"
 
+#ifdef CAN_IDS_CONFIGURED
+#include "genx_ids.h"
+#endif
+
 volatile int exit_code = 0;
 
 int main(void) {
@@ -124,6 +128,11 @@ int main(void) {
 #ifdef SCHEDULER_CONFIGURED
 	genx_scheduler_init();
 #endif //SCHEDULER_CONFIGURED
+
+#ifdef CAN_IDS_CONFIGURED
+	//Initialize CAN Intrusion Detection System
+	genx_ids_init();
+#endif //CAN_IDS_CONFIGURED
 
 #ifdef SIMULINK_BRIDGE_CONFIGURED
 	/* Initialize Simulink model */

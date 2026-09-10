@@ -28,6 +28,8 @@ g_struct_can_rx_t can_rx[CAN_RX_MSG_MAX];
 #include "smartwheels_rover.h"
 #include "genx_common.h"
 
+#include "genx_ids.h"
+
 
 struct smartwheels_rover_rover_vehicle_cmd_t can_rx_msg_rover_vehicle_cmd_instance;
 struct smartwheels_rover_rover_acc_param_t can_rx_msg_rover_acc_param_instance;
@@ -47,6 +49,18 @@ genx_ids_check_message(actual_id, can_rx[CAN_RX_MSG_IDX_ROVER_VEHICLE_CMD].recvM
 if (actual_id != 0x201) { return; } /* Not our message - skip unpack */
 #endif
 smartwheels_rover_rover_vehicle_cmd_unpack(&can_rx_msg_rover_vehicle_cmd_instance,can_rx[CAN_RX_MSG_IDX_ROVER_VEHICLE_CMD].recvMsg.data,can_rx[CAN_RX_MSG_IDX_ROVER_VEHICLE_CMD].recvMsg.dataLen);
+#ifdef CAN_IDS_CONFIGURED
+/* Added: genx_ids_check_message() can only see raw bytes, so the signal-range
+ * check (previously configured but never invoked) has to run here, after unpack,
+ * with values in the same order as ids_signal_ranges_0 in genx_ids.c. */
+double ids_signal_values_0x201[4] = {
+    (double)can_rx_msg_rover_vehicle_cmd_instance.vacc_enable,
+    (double)can_rx_msg_rover_vehicle_cmd_instance.acc_enable,
+    (double)can_rx_msg_rover_vehicle_cmd_instance.speed_cmd,
+    (double)can_rx_msg_rover_vehicle_cmd_instance.direction_cmd,
+};
+genx_ids_check_signal_ranges(0x201, ids_signal_values_0x201, 4);
+#endif
 
 	ggenx.VACC =can_rx_msg_rover_vehicle_cmd_instance.vacc_enable;
 	ggenx.ACC =can_rx_msg_rover_vehicle_cmd_instance.acc_enable;
@@ -64,6 +78,16 @@ genx_ids_check_message(actual_id, can_rx[CAN_RX_MSG_IDX_ROVER_ACC_PARAM].recvMsg
 if (actual_id != 0x202) { return; } /* Not our message - skip unpack */
 #endif
 smartwheels_rover_rover_acc_param_unpack(&can_rx_msg_rover_acc_param_instance,can_rx[CAN_RX_MSG_IDX_ROVER_ACC_PARAM].recvMsg.data,can_rx[CAN_RX_MSG_IDX_ROVER_ACC_PARAM].recvMsg.dataLen);
+#ifdef CAN_IDS_CONFIGURED
+/* Added: same as ROVER_VEHICLE_CMD above - run the signal-range check now that
+ * the values are decoded, in the same order as ids_signal_ranges_1 in genx_ids.c. */
+double ids_signal_values_0x202[3] = {
+    (double)can_rx_msg_rover_acc_param_instance.acc_virt_obj_dist,
+    (double)can_rx_msg_rover_acc_param_instance.acc_d_min,
+    (double)can_rx_msg_rover_acc_param_instance.acc_v_set,
+};
+genx_ids_check_signal_ranges(0x202, ids_signal_values_0x202, 3);
+#endif
 
 	ggenx.ACC_Obj = can_rx_msg_rover_acc_param_instance.acc_virt_obj_dist;
 	ggenx.ACC_Dmin =can_rx_msg_rover_acc_param_instance.acc_d_min;

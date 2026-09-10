@@ -2,11 +2,12 @@
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Pins v11.0
+product: Pins v15.0
 processor: S32K144
 package_id: S32K144_LQFP100
 mcu_data: s32sdk_s32k1xx_rtm_401
 processor_version: 0.0.0
+external_user_signals: {}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -36,8 +37,8 @@ processor_version: 0.0.0
 BOARD_InitPins:
 - options: {callFromInitBoot: 'true', coreID: core0}
 - pin_list:
-  - {pin_num: '54', peripheral: LPUART0, signal: rxd, pin_signal: PTB0}
-  - {pin_num: '53', peripheral: LPUART0, signal: txd, pin_signal: PTB1, direction: OUTPUT}
+  - {pin_num: '30', peripheral: LPUART0, signal: rxd, pin_signal: PTC2}
+  - {pin_num: '29', peripheral: LPUART0, signal: txd, pin_signal: PTC3, direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -45,12 +46,12 @@ BOARD_InitPins:
 /* Generate array of configured pin structures */
 pin_settings_config_t g_pin_mux_InitConfigArr0[NUM_OF_CONFIGURED_PINS0] = {
     {
-        .base            = PORTB,
-        .pinPortIdx      = 0U,
+        .base            = PORTC,
+        .pinPortIdx      = 2U,
         .pullConfig      = PORT_INTERNAL_PULL_NOT_ENABLED,
         .driveSelect     = PORT_LOW_DRIVE_STRENGTH,
         .passiveFilter   = false,
-        .mux             = PORT_MUX_ALT2,
+        .mux             = PORT_MUX_ALT4,
         .pinLock         = false,
         .intConfig       = PORT_DMA_INT_DISABLED,
         .clearIntFlag    = false,
@@ -58,12 +59,12 @@ pin_settings_config_t g_pin_mux_InitConfigArr0[NUM_OF_CONFIGURED_PINS0] = {
         .digitalFilter   = false,
     },
     {
-        .base            = PORTB,
-        .pinPortIdx      = 1U,
+        .base            = PORTC,
+        .pinPortIdx      = 3U,
         .pullConfig      = PORT_INTERNAL_PULL_NOT_ENABLED,
         .driveSelect     = PORT_LOW_DRIVE_STRENGTH,
         .passiveFilter   = false,
-        .mux             = PORT_MUX_ALT2,
+        .mux             = PORT_MUX_ALT4,
         .pinLock         = false,
         .intConfig       = PORT_DMA_INT_DISABLED,
         .clearIntFlag    = false,

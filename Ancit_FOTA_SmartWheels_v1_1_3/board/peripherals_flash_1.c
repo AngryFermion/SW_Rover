@@ -6,7 +6,7 @@
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Peripherals v11.0
+product: Peripherals v14.0
 processor: S32K144
 package_id: S32K144_LQFP100
 mcu_data: s32sdk_s32k1xx_rtm_401
@@ -47,7 +47,7 @@ instance:
         - PFlashSize: '0x80000'
         - DFlashBase: '0x10000000'
         - EERAMBase: '0x14000000'
-        - CallBack: 'NULL_CALLBACK'
+        - CallBack: 'NULL'
     - quick_selection: 'flash_default'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -68,7 +68,7 @@ const flash_user_config_t Flash_InitConfig0 =
     .PFlashSize = 0x80000U,
     .DFlashBase = 0x10000000U,
     .EERAMBase = 0x14000000U,
-    .CallBack = NULL_CALLBACK
+    .CallBack = NULL
 };
 
 

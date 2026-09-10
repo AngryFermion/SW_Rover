@@ -33,10 +33,11 @@
  ***********************************************/
  
 //Total messages configured
-#define CAN_TX_MSG_MAX			1
-//Index for each Tx Message
-#define CAN_TX_MSG_IDX_ROVER_ACC_STATUS			0
+#define CAN_TX_MSG_MAX			2
 
+#define CAN_TX_MSG_IDX_IDS_Alert  0
+//Index for each Tx Message
+#define CAN_TX_MSG_IDX_ROVER_ACC_STATUS			1
 
 /***********************************************
  * ANCIT_CG_Tx_Define_End

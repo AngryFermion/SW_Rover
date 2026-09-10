@@ -1,0 +1,6 @@
+"Task Aware Debugger for GDB" version 11.7.0 (202409241829)
+(c) 2016-2022 NXP Semiconductors, Inc.
+==================================
+17:58:57.889 INFO: [ZephyrRTOS] .config file could not be read [E:\ANCIT\SW_Rover\SM_Rover_V3_Dspace\Debug_FLASH\.config (The system cannot find the file specified)]
+17:58:57.889 INFO: [TadModel] DSF session ID 5 has started.
+18:02:53.320 INFO: [TadModel] DSF session ID 5 has ended.
