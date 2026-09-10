@@ -43,6 +43,16 @@
  ***********************************************/
 static uint32_t ids_last_rx_time[IDS_MSG_VALIDATION_COUNT];
 
+/* Added: the reactive timing check in genx_ids_check_message() only runs when a
+ * NEW frame for that ID arrives, so a message that stops arriving entirely
+ * (bus-off, ECU killed, suppressed by an attacker) was never flagged - there's
+ * no new arrival to trigger the check. These track, per configured message,
+ * whether a "gone silent" violation has already been reported for the current
+ * outage, so the round-robin poll (genx_ids_poll_next) can report it once
+ * instead of spamming every poll cycle while it stays missing. */
+static bool ids_missing_reported[IDS_MSG_VALIDATION_COUNT];
+static uint8_t ids_poll_idx = 0U;
+
 
 /***********************************************
  * IDS Whitelist Table
@@ -120,6 +130,9 @@ void genx_ids_init(void) {
     }
 
     memset(ids_last_rx_time, 0, sizeof(ids_last_rx_time));
+    /* Added: init state for the round-robin "message gone silent" poll. */
+    memset(ids_missing_reported, 0, sizeof(ids_missing_reported));
+    ids_poll_idx = 0U;
 
 }
 
@@ -142,6 +155,12 @@ void genx_ids_check_message(uint32_t msg_id, uint8_t dlc, uint8_t rx_msg_idx) {
     /* Find message config and run per-message checks */
     for (int i = 0; i < IDS_MSG_VALIDATION_COUNT; i++) {
         if (ids_msg_configs[i].msg_id == msg_id) {
+            /* Added: the message just arrived, so it's no longer "missing" -
+             * clear it unconditionally, regardless of whether this particular
+             * arrival was itself early/late. That's a separate concern handled
+             * by the reactive timing check right below. */
+            ids_missing_reported[i] = false;
+
             /* DLC Check */
             if (ids_msg_configs[i].dlc_check_enabled && dlc != ids_msg_configs[i].expected_dlc) {
                 genx_ids_report_violation(IDS_VIOLATION_DLC_MISMATCH, msg_id, "DLC mismatch");
@@ -276,21 +295,56 @@ void genx_ids_report_violation(ids_violation_type_t type, uint32_t msg_id, const
     }
 }
 
-/* Added: drains ids_pending_queue, one retry per call. Call once per main
- * loop iteration (see main.c) so queued real violations still go out once
- * mailbox 15 frees up, instead of being lost like the heartbeat is. */
+static void genx_ids_poll_next(void);
+
+/* Added: drains ids_pending_queue (one retry per call) and advances the
+ * round-robin "is this configured message still alive" poll (one entry per
+ * call). Call once per main loop iteration (see main.c). */
 void genx_ids_main(void) {
-    if (ids_pending_count == 0U) {
+    if (ids_pending_count != 0U) {
+        status_t send_status = genx_ids_send_alert_frame(ids_pending_queue[ids_pending_head].type,
+                                                           ids_pending_queue[ids_pending_head].msg_id);
+        if (send_status == STATUS_SUCCESS) {
+            ids_pending_head = (uint8_t)((ids_pending_head + 1U) % IDS_PENDING_QUEUE_SIZE);
+            ids_pending_count--;
+        }
+        /* else: mailbox still busy - leave it queued and try again next call. */
+    }
+
+    genx_ids_poll_next();
+}
+
+/* Added: checks ONE configured message per call (round-robin via ids_poll_idx),
+ * independent of whether that ID's next frame ever shows up. This is what
+ * catches a message that has gone completely silent - the reactive check in
+ * genx_ids_check_message() only fires on a new arrival, so a dropped/killed
+ * message would otherwise never be flagged at all. Cycling one entry per call
+ * (rather than looping the whole table every call) also means a fast-arriving
+ * ID (e.g. a 1ms-period message) can't starve a slower/now-silent ID out of
+ * being checked - every configured message gets an equal, steady turn. */
+static void genx_ids_poll_next(void) {
+    if (IDS_MSG_VALIDATION_COUNT == 0) {
         return;
     }
 
-    status_t send_status = genx_ids_send_alert_frame(ids_pending_queue[ids_pending_head].type,
-                                                       ids_pending_queue[ids_pending_head].msg_id);
-    if (send_status == STATUS_SUCCESS) {
-        ids_pending_head = (uint8_t)((ids_pending_head + 1U) % IDS_PENDING_QUEUE_SIZE);
-        ids_pending_count--;
+    const ids_message_config_t *cfg = &ids_msg_configs[ids_poll_idx];
+
+    if (cfg->timing_check_enabled && cfg->max_interval_ms > 0U &&
+        ids_last_rx_time[ids_poll_idx] != 0U) {
+
+        uint32_t now = ancit_GetTick();
+        uint32_t elapsed = now - ids_last_rx_time[ids_poll_idx];
+
+        if (elapsed > cfg->max_interval_ms && !ids_missing_reported[ids_poll_idx]) {
+            genx_ids_report_violation(IDS_VIOLATION_TIMING, cfg->msg_id, "Message missing");
+            /* Latch so we report the outage once, not on every poll cycle
+             * while it stays silent - cleared as soon as it's received again
+             * (see genx_ids_check_message). */
+            ids_missing_reported[ids_poll_idx] = true;
+        }
     }
-    /* else: mailbox still busy - leave it queued and try again next call. */
+
+    ids_poll_idx = (uint8_t)((ids_poll_idx + 1U) % IDS_MSG_VALIDATION_COUNT);
 }
 
 /***********************************************

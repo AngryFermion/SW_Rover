@@ -176,6 +176,13 @@ ancit_uart_conn_main();
     genx_ultrason_main();
 #endif
 
+/* Added: drains genx_ids's pending-violation retry queue so a real violation
+ * that lost the race for the shared IDS_Alert mailbox still gets sent once
+ * it frees up, instead of being silently dropped. */
+#ifdef CAN_IDS_CONFIGURED
+	genx_ids_main();
+#endif //CAN_IDS_CONFIGURED
+
     Task_While();
 
 		//Toggle the Debug Pin PTD8 to indicate end of main loop
